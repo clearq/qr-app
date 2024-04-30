@@ -1,0 +1,62 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  phone     String?
+  password  String
+  company   String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  vcard VCard[]
+  qr Qr[]
+}
+
+// model TypeOfQrCode {
+//   id     String      @id @default(cuid())
+//   name   String
+//   vcard VCard[]
+//   qr Qr[]
+// }
+
+model VCard {
+  id             String          @id @default(cuid())
+  firstName      String
+  lastName       String
+  email          String       @unique
+  phone          String?
+  company        String?
+  title          String?
+  logoType       String?
+  image          String?
+  linkedIn       String?
+  x              String?
+  facebook       String?
+  instagram      String?
+  snapchat       String?
+  tiktok         String?
+  url            String
+  customer       Customer     @relation(fields: [customerId], references: [id])
+  customerId     String
+}
+
+model Qr {
+  id             String          @id @default(cuid())
+  url            String
+  customer       Customer?     @relation(fields: [customerId], references: [id])
+  logoType       String?
+  customerId     String
+}
+
+
