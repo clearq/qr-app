@@ -43,8 +43,8 @@ export default function Home() {
               <Input id="email" placeholder="Email" />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" placeholder="" />
+              <Label htmlFor="phone">Phone</Label>
+              <Input id="phone" placeholder="Tel." />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Name</Label>
