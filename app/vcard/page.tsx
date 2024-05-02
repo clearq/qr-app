@@ -18,10 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import Pages from "@/components/Pages"
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center">
+    <>
+    
+      <Pages/>
+    <div className="flex justify-center items-center mt-40">
     <Card className="w-[350px]">
       <CardHeader>
         <CardTitle>VCard</CardTitle>
@@ -93,5 +97,6 @@ export default function Home() {
       </CardFooter>
     </Card>
     </div>
+    </>
   )
 }

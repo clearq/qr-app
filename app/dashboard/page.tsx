@@ -1,37 +1,26 @@
 'use client'
-import { prisma } from "@/lib/db";
 import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { getAllQrData } from "@/data/qr";
+import { IQR } from "@/typings";
 
 export default function Dashboard() {
-  const [qrCodes, setQRCodes] = useState<any[]>([]);
+  const [qrData, setQrData] = useState<IQR[]>([]);
+
+  const fetchData = useCallback(async() => {
+    await fetch("/api/qr").then((data) => data.json()).then((data) => setQrData(data))
+  }, []);
+
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const qrCodesData = await prisma.qr.findMany({
-          include: {
-            customer: true, 
-          },
-        });
-    
-        console.log("QR Codes Data:", qrCodesData);
-    
-        setQRCodes(qrCodesData);
-      } catch (error) {
-        console.error("Error fetching QR codes:", error);
-      }
-    };
-    
-
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-4">QR Code Dashboard</h1>
-      <DataTable />
+      <DataTable qrData={qrData} refetchDataTable={fetchData} />
     </div>
   );
 }
