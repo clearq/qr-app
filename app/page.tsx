@@ -11,6 +11,9 @@ import VCardPage from "./vcard/page";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Input } from "@/components/ui/input";
+import Pages from "@/components/Pages";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface SelectedFormats {
   png: boolean;
@@ -179,17 +182,16 @@ function Home() {
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
     }),
-    onSubmit:  (values) => {
-      fetch("/api/saveQrCode", {
+    onSubmit: (values) => {
+      fetch("/api/qr", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
-      })
-      .then((data) => {
-        console.log(data)
-      })
+      }).then((data) => {
+        console.log(data);
+      });
     },
   });
 
@@ -199,6 +201,7 @@ function Home() {
     if (selectedOption === "qrCode") {
       return (
         <>
+        <Pages/>
           <div className="flex gap-10 items-center justify-center">
             {!session ? (
               <>
@@ -238,15 +241,16 @@ function Home() {
                     med målgruppen!
                   </div>
                   <Link href="/register">
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
                       Register
-                    </button>
+                    </Button>
                   </Link>
                 </div>
               </>
             ) : (
-              <>
-                <div className="flex justify-center items-center mt-40">
+              <div>
+                
+                <Card className="flex justify-center items-center mt-40">
                   <div
                     className={`w-[1080px] h-[${
                       isQRCodeGenerated ? "auto" : "0"
@@ -259,12 +263,12 @@ function Home() {
                       <div className="mb-4">
                         <label className="text-black">
                           Uppladdad Logotyp
-                          <button
+                          <Button
                             className="ml-2 p-2 bg-red-500 text-white rounded-md"
                             onClick={handleLogoRemove}
                           >
                             Ta bort
-                          </button>
+                          </Button>
                         </label>
                         <Image
                           src={resizedLogo.src}
@@ -302,12 +306,13 @@ function Home() {
                           {validation.errors.url}
                         </p>
                       )}
-                      <button
-                        className="ml-4 p-2 bg-blue-500 text-white rounded-md"
+                      <Button
+                        variant="outline"
+                        className="ml-4 p-2 hover:bg-slate-400 hover:text-white rounded-md"
                         onClick={generateQRCode}
                       >
                         Generate
-                      </button>
+                      </Button>
                     </div>
                     {isQRCodeGenerated && (
                       <div className="p-4 mt-4">
@@ -339,23 +344,25 @@ function Home() {
                             PNG
                           </label>
                         </div>
-                        <button
-                          className="mt-2 p-2 bg-blue-500 text-white rounded-md"
+                        <Button
+                          variant="outline"
+                          className="mt-2 p-2 hover:bg-slate-400 hover:text-white rounded-md"
                           onClick={downloadQRCode}
                         >
                           Ladda ner
-                        </button>
-                        <button
-                          className="mt-2 ml-2 p-2 bg-blue-500 text-white rounded-md"
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="mt-2 ml-2 p-2 hover:bg-slate-400 hover:text-white rounded-md"
                           onClick={() => validation.handleSubmit()}
                         >
                           Save
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>
-                </div>
-              </>
+                </Card>
+              </div>
             )}
           </div>
         </>

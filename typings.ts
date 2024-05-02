@@ -45,3 +45,11 @@ export interface Github {
 export type InputProps = {
   typeOfInput: 'text' | 'url' | 'email' | 'tel' | 'vCard' | 'wifi' | 'sms';
 };
+
+
+export interface IQR {
+  id: string;
+  url : string;
+  logoType: string | null;
+  customerId : string;
+}
