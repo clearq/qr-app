@@ -13,9 +13,13 @@ export const qrCodeById = async (id: string) => {
 };
 
 
-export const getAllQrData = async () => {
+export const getAllQrData = async (id: string) => {
   try {
-    const qrData = await prisma.qr.findMany();
+    const qrData = await prisma.qr.findMany({
+      where:{
+        customerId: id
+      }
+    });
 
     return qrData
   } catch {

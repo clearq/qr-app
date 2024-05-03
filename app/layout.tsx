@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import SessionProvider from "@/utils/SessionProvider";
 import { ThemeProvider } from "@/components/theme-provider"
 import {auth} from '@/auth'
+import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -29,6 +30,7 @@ export default async function RootLayout({children}: Props) {
           >
         <SessionProvider session={session}>
           <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
+          <Toaster />
             <Navbar />
             {children}
           </div>
