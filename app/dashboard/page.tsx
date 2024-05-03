@@ -17,10 +17,11 @@ export default function Dashboard() {
     fetchData();
   }, [fetchData]);
 
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-4">QR Code Dashboard</h1>
-      <DataTable qrData={qrData} refetchDataTable={fetchData} />
+      <DataTable  qrData={qrData} refetchDataTable={fetchData} />
     </div>
   );
 }

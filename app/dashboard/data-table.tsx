@@ -26,19 +26,18 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+
 
 interface DataTableProps {
   qrData: IQR[];
   refetchDataTable: () => void;
 }
 
-export const DataTable = ({ qrData, refetchDataTable }: DataTableProps) => {
+export const DataTable = ({ qrData = [], refetchDataTable }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
-
-  const { data: session, status } = useSession();
 
   useEffect(() => {
     setIsMounted(true);
@@ -73,6 +72,7 @@ export const DataTable = ({ qrData, refetchDataTable }: DataTableProps) => {
     router.push("/vcard");
   };
 
+
   if (!isMounted) return null;
 
   return (
@@ -102,7 +102,7 @@ export const DataTable = ({ qrData, refetchDataTable }: DataTableProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {qrData.map((qr, index: number) => (
+          {qrData?.map((qr, index: number) => (
             <TableRow key={qr.id}>
               <TableCell>{index + 1}</TableCell>
               <TableCell>{qr.url}</TableCell>

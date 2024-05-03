@@ -13,7 +13,16 @@ import * as yup from "yup";
 import { Input } from "@/components/ui/input";
 import Pages from "@/components/Pages";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { title } from "process";
+import QRCodeGenerator from "./qr/page";
 
 interface SelectedFormats {
   png: boolean;
@@ -25,6 +34,7 @@ interface SelectedFormats {
 }
 
 function Home() {
+  const { toast } = useToast();
   const [selectedOption, setSelectedOption] = useState<"qrCode" | "vCard">(
     "qrCode"
   );
@@ -190,7 +200,18 @@ function Home() {
         },
         body: JSON.stringify(values),
       }).then((data) => {
-        console.log(data);
+        if (data?.status === 201) {
+          toast({
+            title: `Created sucessfully!`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            title: `Something went worng`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
+        }
       });
     },
   });
@@ -201,7 +222,6 @@ function Home() {
     if (selectedOption === "qrCode") {
       return (
         <>
-        <Pages/>
           <div className="flex gap-10 items-center justify-center">
             {!session ? (
               <>
@@ -248,13 +268,19 @@ function Home() {
                 </div>
               </>
             ) : (
-              <div>
-                
-                <Card className="flex justify-center items-center mt-40">
-                  <div
+              <div className="flex flex-col w-full ">
+                <Pages />
+                <Card className=" mt-40">
+                  <CardHeader>
+                    <CardTitle>URL</CardTitle>
+                    <CardDescription>Enter URL</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <QRCodeGenerator />
+                    {/* <div
                     className={`w-[1080px] h-[${
                       isQRCodeGenerated ? "auto" : "0"
-                    }] p-8 bg-slate-200 bg-opacity-20 rounded-md outline-none flex flex-col transition-all duration-500`}
+                    }] p-8 bg-opacity-20 rounded-md outline-none flex flex-col transition-all duration-500`}
                   >
                     <h1 className="text-black text-[45px] font-bold mb-4">
                       URL Generator
@@ -308,7 +334,7 @@ function Home() {
                       )}
                       <Button
                         variant="outline"
-                        className="ml-4 p-2 hover:bg-slate-400 hover:text-white rounded-md"
+                        className="ml-4 p-2 hover:bg-gray-700 hover:text-white rounded-md"
                         onClick={generateQRCode}
                       >
                         Generate
@@ -325,8 +351,8 @@ function Home() {
                           className={
                             selectedFormats.png ? "bg-white" : "bg-white"
                           }
-                          width={100}
-                          height={100}
+                          width={300}
+                          height={300}
                         />
                         <div className="flex space-x-5 mt-2">
                           <label className="text-black">
@@ -346,21 +372,22 @@ function Home() {
                         </div>
                         <Button
                           variant="outline"
-                          className="mt-2 p-2 hover:bg-slate-400 hover:text-white rounded-md"
+                          className="mt-2 p-2 hover:bg-gray-700 hover:text-white rounded-md"
                           onClick={downloadQRCode}
                         >
                           Ladda ner
                         </Button>
                         <Button
                           variant="outline"
-                          className="mt-2 ml-2 p-2 hover:bg-slate-400 hover:text-white rounded-md"
+                          className="mt-2 ml-2 p-2 hover:bg-gray-700 hover:text-white rounded-md"
                           onClick={() => validation.handleSubmit()}
                         >
                           Save
                         </Button>
                       </div>
                     )}
-                  </div>
+                  </div> */}
+                  </CardContent>
                 </Card>
               </div>
             )}

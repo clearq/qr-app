@@ -33,20 +33,6 @@ export const updateQrCode = async (values : any, userId : string) => {
     }
  }
 
-//  const updatedQr = await prisma.qr.update({
-//     where:{
-        
-//     }
-//  })
-
-if (!updatedQr) {
-    return {
-        error : "Cannot create an qrcode"
-    }
-}
-
-
-return updatedQr;
 
 }
 
