@@ -23,6 +23,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { title } from "process";
 import QRCodeGenerator from "./qr/page";
+import { Label } from "@/components/ui/label";
 
 interface SelectedFormats {
   png: boolean;
@@ -165,23 +166,23 @@ function Home() {
     }
   };
 
-  const downloadQRCode = () => {
-    const allFormats = ["png", "pdf", "svg", "eps", "jpg"];
-    const formatsToDownload = allFormats.filter(
-      (format) => selectedFormats[format]
-    );
+  // const downloadQRCode = () => {
+  //   const allFormats = ["png", "pdf", "svg", "eps", "jpg"];
+  //   const formatsToDownload = allFormats.filter(
+  //     (format) => selectedFormats[format]
+  //   );
 
-    formatsToDownload.forEach((format) => {
-      const downloadLink = document.createElement("a");
-      downloadLink.href = qrCode;
-      downloadLink.download = `qrcode.${format}`;
-      downloadLink.click();
-    });
-  };
+  //   formatsToDownload.forEach((format) => {
+  //     const downloadLink = document.createElement("a");
+  //     downloadLink.href = qrCode;
+  //     downloadLink.download = `qrcode.${format}`;
+  //     downloadLink.click();
+  //   });
+  // };
 
-  const handleLogoRemove = () => {
-    setResizedLogo(null);
-  };
+  // const handleLogoRemove = () => {
+  //   setResizedLogo(null);
+  // };
 
   const { data: session } = useSession();
 
@@ -270,7 +271,7 @@ function Home() {
             ) : (
               <div className="flex flex-col w-full ">
                 <Pages />
-                <Card className=" mt-40">
+                <Card className=" mt-10">
                   <CardHeader>
                     <CardTitle>URL</CardTitle>
                     <CardDescription>Enter URL</CardDescription>
@@ -305,7 +306,7 @@ function Home() {
                         />
                       </div>
                     )}
-                    <label className="text-black">
+                    <Label className="text-black">
                       Ladda upp logotyp
                       <input
                         className="mr-2"
@@ -313,13 +314,13 @@ function Home() {
                         accept="image/*"
                         onChange={handleLogoUpload}
                       />
-                    </label>
-                    <label className="text-black" htmlFor="text-input">
+                    </Label>
+                    <Label className="text-black text-xl" htmlFor="text-input">
                       Ange text:
-                    </label>
+                    </Label>
                     <div className="flex items-center">
                       <Input
-                        className="border-b border-white outline-none bg-transparent text-black p-2 flex-grow"
+                        className="border-b border-white outline-none bg-transparent text-black p-2 w-[70%]"
                         type="text"
                         placeholder="https://"
                         id="text-input"

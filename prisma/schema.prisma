@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,8 +18,8 @@ model Customer {
   image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  vcard VCard[]
-  qr Qr[]
+  vcard     VCard[]
+  qr        Qr[]
 }
 
 // model TypeOfQrCode {
@@ -31,32 +30,32 @@ model Customer {
 // }
 
 model VCard {
-  id             String          @id @default(cuid())
-  firstName      String
-  lastName       String
-  email          String       @unique
-  phone          String?
-  company        String?
-  title          String?
-  logoType       String?
-  image          String?
-  linkedIn       String?
-  x              String?
-  facebook       String?
-  instagram      String?
-  snapchat       String?
-  tiktok         String?
-  url            String
-  customer       Customer     @relation(fields: [customerId], references: [id])
-  customerId     String
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  tag           String
+  customerEmail String?
+  phone         String?
+  company       String?
+  title         String?
+  logoType      String?
+  image         String?
+  linkedIn      String?
+  x             String?
+  facebook      String?
+  instagram     String?
+  snapchat      String?
+  tiktok        String?
+  url           String?
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  customerId    String
 }
 
 model Qr {
-  id             String          @id @default(cuid())
-  url            String
-  customer       Customer?     @relation(fields: [customerId], references: [id])
-  logoType       String?
-  customerId     String
+  id         String    @id @default(cuid())
+  url        String
+  tag        String
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  logoType   String?
+  customerId String
 }
-
-

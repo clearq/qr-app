@@ -1,11 +1,26 @@
+"use server";
 import { prisma } from "@/lib/db";
 
-export const qrCodeById = async (id: string) => {
+export const vCodeById = async (id: string) => {
   try {
-    const qrData = await prisma.vCard.findFirst({
+    const vData = await prisma.vCard.findFirst({
       where: { id },
     });
-    return qrData;
+    return vData;
+  } catch {
+    return null;
+  }
+};
+
+export const getAllVData = async (id: string) => {
+  try {
+    const vData = await prisma.vCard.findMany({
+      where: {
+        customerId: id,
+      },
+    });
+
+    return vData;
   } catch {
     return null;
   }
