@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AuthError } from "next-auth";
+import { Input } from "@/components/ui/input";
 
 const Login = () => {
   const [error, setError] = useState("");
@@ -39,10 +39,6 @@ const Login = () => {
       setError("Password is invalid");
       return;
     }
-
-
-
-
     try {
       
     const res = await signIn("credentials", {

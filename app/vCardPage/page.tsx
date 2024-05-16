@@ -17,11 +17,6 @@ import { useSession } from "next-auth/react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function Home() {
   const { toast } = useToast();
@@ -36,12 +31,11 @@ export default function Home() {
       customerEmail: "",
       firstName: "",
       lastName: "",
-      tag: "",
       phone: "",
       company: "",
       title: "",
       logoType: "",
-      image: "",
+      image : "",
       linkedIn: "",
       x: "",
       facebook: "",
@@ -54,10 +48,9 @@ export default function Home() {
       customerEmail: yup.string().email().required("Email is required"),
       firstName: yup.string().min(3).required("First name is required"),
       lastName: yup.string().min(3).required("Last name is required"),
-      tag: yup.string().min(3).required("Label is required"),
       phone: yup.number().nullable(),
       company: yup.string().nullable(),
-      image: yup.string().nullable(),
+      image : yup.string().nullable(),
       title: yup.string().nullable(),
       logoType: yup.string().nullable(),
       linkedIn: yup.string().nullable(),
@@ -73,35 +66,35 @@ export default function Home() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
+        },  
         body: JSON.stringify(values),
       })
-        .then(async (response) => {
-          if (response.status === 201) {
-            toast({
-              title: `Created successfully!`,
-              description: `${new Date().toLocaleDateString()}`,
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              title: `Error create VCard`,
-              description: `${new Date().toLocaleDateString()}`,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
+      .then(async (response) => {
+
+        if (response.status === 201) {
           toast({
-            variant: "destructive",
-            title: `Something went wrong`,
+            title: `Created successfully!`,
             description: `${new Date().toLocaleDateString()}`,
           });
+        } else {
+          toast({
+            variant: "destructive",
+            title: `Error create VCard`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error); // Log any errors
+        toast({
+          variant: "destructive",
+          title: `Something went wrong`,
+          description: `${new Date().toLocaleDateString()}`,
         });
+      });
     },
   });
 
-  
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -130,9 +123,7 @@ END:VCARD
     `.trim();
   };
 
-  const vCardValue = generateVCardString(validation.values)
-
-  const handleDownloadVcard = () => {
+  const handleDownload = () => {
     const values = validation.values;
     const vCardData = generateVCardString(values);
 
@@ -145,43 +136,11 @@ END:VCARD
     URL.revokeObjectURL(url);
   };
 
-  const handleDownload = () => {
-    
-    const svg = document.getElementById("vcard-svg");
-    if (!svg){
-      return
-    }
-    
-    const svgData = new XMLSerializer().serializeToString(svg);
-  
-    const canvas = document.createElement("canvas");
-    const svgSize = svg.getBoundingClientRect();
-    canvas.width = svgSize.width;
-    canvas.height = svgSize.height;
-  
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return; // Check if context is null
-    
-    const img = document.createElement("img");
-  
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      const link = document.createElement("a");
-      link.download = "vcard-svg.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    };
-  
-    img.src = "data:image/svg+xml;base64," + btoa(svgData);
-  };
-
-  
-
   return (
     <div>
       <div className="flex flex-col w-full ">
         <Pages />
-        <Card className="mt-10">
+        <Card className="mt-40">
           <CardHeader>
             <CardTitle>VCard</CardTitle>
             <CardDescription>Create your VCard here</CardDescription>
@@ -201,11 +160,8 @@ END:VCARD
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.firstName &&
-                  validation.errors.firstName ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.firstName}
-                    </div>
+                  {validation.touched.firstName && validation.errors.firstName ? (
+                    <div className="text-red-500">{validation.errors.firstName}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -221,9 +177,7 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.lastName && validation.errors.lastName ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.lastName}
-                    </div>
+                    <div className="text-red-500">{validation.errors.lastName}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -238,30 +192,8 @@ END:VCARD
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.customerEmail &&
-                  validation.errors.customerEmail ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.customerEmail}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="label">
-                    Label<span className="text-red-700">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    name="tag"
-                    placeholder="Label"
-                    value={validation.values.tag}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.tag &&
-                  validation.errors.tag ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.tag}
-                    </div>
+                  {validation.touched.customerEmail && validation.errors.customerEmail ? (
+                    <div className="text-red-500">{validation.errors.customerEmail}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -275,7 +207,7 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.url && validation.errors.url ? (
-                    <div className="text-xs text-red-500">{validation.errors.url}</div>
+                    <div className="text-red-500">{validation.errors.url}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -289,9 +221,7 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.phone && validation.errors.phone ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.phone}
-                    </div>
+                    <div className="text-red-500">{validation.errors.phone}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -305,9 +235,7 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.company && validation.errors.company ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.company}
-                    </div>
+                    <div className="text-red-500">{validation.errors.company}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -321,15 +249,13 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.title && validation.errors.title ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.title}
-                    </div>
+                    <div className="text-red-500">{validation.errors.title}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="linkedIn">LinkedIn</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="linkedIn"
                     placeholder="https://"
                     value={validation.values.linkedIn}
@@ -337,15 +263,13 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.linkedIn && validation.errors.linkedIn ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.linkedIn}
-                    </div>
+                    <div className="text-red-500">{validation.errors.linkedIn}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="facebook">Facebook</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="facebook"
                     placeholder="https://"
                     value={validation.values.facebook}
@@ -353,32 +277,27 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.facebook && validation.errors.facebook ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.facebook}
-                    </div>
+                    <div className="text-red-500">{validation.errors.facebook}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="instagram">Instagram</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="instagram"
                     placeholder="https://"
                     value={validation.values.instagram}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.instagram &&
-                  validation.errors.instagram ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.instagram}
-                    </div>
+                  {validation.touched.instagram && validation.errors.instagram ? (
+                    <div className="text-red-500">{validation.errors.instagram}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="tiktok">Tiktok</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="tiktok"
                     placeholder="https://"
                     value={validation.values.tiktok}
@@ -386,15 +305,13 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.tiktok && validation.errors.tiktok ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.tiktok}
-                    </div>
+                    <div className="text-red-500">{validation.errors.tiktok}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="snapchat">Snapchat</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="snapchat"
                     placeholder="https://"
                     value={validation.values.snapchat}
@@ -402,15 +319,13 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.snapchat && validation.errors.snapchat ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.snapchat}
-                    </div>
+                    <div className="text-red-500">{validation.errors.snapchat}</div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="x">X</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="x"
                     placeholder="https://"
                     value={validation.values.x}
@@ -418,47 +333,38 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.x && validation.errors.x ? (
-                    <div className="text-xs text-red-500">{validation.errors.x}</div>
+                    <div className="text-red-500">{validation.errors.x}</div>
                   ) : null}
                 </div>
               </div>
-                <div className="flex flex-row mt-5">
-                  <Button
-                    className="flex mr-3"
-                    onClick={() => validation.handleSubmit()}
-                  >
-                    Save
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button  className="">
-                        Download
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="flex flex-col mt-2" align="end">
-                      <Button className="mb-2" onClick={() => handleDownloadVcard()}>
-                        Download vCard
-                      </Button>
-                      <Button onClick={handleDownload}>VCard PNG</Button>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              <QRCode 
-              className="mt-6 flex container"
-                id="vcard-svg"
-                value={vCardValue}
+            </form>
+            <div className="grid grid-flow-row justify-start mt-4 items-start bottom-96">
+              <QRCode
+                id="qr-code-svg"
+                value={generateVCardString(validation.values)}
                 size={450}
-                renderAs="svg"
                 imageSettings={{
-                  src: logo!,
+                  //@ts-ignore
+                  src: logo ?? null,
                   height: 48,
                   width: 48,
                   excavate: true,
                 }}
               />
-            </form>
+            </div>
+            <br />
+            <div className="flex flex-row">
+              <Button
+                className="flex mr-3"
+                onClick={() => validation.handleSubmit()}
+              >
+                Save
+              </Button>
+              <Button onClick={handleDownload}>Download vCard</Button>
+            </div>
           </CardContent>
-          <CardFooter className="flex justify-between"></CardFooter>
+          <CardFooter className="flex justify-between">
+          </CardFooter>
         </Card>
       </div>
     </div>

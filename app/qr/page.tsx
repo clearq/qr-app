@@ -7,6 +7,7 @@ import { useSession } from 'next-auth/react';
 import { useFormik } from 'formik';
 import * as yup from "yup";
 import { useToast } from "@/components/ui/use-toast";
+import { Label } from '@/components/ui/label';
 
 
 const QRCodeGenerator: React.FC = () => {
@@ -17,26 +18,30 @@ const QRCodeGenerator: React.FC = () => {
   const { toast } = useToast();
 
 
-  const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setUrl(e.target.value);
-    generateQRCode(e.target.value);
-  };
+  // const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   setUrl(e.target.value);
+  //   generateQRCode(e.target.value);
+  // };
 
-  const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogo(URL.createObjectURL(file));
-    }
-  };
+  // const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     setLogo(URL.createObjectURL(file));
+  //   }
+  // };
 
   const { data: session } = useSession();
 
   const validation = useFormik({
     initialValues: {
       url: "",
+      tag: "",
+      logoType: "",
     },
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
+      tag: yup.string().nullable(),
+      logoType: yup.string().url().uuid(),
     }),
     onSubmit: (values) => {
       fetch("/api/qr", {
@@ -62,63 +67,37 @@ const QRCodeGenerator: React.FC = () => {
     },
   });
 
-  const generateQRCode = (value: string) => {
-    // Generate QR code data
-    setQRCodeData(value);
-  };
-
-  const handleSave = () => {
-    // Here you can implement saving the QR code data to the database
-    // For demonstration purposes, let's just log it
-    console.log('QR code saved to the database:', qrCodeData);
-  };
+  // const generateQRCode = (value: string) => {
+  //   // Generate QR code data
+  //   setQRCodeData(value);
+  // };
 
   const handleDownload = () => {
-    const qrCodeSVG = document.getElementById('qr-code-svg');
-    const logoImage = document.createElement('img');
-    if (qrCodeSVG && logo) {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      const svgData = new XMLSerializer().serializeToString(qrCodeSVG);
+    const svg = document.getElementById("qr-code-svg");
+    if (!svg) return; // Check if svg is null
+    
+    const svgData = new XMLSerializer().serializeToString(svg);
   
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
+    const canvas = document.createElement("canvas");
+    const svgSize = svg.getBoundingClientRect();
+    canvas.width = svgSize.width;
+    canvas.height = svgSize.height;
   
-        // Set canvas background to transparent
-        if (context) {
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          context.globalCompositeOperation = 'destination-over';
-          context.fillStyle = 'transparent';
-          context.fillRect(0, 0, canvas.width, canvas.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return; // Check if context is null
+    
+    const img = document.createElement("img");
   
-          // Draw QR code onto canvas
-          context.drawImage(img, 0, 0);
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      const link = document.createElement("a");
+      link.download = "qr-code.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    };
   
-          // Draw logo onto canvas
-          logoImage.onload = () => {
-            context.drawImage(logoImage, canvas.width / 2 - 24, canvas.height / 2 - 24, 48, 48);
-  
-            // Create a temporary link and trigger download
-            const pngData = canvas.toDataURL('image/png');
-            const a = document.createElement('a');
-            a.href = pngData;
-            a.download = 'qrcode_with_logo.png';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          };
-          logoImage.src = logo;
-        }
-      };
-      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
-    }
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
-  
-  
-  
-  
 
   return (
     <div>
@@ -127,24 +106,26 @@ const QRCodeGenerator: React.FC = () => {
         type="text"
         placeholder="https://"
         name='url'
-        value={url}
-        onChange={handleUrlChange}
+        value={validation.values.url}
+        onChange={validation.handleChange}
       />
+      <div>
+      <Label>Lable</Label>
+      <Input
+      className='w-[50%]'
+        type="text"
+        placeholder="Label"
+        name='tag'
+        value={validation.values.tag}
+        onChange={validation.handleChange}
+      />
+      </div>
       <br />
-      <Input className='w-[20%] bg-slate-400' type="file" accept="image/*" onChange={handleLogoChange} />
+      {/* <Input className='w-[20%] bg-slate-400' type="file" accept="image/*" value={validation.values.logoType} onChange={validation.handleChange} /> */}
       <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
-      <QRCode className="flex flex-col justify-end items-end bottom-[25rem] right-[50rem] fixed"
+      <QRCode className="flex flex-col relative"
         id="qr-code-svg"
-        value={qrCodeData}
+        value={validation.values.url}
         size={450}
         renderAs="svg"
         imageSettings={{

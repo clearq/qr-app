@@ -20,7 +20,7 @@ export interface ICommon {
     };
     metaSocial?: {
       id: string;
-      socialNetwork?: 'Facebook' | 'Twitter';
+      socialNetwork?: "Facebook" | "Twitter";
       title?: string;
       description?: string;
       image?: {
@@ -43,13 +43,34 @@ export interface Github {
 }
 
 export type InputProps = {
-  typeOfInput: 'text' | 'url' | 'email' | 'tel' | 'vCard' | 'wifi' | 'sms';
+  typeOfInput: "text" | "url" | "email" | "tel" | "vCard" | "wifi" | "sms";
 };
 
+export interface IVCARD {
+  id: string;
+  firstName: string;
+  lastName: string;
+  tag: string;
+  customerEmail: string;
+  phone: string;
+  company: string;
+  title: string;
+  logoType: string | null;
+  image: string | null;
+  linkedIn: string;
+  x: string;
+  facebook: string;
+  instagram: string;
+  snapchat: string;
+  tiktok: string;
+  url: string;
+  customerId: string;
+}
 
 export interface IQR {
   id: string;
-  url : string;
+  url: string;
+  tag: string;
   logoType: string | null;
-  customerId : string;
+  customerId: string;
 }
