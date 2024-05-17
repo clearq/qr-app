@@ -45,6 +45,16 @@ export interface Github {
 export type InputProps = {
   typeOfInput: "text" | "url" | "email" | "tel" | "vCard" | "wifi" | "sms";
 };
+export interface ICUSTOMER {
+  id: String;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  password: string;
+  company: string;
+  image: string;
+}
 
 export interface IVCARD {
   id: string;

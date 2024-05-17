@@ -22,10 +22,11 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { toast } = useToast();
-
+  const router = useRouter();
   const [logo, setLogo] = useState<string | null>(null);
 
   const { data: session } = useSession();
@@ -82,6 +83,10 @@ export default function Home() {
               title: `Created successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
+            // Redirect to the dynamic page with the information
+            router.push(
+              `/vcard/[id]`
+            );
           } else {
             toast({
               variant: "destructive",
@@ -101,7 +106,6 @@ export default function Home() {
     },
   });
 
-  
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -130,7 +134,7 @@ END:VCARD
     `.trim();
   };
 
-  const vCardValue = generateVCardString(validation.values)
+  const vCardValue = generateVCardString(validation.values);
 
   const handleDownloadVcard = () => {
     const values = validation.values;
@@ -146,24 +150,23 @@ END:VCARD
   };
 
   const handleDownload = () => {
-    
     const svg = document.getElementById("vcard-svg");
-    if (!svg){
-      return
+    if (!svg) {
+      return;
     }
-    
+
     const svgData = new XMLSerializer().serializeToString(svg);
-  
+
     const canvas = document.createElement("canvas");
     const svgSize = svg.getBoundingClientRect();
     canvas.width = svgSize.width;
     canvas.height = svgSize.height;
-  
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return; // Check if context is null
-    
+
     const img = document.createElement("img");
-  
+
     img.onload = () => {
       ctx.drawImage(img, 0, 0);
       const link = document.createElement("a");
@@ -171,11 +174,9 @@ END:VCARD
       link.href = canvas.toDataURL("image/png");
       link.click();
     };
-  
+
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
-
-  
 
   return (
     <div>
@@ -257,8 +258,7 @@ END:VCARD
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.tag &&
-                  validation.errors.tag ? (
+                  {validation.touched.tag && validation.errors.tag ? (
                     <div className="text-xs text-red-500">
                       {validation.errors.tag}
                     </div>
@@ -275,7 +275,9 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.url && validation.errors.url ? (
-                    <div className="text-xs text-red-500">{validation.errors.url}</div>
+                    <div className="text-xs text-red-500">
+                      {validation.errors.url}
+                    </div>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -418,33 +420,39 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.x && validation.errors.x ? (
-                    <div className="text-xs text-red-500">{validation.errors.x}</div>
+                    <div className="text-xs text-red-500">
+                      {validation.errors.x}
+                    </div>
                   ) : null}
                 </div>
               </div>
-                <div className="flex flex-row mt-5">
-                  <Button
-                    className="flex mr-3"
-                    onClick={() => validation.handleSubmit()}
+              <div className="flex flex-row mt-5">
+                <Button
+                  className="flex mr-3"
+                  onClick={() => validation.handleSubmit()}
+                >
+                  Save
+                </Button>
+                {/* <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="">Download</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="flex flex-col mt-2"
+                    align="end"
                   >
-                    Save
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button  className="">
-                        Download
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="flex flex-col mt-2" align="end">
-                      <Button className="mb-2" onClick={() => handleDownloadVcard()}>
-                        Download vCard
-                      </Button>
-                      <Button onClick={handleDownload}>VCard PNG</Button>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              <QRCode 
-              className="mt-6 flex container"
+                    <Button
+                      className="mb-2"
+                      onClick={() => handleDownloadVcard()}
+                    >
+                      Download vCard
+                    </Button>
+                    <Button onClick={handleDownload}>VCard PNG</Button>
+                  </DropdownMenuContent>
+                </DropdownMenu> */}
+              </div>
+              <QRCode
+                className="hidden mt-6 flex container"
                 id="vcard-svg"
                 value={vCardValue}
                 size={450}
