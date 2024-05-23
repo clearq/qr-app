@@ -32,7 +32,9 @@ export default async function RootLayout({children}: Props) {
           <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
           <Toaster />
             <Navbar />
+
             {children}
+            
           </div>
         </SessionProvider>
       </ThemeProvider>

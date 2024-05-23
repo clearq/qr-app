@@ -133,3 +133,17 @@
 a:link {
   scroll-behavior: auto !important;
 }
+
+/* globals.css */
+.background-container {
+  background-image: url('/image/forest-landscape.jpg'); /* Replace '/path/to/your/image.jpg' with the path to your image */
+  background-size: cover; /* Cover the entire container with the background image */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Do not repeat the background image */
+  width: 100vw; /* Set width to 100% of the viewport width */
+  height: 100vh; /* Set height to 100% of the viewport height */
+  position: fixed; /* Fix the container position */
+  top: 0; /* Position the container at the top */
+  left: 0; /* Position the container at the left */
+  z-index: -1; /* Set z-index to send the container behind other content */
+}

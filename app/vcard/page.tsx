@@ -59,7 +59,7 @@ export default function Home() {
       phone: yup.number().nullable(),
       company: yup.string().nullable(),
       image: yup.string().nullable(),
-      title: yup.string().nullable(),
+      title: yup.string(),
       logoType: yup.string().nullable(),
       linkedIn: yup.string().nullable(),
       x: yup.string().nullable(),
@@ -69,7 +69,6 @@ export default function Home() {
       tiktok: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values); // Log form values
       fetch("/api/saveVcard", {
         method: "POST",
         headers: {
@@ -78,19 +77,19 @@ export default function Home() {
         body: JSON.stringify(values),
       })
         .then(async (response) => {
+          const data = await response.json();
           if (response.status === 201) {
             toast({
-              title: `Created successfully!`,
+              title: `Created sucessfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
+
             // Redirect to the dynamic page with the information
-            router.push(
-              `/vcard/[id]`
-            );
+            router.replace(`/vcard/details?id=${data.id}`);
           } else {
             toast({
               variant: "destructive",
-              title: `Error create VCard`,
+              title: `Error creating vCard`,
               description: `${new Date().toLocaleDateString()}`,
             });
           }
@@ -133,8 +132,6 @@ X-TIKTOK:${values.tiktok ?? ""}
 END:VCARD
     `.trim();
   };
-
-  const vCardValue = generateVCardString(validation.values);
 
   const handleDownloadVcard = () => {
     const values = validation.values;
@@ -188,16 +185,17 @@ END:VCARD
             <CardDescription>Create your VCard here</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="" onSubmit={validation.handleSubmit}>
+            <form
+              onSubmit={validation.handleSubmit}
+              className="w-full space-y-5"
+            >
               <div className="grid grid-cols-2 w-[50%] items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="firstName">
-                    First Name<span className="text-red-700">*</span>
-                  </Label>
+                  <Label htmlFor="firstName">First name <span className="text-xs text-red-500" >*</span></Label>
                   <Input
                     type="text"
                     name="firstName"
-                    placeholder="First Name"
+                    placeholder="First name"
                     value={validation.values.firstName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -210,13 +208,11 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="lastName">
-                    Last Name<span className="text-red-700">*</span>
-                  </Label>
+                  <Label htmlFor="lastName">Last name <span className="text-xs text-red-500" >*</span></Label>
                   <Input
                     type="text"
                     name="lastName"
-                    placeholder="Last Name"
+                    placeholder="Last name"
                     value={validation.values.lastName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -228,13 +224,11 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">
-                    Email<span className="text-red-700">*</span>
-                  </Label>
+                  <Label htmlFor="customerEmail">Email <span className="text-xs text-red-500" >*</span></Label>
                   <Input
-                    type="text"
+                    type="email"
                     name="customerEmail"
-                    placeholder="Email"
+                    placeholder="example@gmail.com"
                     value={validation.values.customerEmail}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -247,13 +241,11 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="label">
-                    Label<span className="text-red-700">*</span>
-                  </Label>
+                  <Label htmlFor="tag">Label <span className="text-xs text-red-500" >*</span></Label>
                   <Input
                     type="text"
                     name="tag"
-                    placeholder="Label"
+                    placeholder="Tag"
                     value={validation.values.tag}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -264,22 +256,7 @@ END:VCARD
                     </div>
                   ) : null}
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="url">Website</Label>
-                  <Input
-                    type="text"
-                    name="url"
-                    placeholder="https://"
-                    value={validation.values.url}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.url && validation.errors.url ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.url}
-                    </div>
-                  ) : null}
-                </div>
+
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
                   <Input
@@ -325,6 +302,22 @@ END:VCARD
                   {validation.touched.title && validation.errors.title ? (
                     <div className="text-xs text-red-500">
                       {validation.errors.title}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="url">Website</Label>
+                  <Input
+                    type="url"
+                    name="url"
+                    placeholder="Website"
+                    value={validation.values.url}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                  {validation.touched.url && validation.errors.url ? (
+                    <div className="text-xs text-red-500">
+                      {validation.errors.url}
                     </div>
                   ) : null}
                 </div>
@@ -427,13 +420,10 @@ END:VCARD
                 </div>
               </div>
               <div className="flex flex-row mt-5">
-                <Button
-                  className="flex mr-3"
-                  onClick={() => validation.handleSubmit()}
-                >
+                <Button className="flex mr-3" type="submit">
                   Save
                 </Button>
-                {/* <DropdownMenu>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button className="">Download</Button>
                   </DropdownMenuTrigger>
@@ -449,21 +439,8 @@ END:VCARD
                     </Button>
                     <Button onClick={handleDownload}>VCard PNG</Button>
                   </DropdownMenuContent>
-                </DropdownMenu> */}
+                </DropdownMenu>
               </div>
-              <QRCode
-                className="hidden mt-6 flex container"
-                id="vcard-svg"
-                value={vCardValue}
-                size={450}
-                renderAs="svg"
-                imageSettings={{
-                  src: logo!,
-                  height: 48,
-                  width: 48,
-                  excavate: true,
-                }}
-              />
             </form>
           </CardContent>
           <CardFooter className="flex justify-between"></CardFooter>

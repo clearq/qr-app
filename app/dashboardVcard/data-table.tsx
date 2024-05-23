@@ -19,12 +19,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { VCard } from "@prisma/client";
 
 interface DataTableProps {
   vData: IVCARD[];
+  user: VCard;
   refetchDataTable: () => void;
 }
 
@@ -33,11 +43,12 @@ export const DataTable = ({
   refetchDataTable,
 }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(5); // Items per page
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
 
   const handleDeleteV = async (id: string) => {
     await fetch(`/api/saveVcard/${id}`, {
@@ -52,17 +63,23 @@ export const DataTable = ({
 
   const router = useRouter();
 
-  const handleUrl = () => {
-    router.push("/");
-  };
-
   const handleVcard = () => {
     router.push("/vcard");
   };
 
-  
-
   if (!isMounted) return null;
+
+  // Calculate the data for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Handle pagination
+  const totalPages = Math.ceil(vData.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div>
@@ -80,19 +97,20 @@ export const DataTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {vData.length === 0 ? (
+          {currentData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4}>No data available</TableCell>
             </TableRow>
           ) : (
             <>
-              {vData.map((vcard, index: number) => (
+              {currentData.map((vcard, index: number) => (
                 <TableRow key={vcard.id}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{index + 1 + (currentPage - 1) * itemsPerPage}</TableCell>
                   <TableCell>{vcard.tag}</TableCell>
                   <TableCell>VCARD</TableCell>
                   <TableCell>
                     <div className="m-3 flex flex-row space-x-7 justify-end items-end">
+                          <Button onClick={() => router.replace(`vcard/details?id=${vcard.id}`)} variant="outline">👁️‍🗨️</Button>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button variant="outline">✎</Button>
@@ -104,7 +122,7 @@ export const DataTable = ({
                               Edit your vCard here and save your changes.
                             </DialogDescription>
                           </DialogHeader>
-                          <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-2 gap-4 py-4">
                             <div className="flex flex-col space-y-1.5">
                               <Label htmlFor="firstName">
                                 First Name
@@ -261,6 +279,37 @@ export const DataTable = ({
           )}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => handlePageChange(currentPage - 1)}
+              //@ts-ignore
+              disabled={currentPage === 1}
+            />
+          </PaginationItem>
+          {[...Array(totalPages)].map((_, pageIndex) => (
+            <PaginationItem key={pageIndex}>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageChange(pageIndex + 1)}
+                isActive={currentPage === pageIndex + 1}
+              >
+                {pageIndex + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() => handlePageChange(currentPage + 1)}
+              //@ts-ignore
+              disabled={currentPage === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

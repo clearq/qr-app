@@ -19,6 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { IQR } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,6 +42,8 @@ export const DataTable = ({
   refetchDataTable,
 }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(5); // Items per page
 
   useEffect(() => {
     setIsMounted(true);
@@ -55,9 +66,19 @@ export const DataTable = ({
     router.push("/");
   };
 
-  
-
   if (!isMounted) return null;
+
+  // Calculate the data for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = qrData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Handle pagination
+  const totalPages = Math.ceil(qrData.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div>
@@ -75,15 +96,15 @@ export const DataTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {qrData.length === 0 ? (
+          {currentData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4}>No data available</TableCell>
             </TableRow>
           ) : (
             <>
-              {qrData.map((qr, index: number) => (
+              {currentData.map((qr, index: number) => (
                 <TableRow key={qr.id}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{index + 1 + (currentPage - 1) * itemsPerPage}</TableCell>
                   <TableCell>{qr.tag}</TableCell>
                   <TableCell>QR</TableCell>
                   <TableCell>
@@ -142,6 +163,37 @@ export const DataTable = ({
           )}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => handlePageChange(currentPage - 1)}
+              //@ts-ignore
+              disabled={currentPage === 1}
+            />
+          </PaginationItem>
+          {[...Array(totalPages)].map((_, pageIndex) => (
+            <PaginationItem key={pageIndex}>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageChange(pageIndex + 1)}
+                isActive={currentPage === pageIndex + 1}
+              >
+                {pageIndex + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() => handlePageChange(currentPage + 1)}
+              //@ts-ignore
+              disabled={currentPage === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

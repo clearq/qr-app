@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
 
   if (!user?.user) {
     return NextResponse.json(
-      { error: "You need to login in" },
+      { error: "You need to login" },
       { status: 400 }
     );
   }
@@ -52,7 +52,7 @@ export async function PUT(req: NextRequest) {
         lastName: lastName,
         phone: phone,
         company: company,
-        image: image,
+        image: image, 
       },
     });
 

@@ -15,7 +15,7 @@ model Customer {
   phone     String?
   password  String
   company   String?
-  image     String?
+  image     Bytes?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   vcard     VCard[]

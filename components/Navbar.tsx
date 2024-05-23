@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -16,21 +16,17 @@ import {
 import { useRouter } from "next/navigation";
 import { Customer } from "@prisma/client";
 import { toast } from "./ui/use-toast";
-import * as yup from 'yup'
+import * as yup from "yup";
 import { useFormik } from "formik";
 
 interface Props {
-  user : Customer;
+  user: Customer;
 }
 
-export const Navbar = ({
-  user : userData
-}: Props) => {
-
-  
-  const [error, setError] = useState("");
+export const Navbar = ({ user: userData }: Props) => {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const validation = useFormik({
     initialValues: {
@@ -39,7 +35,7 @@ export const Navbar = ({
       lastName: userData?.lastName,
       phone: userData?.phone || "",
       company: userData?.company || "",
-      image: userData?.image || null,
+      image: userData?.image || Buffer,
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -67,7 +63,7 @@ export const Navbar = ({
           } else {
             toast({
               variant: "destructive",
-              title: `Error updateing data`,
+              title: `Error updating data`,
               description: `${new Date().toLocaleDateString()}`,
             });
           }
@@ -83,23 +79,26 @@ export const Navbar = ({
     },
   });
 
- 
+  const handleSignOut = () => {
+    signOut();
+  };
+
   return (
-    <div className="">
-      <ul className="flex justify-between m-10 item-canter">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <ul className="flex flex-wrap justify-between items-center m-10">
         <div>
           <Link href="/">
-            <li>Qr-generator</li>
+            <li className="cursor-pointer">Qr-generator</li>
           </Link>
         </div>
-        <div className="flex gap-10">
+        <div className="flex flex-wrap gap-4 sm:gap-10 items-center">
           {!session ? (
             <>
               <Link href="/login">
-                <li>Login</li>
+                <li className="cursor-pointer">Login</li>
               </Link>
               <Link href="/register">
-                <li>Register</li>
+                <li className="cursor-pointer">Register</li>
               </Link>
             </>
           ) : (
@@ -108,21 +107,23 @@ export const Navbar = ({
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     <NavigationMenuTrigger>
-                      <Avatar className="flex flex-col justify-center items-center">
+                      <Avatar className="flex flex-col justify-center items-center mr-2">
                         <AvatarImage
-                          src={userData?.image || undefined}
+                          src="https://github.com/shadcn.png"
                           alt="User Image"
                         />
-                        {/* <AvatarFallback>
-                          {userData.firstName[0]}
-                          {userData.lastName[0]}
-                        </AvatarFallback> */}
+                        <AvatarFallback>
+                          {session.user.firstName ? userData.firstName[0] : ""}
+                          {session.user.lastName ? userData.lastName[0] : ""}
+                        </AvatarFallback>
                       </Avatar>
-
-                      {session.user?.email}
+                      {/* Show email on larger screens */}
+                      <span className="hidden sm:inline">
+                        {session.user?.email}
+                      </span>
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                      <ul className="grid gap-3 p-6 sm:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                         <li className="row-span-3">
                           <Link href="/profile">
                             <NavigationMenuLink asChild>
@@ -171,14 +172,15 @@ export const Navbar = ({
                 </NavigationMenuList>
               </NavigationMenu>
 
+              {/* Conditionally render icon on mobile */}
               <li>
                 <Button
-                  onClick={() => {
-                    signOut();
-                  }}
-                  className="p-2 hover:text-white px-5 -mt-1 hover:bg-blue-500 "
+                  onClick={handleSignOut}
+                  className="p-2 hover:text-white px-5 hover:bg-blue-500"
                   variant="outline"
                 >
+                  {/* Render logout icon on small screens */}
+                  <span className="inline sm:hidden">↩</span>
                   Logout
                 </Button>
               </li>
@@ -189,6 +191,6 @@ export const Navbar = ({
       </ul>
     </div>
   );
-}
+};
 
 export default Navbar;

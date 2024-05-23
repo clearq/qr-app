@@ -3,27 +3,31 @@ import { prisma } from "@/lib/db";
 
 
 export const createQrCode = async (values : any, userId : string) => {
- if (!values) {
-    return {
-        error : "Field is required!"
+ try {
+    if (!values) {
+        return {
+            error : "Field is required!"
+        }
+     }
+    
+     const createdQr = await prisma.qr.create({
+        data: {
+            ...values,
+            customerId : userId
+        },
+      });
+    
+    if (!createdQr) {
+        return {
+            error : "Cannot create an qrcode"
+        }
     }
+    
+    
+    return createdQr;
+ } catch  {
+    return null
  }
-
- const createdQr = await prisma.qr.create({
-    data: {
-        ...values,
-        customerId : userId
-    },
-  });
-
-if (!createdQr) {
-    return {
-        error : "Cannot create an qrcode"
-    }
-}
-
-
-return createdQr;
 
 }
 export const updateQrCode = async (values : any, userId : string) => {
