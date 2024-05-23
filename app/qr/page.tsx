@@ -10,24 +10,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
 
 const QRCodeGenerator: React.FC = () => {
-  const [url, setUrl] = useState<string>("");
   const [logo, setLogo] = useState<string | null>(null);
-  const [qrCodeData, setQRCodeData] = useState<string>("");
-  const [qrCode, setQRCode] = useState<string>("");
   const { toast } = useToast();
-
-  // const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   setUrl(e.target.value);
-  //   generateQRCode(e.target.value);
-  // };
-
-  // const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0];
-  //   if (file) {
-  //     setLogo(URL.createObjectURL(file));
-  //   }
-  // };
-
   const { data: session } = useSession();
 
   const validation = useFormik({
@@ -51,25 +35,20 @@ const QRCodeGenerator: React.FC = () => {
       }).then((data) => {
         if (data?.status === 201) {
           toast({
-            title: `Created sucessfully!`,
+            title: `Created successfully!`,
             description: `${new Date().toLocaleDateString()}`,
           });
           validation.resetForm();
         } else {
           toast({
             variant: "destructive",
-            title: `Something went worng`,
+            title: `Something went wrong`,
             description: `${new Date().toLocaleDateString()}`,
           });
         }
       });
     },
   });
-
-  // const generateQRCode = (value: string) => {
-  //   // Generate QR code data
-  //   setQRCodeData(value);
-  // };
 
   const handleDownload = () => {
     const svg = document.getElementById("qr-code-svg");
@@ -99,40 +78,41 @@ const QRCodeGenerator: React.FC = () => {
   };
 
   return (
-    <div className="flex items-start justify-between flex-col md:flex-row px-4 w-full h-full">
-      <form onSubmit={validation.handleSubmit} className="w-full">
-        <div className="space-y-5 w-[90%]">
-          <Label>Url </Label>
+    <div className="flex flex-col md:flex-row items-start justify-between w-full h-full px-4">
+      <form onSubmit={validation.handleSubmit} className="w-full md:w-1/2 space-y-4">
+        <div>
+          <Label htmlFor="url">URL</Label>
           <Input
-            className=""
+            id="url"
             type="text"
             placeholder="https://"
             name="url"
             value={validation.values.url}
             onChange={validation.handleChange}
+            className="w-full"
           />
-
-          <Label>Lable</Label>
+        </div>
+        <div>
+          <Label htmlFor="tag">Label</Label>
           <Input
-            className=""
+            id="tag"
             type="text"
             placeholder="Label"
             name="tag"
             value={validation.values.tag}
             onChange={validation.handleChange}
+            className="w-full"
           />
-
-          <Button className="flex mr-3" type="submit">
-            Save
-          </Button>
         </div>
+        <Button type="submit" className="w-full md:w-auto">
+          Save
+        </Button>
       </form>
-      <div className="flex items-center flex-col justify-center px-4">
+      <div className="flex flex-col items-center justify-center w-full md:w-1/2 mt-8 md:mt-0">
         <QRCode
-          className="flex flex-col relative"
           id="qr-code-svg"
           value={validation.values.url}
-          size={450}
+          size={window.innerWidth > 768 ? 400 : 300} // Adjust size based on screen width
           renderAs="svg"
           imageSettings={{
             //@ts-ignore
@@ -142,12 +122,9 @@ const QRCodeGenerator: React.FC = () => {
             excavate: true, // Make the QR code transparent where the logo is placed
           }}
         />
-
-        <div className="flex flex-row mb-4">
-          <Button onClick={handleDownload} className="mt-4 w-full">
-            Download QR Code
-          </Button>
-        </div>
+        <Button onClick={handleDownload} className="mt-4 w-full md:w-auto">
+          Download QR Code
+        </Button>
       </div>
     </div>
   );

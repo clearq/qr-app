@@ -176,8 +176,8 @@ END:VCARD
   };
 
   return (
-    <div>
-      <div className="flex flex-col w-full ">
+    <div className="flex justify-center">
+      <div className="max-w-xl w-full">
         <Pages />
         <Card className="mt-10">
           <CardHeader>
@@ -185,11 +185,8 @@ END:VCARD
             <CardDescription>Create your VCard here</CardDescription>
           </CardHeader>
           <CardContent>
-            <form
-              onSubmit={validation.handleSubmit}
-              className="w-full space-y-5"
-            >
-              <div className="grid grid-cols-2 w-[50%] items-center gap-4">
+            <form onSubmit={validation.handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="firstName">First name <span className="text-xs text-red-500" >*</span></Label>
                   <Input

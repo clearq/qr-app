@@ -36,9 +36,6 @@ interface SelectedFormats {
 
 function Home() {
   const { toast } = useToast();
-  const [selectedOption, setSelectedOption] = useState<"qrCode" | "vCard">(
-    "qrCode"
-  );
   // const [text, setText] = useState<string>("");
   const [qrCode, setQRCode] = useState<string>("");
   const [logoImage, setLogoImage] = useState<string | null>(null);
@@ -217,10 +214,8 @@ function Home() {
     },
   });
 
-  const renderContent = () => {
-    const isQRCodeGenerated = !!qrCode;
-
-    if (selectedOption === "qrCode") {
+  // <div className="flex gap-10 items-center justify-center">
+    
       return (
         <>
           <div className="flex gap-10 items-center justify-center">
@@ -395,12 +390,8 @@ function Home() {
           </div>
         </>
       );
-    } else if (selectedOption === "vCard") {
-      return <VCardPage />;
-    }
   };
-  return renderContent();
-}
+  
 
 async function resizeImage(url: string, width: number, height: number) {
   throw new Error("Function not implemented.");

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -85,20 +85,18 @@ export const Navbar = ({ user: userData }: Props) => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <ul className="flex flex-wrap justify-between items-center m-10">
-        <div>
-          <Link href="/">
-            <li className="cursor-pointer">Qr-generator</li>
-          </Link>
-        </div>
-        <div className="flex flex-wrap gap-4 sm:gap-10 items-center">
+      <ul className="flex flex-wrap justify-between items-center m-4 sm:m-10">
+        <Link href="/">
+          <li className="cursor-pointer text-base sm:text-lg">Qr-generator</li>
+        </Link>
+        <div className="flex items-center gap-4 sm:gap-6">
           {!session ? (
             <>
               <Link href="/login">
-                <li className="cursor-pointer">Login</li>
+                <li className="cursor-pointer text-sm sm:text-base">Login</li>
               </Link>
               <Link href="/register">
-                <li className="cursor-pointer">Register</li>
+                <li className="cursor-pointer text-sm sm:text-base">Register</li>
               </Link>
             </>
           ) : (
@@ -107,32 +105,29 @@ export const Navbar = ({ user: userData }: Props) => {
                 <NavigationMenuList>
                   <NavigationMenuItem>
                     <NavigationMenuTrigger>
-                      <Avatar className="flex flex-col justify-center items-center mr-2">
+                      <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
                         <AvatarImage
                           src="https://github.com/shadcn.png"
                           alt="User Image"
                         />
                         <AvatarFallback>
-                          {session.user.firstName ? userData.firstName[0] : ""}
-                          {session.user.lastName ? userData.lastName[0] : ""}
+                          {/* {userData.firstName ? userData.firstName[0] : ""}
+                          {userData.lastName ? userData.lastName[0] : ""} */}
                         </AvatarFallback>
                       </Avatar>
-                      {/* Show email on larger screens */}
-                      <span className="hidden sm:inline">
+                      <span className="hidden sm:inline text-sm sm:text-base">
                         {session.user?.email}
                       </span>
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <ul className="grid gap-3 p-6 sm:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                      <ul className="grid gap-3 p-6 sm:w-[300px] lg:w-[400px] lg:grid-cols-[.75fr_1fr]">
                         <li className="row-span-3">
                           <Link href="/profile">
                             <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
+                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
                                 Profile
                                 <p className="text-sm leading-tight text-muted-foreground">
-                                  Beautifully designed components that you can
-                                  copy and paste into your apps. Accessible.
-                                  Customizable. Open Source.
+                                  You can view your profile and edit the information here.
                                 </p>
                               </a>
                             </NavigationMenuLink>
@@ -141,12 +136,10 @@ export const Navbar = ({ user: userData }: Props) => {
                         <li className="row-span-3">
                           <Link href="/dashboard">
                             <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
-                                QR
+                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
+                                URL
                                 <p className="text-sm leading-tight text-muted-foreground">
-                                  Beautifully designed components that you can
-                                  copy and paste into your apps. Accessible.
-                                  Customizable. Open Source.
+                                  View your QR-code here.
                                 </p>
                               </a>
                             </NavigationMenuLink>
@@ -155,12 +148,10 @@ export const Navbar = ({ user: userData }: Props) => {
                         <li className="row-span-3">
                           <Link href="/dashboardVcard">
                             <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
+                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
                                 VCard
                                 <p className="text-sm leading-tight text-muted-foreground">
-                                  Beautifully designed components that you can
-                                  copy and paste into your apps. Accessible.
-                                  Customizable. Open Source.
+                                  View your VCard here.
                                 </p>
                               </a>
                             </NavigationMenuLink>
@@ -171,17 +162,14 @@ export const Navbar = ({ user: userData }: Props) => {
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>
-
-              {/* Conditionally render icon on mobile */}
               <li>
                 <Button
                   onClick={handleSignOut}
-                  className="p-2 hover:text-white px-5 hover:bg-blue-500"
+                  className="p-2 text-sm sm:text-base hover:text-white px-3 sm:px-5 hover:bg-blue-500"
                   variant="outline"
                 >
-                  {/* Render logout icon on small screens */}
                   <span className="inline sm:hidden">↩</span>
-                  Logout
+                  <span className="hidden sm:inline">Logout</span>
                 </Button>
               </li>
             </>

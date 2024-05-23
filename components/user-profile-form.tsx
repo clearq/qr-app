@@ -24,7 +24,7 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const { status: sessionStatus } = useSession();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
 
   const router = useRouter();
 
@@ -35,7 +35,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       lastName: userData?.lastName,
       phone: userData?.phone || "",
       company: userData?.company || "",
-      image: userData?.image || Buffer,
+      image: userData?.image || undefined,
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -78,67 +78,73 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     },
   });
 
-  const prisma = new PrismaClient();
+console.log(validation.values.image)
+  // const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files[0]) {
+  //     const WIDTH = 300;
+  //     let imgObj = e.target.files[0]
+  //     // initiate reader and convert blob to base64.
+  //     let reader = new FileReader()
+  //     reader.readAsDataURL(imgObj)
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  //     reader.onload = e => {
+  //       let imageUrl = e.target?.result
+  //       let image = document.createElement("img");
+
+  //       //@ts-ignore
+  //       image.src = imageUrl
+
+  //       image.onload = (e) => {
+
+  //         let canvas = document.createElement('canvas');
+  //          //@ts-ignore
+  //         let ratio = WIDTH / e.target.width
+  //         canvas.width = WIDTH
+  //          //@ts-ignore
+  //         canvas.height = e.target.height * ratio
+
+  //         const context = canvas.getContext("2d")
+  //          //@ts-ignore
+  //         context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  //         //@ts-ignore
+  //         let new_image = context.canvas.toDataURL("image/jpeg", 80);
+  //         validation.setFieldValue('image', new_image)
+  //       }
+
+  //     }
+  //   }
+  // }
+
+
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
+    if (e.target.files && e.target.files[0]){
+      const file = e.target.files[0];
       const reader = new FileReader();
-      reader.onloadend = async () => {
-        try {
-          // Convert the file to binary data
-          const fileBuffer = Buffer.from(reader.result as ArrayBuffer);
-
-          // Set the image preview
-          const url = URL.createObjectURL(file);
-          setImagePreview(url);
-
-          // Update the image field in the form
-          setImageFile(file);
-        } catch (error) {
-          console.error("Error updating image:", error);
-          toast({
-            variant: "destructive",
-            title: "Error updating image",
-            description: `${new Date().toLocaleDateString()}`,
-          });
-        }
+  
+      reader.readAsBinaryString(file);
+      reader.onload = (e) => {
+        const result = e.target?.result;
+        validation.setFieldValue('binaryFile', result?.slice(0, 4000));
       };
-      reader.readAsArrayBuffer(file);
+    } else {
+      return;
     }
   };
 
-  const onSubmit = async (values: any) => {
-    // Assuming other form fields are also updated
-    try {
-      // Update the customer data in the database
-      await prisma.customer.update({
-        where: { id: userData.id },
-        data: {
-          email: values.email,
-          firstName: values.firstName,
-          lastName: values.lastName,
-          phone: values.phone,
-          company: values.company,
-          image: values.image,
-        },
-      });
-      // Show success message
-      toast({
-        title: `Updated successfully!`,
-        description: `${new Date().toLocaleDateString()}`,
-      });
-    } catch (error) {
-      console.error("Error updating data:", error);
-      toast({
-        variant: "destructive",
-        title: `Error updating data`,
-        description: `${new Date().toLocaleDateString()}`,
-      });
-    }
-  };
+  // const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (e.target.files && e.target.files[0]) {
+  //       let imgObj = e.target.files[0]
+  //       // initiate reader and convert blob to base64.
+  //       let reader = new FileReader()
+  //       reader.readAsDataURL(imgObj)
+  
+  //       reader.onload = e => {
+  //         let imageUrl = e.target?.result
+  //         validation.setFieldValue('image', imageUrl)
+  //     }
+  //   }
+  // };
 
   const handleBrowseClick = () => {
     const input = document.getElementById("imageInput");
@@ -161,30 +167,25 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
           <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
             <AvatarImage
-              src={
-                imagePreview ||
-                (userData?.image
-                  ? `data:image/jpeg;base64,${Buffer.from(
-                      userData.image
-                    ).toString("base64")}`
-                  : undefined) // Use undefined if there's no image data
-              }
+              src={validation.values.image}
               alt="User Image"
             />
-            <AvatarFallback>
+            <AvatarFallback className="text-[3rem]">
               {userData.firstName[0]}
               {userData.lastName[0]}
             </AvatarFallback>
           </Avatar>
           <input
-            id="imageInput"
+          id="imageInput"
+          name='image'
             type="file"
             accept="image/*"
             style={{ display: "none" }}
             onChange={handleImageChange}
+
           />
         </label>
-        <Button onClick={handleBrowseClick} className="mt-2">
+        <Button onClick={handleBrowseClick} className="mt-6">
           Browse
         </Button>
         <CardContent className="mt-10">

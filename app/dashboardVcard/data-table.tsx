@@ -69,12 +69,10 @@ export const DataTable = ({
 
   if (!isMounted) return null;
 
-  // Calculate the data for the current page
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handle pagination
   const totalPages = Math.ceil(vData.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
