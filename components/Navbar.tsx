@@ -18,6 +18,9 @@ import { Customer } from "@prisma/client";
 import { toast } from "./ui/use-toast";
 import * as yup from "yup";
 import { useFormik } from "formik";
+import Image from "next/image";
+// import logoImage from "../public/image/clearqr.svg";
+import logoImage from "../public/image/clearqr2.svg";
 
 interface Props {
   user: Customer;
@@ -35,7 +38,7 @@ export const Navbar = ({ user: userData }: Props) => {
       lastName: userData?.lastName,
       phone: userData?.phone || "",
       company: userData?.company || "",
-      image: userData?.image || Buffer,
+      image: userData?.image || "",
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -86,17 +89,23 @@ export const Navbar = ({ user: userData }: Props) => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <ul className="flex flex-wrap justify-between items-center m-4 sm:m-10">
-        <Link href="/">
-          <li className="cursor-pointer text-base sm:text-lg">Qr-generator</li>
-        </Link>
         <div className="flex items-center gap-4 sm:gap-6">
+          <Link href="/">
+            <Image
+              alt="logo-image "
+              src={logoImage}
+              className="cursor-pointer w-[80%] text-base sm:text-lg"
+            />
+          </Link>
           {!session ? (
             <>
               <Link href="/login">
                 <li className="cursor-pointer text-sm sm:text-base">Login</li>
               </Link>
               <Link href="/register">
-                <li className="cursor-pointer text-sm sm:text-base">Register</li>
+                <li className="cursor-pointer text-sm sm:text-base">
+                  Register
+                </li>
               </Link>
             </>
           ) : (
@@ -107,12 +116,12 @@ export const Navbar = ({ user: userData }: Props) => {
                     <NavigationMenuTrigger>
                       <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
                         <AvatarImage
-                          src="https://github.com/shadcn.png"
+                          src={validation.values.image}
                           alt="User Image"
                         />
                         <AvatarFallback>
-                          {/* {userData.firstName ? userData.firstName[0] : ""}
-                          {userData.lastName ? userData.lastName[0] : ""} */}
+                          {userData?.firstName[0]}
+                          {userData?.lastName[0]}
                         </AvatarFallback>
                       </Avatar>
                       <span className="hidden sm:inline text-sm sm:text-base">
@@ -127,7 +136,8 @@ export const Navbar = ({ user: userData }: Props) => {
                               <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
                                 Profile
                                 <p className="text-sm leading-tight text-muted-foreground">
-                                  You can view your profile and edit the information here.
+                                  You can view your profile and edit the
+                                  information here.
                                 </p>
                               </a>
                             </NavigationMenuLink>
@@ -174,7 +184,9 @@ export const Navbar = ({ user: userData }: Props) => {
               </li>
             </>
           )}
-          <ModeToggle />
+          <div>
+            <ModeToggle />
+          </div>
         </div>
       </ul>
     </div>

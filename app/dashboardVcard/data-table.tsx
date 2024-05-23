@@ -31,6 +31,7 @@ import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { VCard } from "@prisma/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface DataTableProps {
   vData: IVCARD[];
@@ -38,13 +39,10 @@ interface DataTableProps {
   refetchDataTable: () => void;
 }
 
-export const DataTable = ({
-  vData = [],
-  refetchDataTable,
-}: DataTableProps) => {
+export const DataTable = ({ vData = [], refetchDataTable }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(5); // Items per page
+  const [itemsPerPage] = useState<number>(5);
 
   useEffect(() => {
     setIsMounted(true);
@@ -79,6 +77,42 @@ export const DataTable = ({
     setCurrentPage(page);
   };
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const WIDTH = 300;
+
+      let imgObj = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(imgObj);
+
+      reader.onload = (e) => {
+        let imageUrl = e.target?.result;
+        let image = document.createElement("img");
+        //@ts-ignore
+        image.src = imageUrl;
+
+        image.onload = (e) => {
+          let canvas = document.createElement("canvas");
+          //@ts-ignore
+          let ratio = WIDTH / e.target.width;
+          canvas.width = WIDTH;
+          //@ts-ignore
+          canvas.height = e.target.height * ratio;
+          const context = canvas.getContext("2d");
+          //@ts-ignore
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          //   canvas.toBlob((blob) => {
+          // //@ts-ignore
+          //     const new_image = URL.createObjectURL(blob);
+          //     // Use new_image for your purposes (e.g., saving or displaying)
+          //     vData.setFieldValue('image', new_image);
+          //   }, 'image/jpeg');
+        };
+      };
+    }
+  };
+
   return (
     <div>
       <Table>
@@ -103,12 +137,21 @@ export const DataTable = ({
             <>
               {currentData.map((vcard, index: number) => (
                 <TableRow key={vcard.id}>
-                  <TableCell>{index + 1 + (currentPage - 1) * itemsPerPage}</TableCell>
+                  <TableCell>
+                    {index + 1 + (currentPage - 1) * itemsPerPage}
+                  </TableCell>
                   <TableCell>{vcard.tag}</TableCell>
                   <TableCell>VCARD</TableCell>
                   <TableCell>
                     <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                          <Button onClick={() => router.replace(`vcard/details?id=${vcard.id}`)} variant="outline">👁️‍🗨️</Button>
+                      <Button
+                        onClick={() =>
+                          router.replace(`vcard/details?id=${vcard.id}`)
+                        }
+                        variant="outline"
+                      >
+                        👁️‍🗨️
+                      </Button>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button variant="outline">✎</Button>
@@ -119,6 +162,30 @@ export const DataTable = ({
                             <DialogDescription>
                               Edit your vCard here and save your changes.
                             </DialogDescription>
+                            <label
+                              htmlFor="imageInput"
+                              className="cursor-pointer flex justify-center items-center"
+                            >
+                              <div className="relative w-32 h-32">
+                                <Avatar className="absolute inset-0 flex items-center justify-center w-full h-full">
+                                  <AvatarImage
+                                    src={vcard.image}
+                                    alt="User Image"
+                                  />
+                                  <AvatarFallback>
+                                    {vcard.firstName ? vcard.firstName[0] : ""}
+                                    {vcard.lastName ? vcard.lastName[0] : ""}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <input
+                                  id="imageInput"
+                                  type="file"
+                                  accept="image/*"
+                                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                  onChange={handleImageChange}
+                                />
+                              </div>
+                            </label>
                           </DialogHeader>
                           <div className="grid grid-cols-2 gap-4 py-4">
                             <div className="flex flex-col space-y-1.5">

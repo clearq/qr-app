@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IVCARD } from "@/typings";
 
 export default function Home() {
   const { toast } = useToast();
@@ -175,8 +177,56 @@ END:VCARD
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const WIDTH = 300;
+      const quality = 0.8; // Adjust quality as needed
+
+      let imgObj = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(imgObj);
+
+      reader.onload = (e) => {
+        let imageUrl = e.target?.result;
+        let image = document.createElement("img");
+        //@ts-ignore
+        image.src = imageUrl;
+
+        image.onload = (e) => {
+          let canvas = document.createElement("canvas");
+          //@ts-ignore
+          let ratio = WIDTH / e.target.width;
+          canvas.width = WIDTH;
+          //@ts-ignore
+          canvas.height = e.target.height * ratio;
+          const context = canvas.getContext("2d");
+          //@ts-ignore
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(
+            (blob) => {
+              //@ts-ignore
+              const new_image = URL.createObjectURL(blob);
+              // Use new_image for your purposes (e.g., saving or displaying)
+              validation.setFieldValue("image", new_image);
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+      };
+    }
+  };
+
+  const handleBrowseClick = () => {
+    const input = document.getElementById("imageInput");
+    if (input) {
+      input.click();
+    }
+  };
+
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center items-center">
       <div className="max-w-xl w-full">
         <Pages />
         <Card className="mt-10">
@@ -184,11 +234,32 @@ END:VCARD
             <CardTitle>VCard</CardTitle>
             <CardDescription>Create your VCard here</CardDescription>
           </CardHeader>
+          <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
+            <div className="flex justify-center items-center">
+              <Avatar className="w-32 h-32">
+                <AvatarImage src={validation.values.image} alt="User Image" />
+                <AvatarFallback className="text-[3rem]">
+                  {validation.values.firstName[0]}
+                  {validation.values.lastName[0]}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            <input
+              id="imageInput"
+              name="image"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+            />
+          </label>
           <CardContent>
             <form onSubmit={validation.handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="firstName">First name <span className="text-xs text-red-500" >*</span></Label>
+                  <Label htmlFor="firstName">
+                    First name <span className="text-xs text-red-500">*</span>
+                  </Label>
                   <Input
                     type="text"
                     name="firstName"
@@ -205,7 +276,9 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="lastName">Last name <span className="text-xs text-red-500" >*</span></Label>
+                  <Label htmlFor="lastName">
+                    Last name <span className="text-xs text-red-500">*</span>
+                  </Label>
                   <Input
                     type="text"
                     name="lastName"
@@ -221,7 +294,9 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="customerEmail">Email <span className="text-xs text-red-500" >*</span></Label>
+                  <Label htmlFor="customerEmail">
+                    Email <span className="text-xs text-red-500">*</span>
+                  </Label>
                   <Input
                     type="email"
                     name="customerEmail"
@@ -238,7 +313,9 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tag">Label <span className="text-xs text-red-500" >*</span></Label>
+                  <Label htmlFor="tag">
+                    Label <span className="text-xs text-red-500">*</span>
+                  </Label>
                   <Input
                     type="text"
                     name="tag"
@@ -415,6 +492,9 @@ END:VCARD
                     </div>
                   ) : null}
                 </div>
+                <Button onClick={handleBrowseClick} className="mt-6">
+                  Upload Image 📄
+                </Button>
               </div>
               <div className="flex flex-row mt-5">
                 <Button className="flex mr-3" type="submit">

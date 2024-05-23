@@ -66,7 +66,7 @@ export interface IVCARD {
   company: string;
   title: string;
   logoType: string | null;
-  image: string | null;
+  image: string;
   linkedIn: string;
   x: string;
   facebook: string;

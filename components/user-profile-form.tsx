@@ -24,6 +24,7 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const { status: sessionStatus } = useSession();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
 
   const router = useRouter();
@@ -35,7 +36,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       lastName: userData?.lastName,
       phone: userData?.phone || "",
       company: userData?.company || "",
-      image: userData?.image || undefined,
+      image: userData?.image || '',
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -78,73 +79,42 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     },
   });
 
-console.log(validation.values.image)
-  // const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (e.target.files && e.target.files[0]) {
-  //     const WIDTH = 300;
-  //     let imgObj = e.target.files[0]
-  //     // initiate reader and convert blob to base64.
-  //     let reader = new FileReader()
-  //     reader.readAsDataURL(imgObj)
-
-  //     reader.onload = e => {
-  //       let imageUrl = e.target?.result
-  //       let image = document.createElement("img");
-
-  //       //@ts-ignore
-  //       image.src = imageUrl
-
-  //       image.onload = (e) => {
-
-  //         let canvas = document.createElement('canvas');
-  //          //@ts-ignore
-  //         let ratio = WIDTH / e.target.width
-  //         canvas.width = WIDTH
-  //          //@ts-ignore
-  //         canvas.height = e.target.height * ratio
-
-  //         const context = canvas.getContext("2d")
-  //          //@ts-ignore
-  //         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  //         //@ts-ignore
-  //         let new_image = context.canvas.toDataURL("image/jpeg", 80);
-  //         validation.setFieldValue('image', new_image)
-  //       }
-
-  //     }
-  //   }
-  // }
-
-
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]){
-      const file = e.target.files[0];
-      const reader = new FileReader();
+    if (e.target.files && e.target.files[0]) {
+      const WIDTH = 300;
   
-      reader.readAsBinaryString(file);
-      reader.onload = (e) => {
-        const result = e.target?.result;
-        validation.setFieldValue('binaryFile', result?.slice(0, 4000));
-      };
-    } else {
-      return;
+      let imgObj = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(imgObj);
+  
+      reader.onload = e => {
+        let imageUrl = e.target?.result;
+        let image = document.createElement("img");
+        //@ts-ignore
+        image.src = imageUrl;
+  
+        image.onload = (e) => {
+          let canvas = document.createElement('canvas');
+        //@ts-ignore
+          let ratio = WIDTH / e.target.width;
+          canvas.width = WIDTH;
+        //@ts-ignore
+          canvas.height = e.target.height * ratio;
+          const context = canvas.getContext("2d");
+        //@ts-ignore
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  
+          canvas.toBlob((blob) => {
+        //@ts-ignore
+            const new_image = URL.createObjectURL(blob);
+            // Use new_image for your purposes (e.g., saving or displaying)
+            validation.setFieldValue('image', new_image);
+          }, 'image/jpeg');
+        }
+      }
     }
-  };
-
-  // const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     if (e.target.files && e.target.files[0]) {
-  //       let imgObj = e.target.files[0]
-  //       // initiate reader and convert blob to base64.
-  //       let reader = new FileReader()
-  //       reader.readAsDataURL(imgObj)
-  
-  //       reader.onload = e => {
-  //         let imageUrl = e.target?.result
-  //         validation.setFieldValue('image', imageUrl)
-  //     }
-  //   }
-  // };
+  }
 
   const handleBrowseClick = () => {
     const input = document.getElementById("imageInput");
@@ -176,13 +146,11 @@ console.log(validation.values.image)
             </AvatarFallback>
           </Avatar>
           <input
-          id="imageInput"
-          name='image'
+            id="imageInput"
             type="file"
             accept="image/*"
             style={{ display: "none" }}
             onChange={handleImageChange}
-
           />
         </label>
         <Button onClick={handleBrowseClick} className="mt-6">

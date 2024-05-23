@@ -40,7 +40,7 @@ export const VcardSingelComponent = ({ vDetails: vData }: Props) => {
       lastName: vData?.lastName || "",
       phone: vData?.phone || "",
       company: vData?.company || "",
-      image: vData?.image || Buffer,
+      image: vData?.image || undefined,
       tag: vData?.tag || "",
       title: vData?.title || "",
       linkedIn: vData?.linkedIn || "",
@@ -209,17 +209,10 @@ END:VCARD
               <CardTitle>VCard Details</CardTitle>
               <CardDescription></CardDescription>
             </CardHeader>
-            <label htmlFor="imageInput" className="cursor-pointer">
+            <label htmlFor="imageInput">
               <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
                 <AvatarImage
-                  src={
-                    imagePreview ||
-                    (vcardData.image
-                      ? `data:image/jpeg;base64,${Buffer.from(
-                          vcardData.image
-                        ).toString("base64")}`
-                      : undefined) // Use undefined if there's no image data
-                  }
+                  src={validation.values.image}
                   alt="User Image"
                 />
                 <AvatarFallback>
@@ -418,14 +411,7 @@ END:VCARD
             <label htmlFor="imageInput" className="cursor-pointer">
               <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
                 <AvatarImage
-                  src={
-                    imagePreview ||
-                    (vcardData.image
-                      ? `data:image/jpeg;base64,${Buffer.from(
-                          vcardData.image
-                        ).toString("base64")}`
-                      : undefined) // Use undefined if there's no image data
-                  }
+                  src={validation.values.image}
                   alt="User Image"
                 />
                 <AvatarFallback>
