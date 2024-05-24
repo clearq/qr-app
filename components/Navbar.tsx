@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ui/modeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -13,74 +13,66 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
-import { useRouter } from "next/navigation";
-import { Customer } from "@prisma/client";
-import { toast } from "./ui/use-toast";
-import * as yup from "yup";
-import { useFormik } from "formik";
 import Image from "next/image";
-// import logoImage from "../public/image/clearqr.svg";
 import logoImage from "../public/image/clearqr2.svg";
+import { ExtendedUser } from "@/next-auth";
 
 interface Props {
-  user: Customer;
+  user: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
-  const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const validation = useFormik({
-    initialValues: {
-      email: userData?.email,
-      firstName: userData?.firstName,
-      lastName: userData?.lastName,
-      phone: userData?.phone || "",
-      company: userData?.company || "",
-      image: userData?.image || "",
-    },
-    validationSchema: yup.object({
-      email: yup.string().email().required("Email is required"),
-      firstName: yup.string().required("First name is required"),
-      lastName: yup.string().required("Last name is required"),
-      phone: yup.string().nullable(),
-      company: yup.string().nullable(),
-      image: yup.string().nullable(),
-    }),
-    onSubmit: (values) => {
-      console.log("Form values:", values);
-      fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-        .then(async (response) => {
-          if (response.status === 201) {
-            toast({
-              title: `Updated successfully!`,
-              description: `${new Date().toLocaleDateString()}`,
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              title: `Error updating data`,
-              description: `${new Date().toLocaleDateString()}`,
-            });
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          toast({
-            variant: "destructive",
-            title: `Something went wrong`,
-            description: `${new Date().toLocaleDateString()}`,
-          });
-        });
-    },
-  });
+  // const validation = useFormik({
+  //   initialValues: {
+  //     email: userData?.email,
+  //     firstName: userData?.firstName,
+  //     lastName: userData?.lastName,
+  //     phone: userData?.phone || "",
+  //     company: userData?.company || "",
+  //     image: userData?.image || undefined,
+  //   },
+  //   validationSchema: yup.object({
+  //     email: yup.string().email().required("Email is required"),
+  //     firstName: yup.string().required("First name is required"),
+  //     lastName: yup.string().required("Last name is required"),
+  //     phone: yup.string().nullable(),
+  //     company: yup.string().nullable(),
+  //     image: yup.string().nullable(),
+  //   }),
+  //   onSubmit: (values) => {
+  //     console.log("Form values:", values);
+  //     fetch("/api/profile", {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(values),
+  //     })
+  //       .then(async (response) => {
+  //         if (response.status === 201) {
+  //           toast({
+  //             title: `Updated successfully!`,
+  //             description: `${new Date().toLocaleDateString()}`,
+  //           });
+  //         } else {
+  //           toast({
+  //             variant: "destructive",
+  //             title: `Error updating data`,
+  //             description: `${new Date().toLocaleDateString()}`,
+  //           });
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error:", error);
+  //         toast({
+  //           variant: "destructive",
+  //           title: `Something went wrong`,
+  //           description: `${new Date().toLocaleDateString()}`,
+  //         });
+  //       });
+  //   },
+  // });
 
   const handleSignOut = () => {
     signOut();
@@ -97,7 +89,7 @@ export const Navbar = ({ user: userData }: Props) => {
               className="cursor-pointer w-[80%] text-base sm:text-lg"
             />
           </Link>
-          {!session ? (
+          {!userData ? (
             <>
               <Link href="/login">
                 <li className="cursor-pointer text-sm sm:text-base">Login</li>
@@ -116,16 +108,16 @@ export const Navbar = ({ user: userData }: Props) => {
                     <NavigationMenuTrigger>
                       <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
                         <AvatarImage
-                          src={validation.values.image}
+                          src={userData?.image || ""}
                           alt="User Image"
                         />
                         <AvatarFallback>
-                          {userData?.firstName[0]}
-                          {userData?.lastName[0]}
+                          {userData?.firstName ? userData?.firstName[0] : ""}
+                          {userData?.lastName ? userData?.lastName[0] : ""}
                         </AvatarFallback>
                       </Avatar>
                       <span className="hidden sm:inline text-sm sm:text-base">
-                        {session.user?.email}
+                        {userData?.email}
                       </span>
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>

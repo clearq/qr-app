@@ -235,7 +235,7 @@ END:VCARD
             <CardDescription>Create your VCard here</CardDescription>
           </CardHeader>
           <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
-            <div className="flex justify-center items-center">
+            <div className="flex flex-col justify-center items-center">
               <Avatar className="w-32 h-32">
                 <AvatarImage src={validation.values.image} alt="User Image" />
                 <AvatarFallback className="text-[3rem]">
@@ -243,6 +243,9 @@ END:VCARD
                   {validation.values.lastName[0]}
                 </AvatarFallback>
               </Avatar>
+          <Button onClick={handleBrowseClick} className="mt-6">
+                  Upload Image 📄
+                </Button>
             </div>
             <input
               id="imageInput"
@@ -254,7 +257,7 @@ END:VCARD
             />
           </label>
           <CardContent>
-            <form onSubmit={validation.handleSubmit} className="space-y-5">
+            <form onSubmit={validation.handleSubmit} className="space-y-5 mt-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="firstName">
@@ -492,9 +495,7 @@ END:VCARD
                     </div>
                   ) : null}
                 </div>
-                <Button onClick={handleBrowseClick} className="mt-6">
-                  Upload Image 📄
-                </Button>
+               
               </div>
               <div className="flex flex-row mt-5">
                 <Button className="flex mr-3" type="submit">

@@ -47,17 +47,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Cannot create vCard" }, { status: 400 });
   }
 
-  const qrData = {
-    url : `${process.env.NEXT_PUBLIC_APP_URL}/vcard/details/${createdVcard.id}`,
-    tag : createdVcard.title
-  }
-
-  const createQr = await createQrCode(qrData, id);
-
-  if (!createQr) {
-    return NextResponse.json({ error: "Cannot create qrcode" }, { status: 400 });
-  }
-
 
   return NextResponse.json(
     {
