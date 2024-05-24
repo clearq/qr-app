@@ -22,10 +22,13 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IVCARD } from "@/typings";
 
 export default function Home() {
   const { toast } = useToast();
-
+  const router = useRouter();
   const [logo, setLogo] = useState<string | null>(null);
 
   const { data: session } = useSession();
@@ -58,7 +61,7 @@ export default function Home() {
       phone: yup.number().nullable(),
       company: yup.string().nullable(),
       image: yup.string().nullable(),
-      title: yup.string().nullable(),
+      title: yup.string(),
       logoType: yup.string().nullable(),
       linkedIn: yup.string().nullable(),
       x: yup.string().nullable(),
@@ -68,7 +71,6 @@ export default function Home() {
       tiktok: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values); // Log form values
       fetch("/api/saveVcard", {
         method: "POST",
         headers: {
@@ -77,15 +79,19 @@ export default function Home() {
         body: JSON.stringify(values),
       })
         .then(async (response) => {
+          const data = await response.json();
           if (response.status === 201) {
             toast({
-              title: `Created successfully!`,
+              title: `Created sucessfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
+
+            // Redirect to the dynamic page with the information
+            router.replace(`/vcard/details?id=${data.id}`);
           } else {
             toast({
               variant: "destructive",
-              title: `Error create VCard`,
+              title: `Error creating vCard`,
               description: `${new Date().toLocaleDateString()}`,
             });
           }
@@ -101,7 +107,6 @@ export default function Home() {
     },
   });
 
-  
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -130,8 +135,6 @@ END:VCARD
     `.trim();
   };
 
-  const vCardValue = generateVCardString(validation.values)
-
   const handleDownloadVcard = () => {
     const values = validation.values;
     const vCardData = generateVCardString(values);
@@ -146,24 +149,23 @@ END:VCARD
   };
 
   const handleDownload = () => {
-    
     const svg = document.getElementById("vcard-svg");
-    if (!svg){
-      return
+    if (!svg) {
+      return;
     }
-    
+
     const svgData = new XMLSerializer().serializeToString(svg);
-  
+
     const canvas = document.createElement("canvas");
     const svgSize = svg.getBoundingClientRect();
     canvas.width = svgSize.width;
     canvas.height = svgSize.height;
-  
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return; // Check if context is null
-    
+
     const img = document.createElement("img");
-  
+
     img.onload = () => {
       ctx.drawImage(img, 0, 0);
       const link = document.createElement("a");
@@ -171,32 +173,100 @@ END:VCARD
       link.href = canvas.toDataURL("image/png");
       link.click();
     };
-  
+
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
-  
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const WIDTH = 300;
+      const quality = 0.8; // Adjust quality as needed
+
+      let imgObj = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsDataURL(imgObj);
+
+      reader.onload = (e) => {
+        let imageUrl = e.target?.result;
+        let image = document.createElement("img");
+        //@ts-ignore
+        image.src = imageUrl;
+
+        image.onload = (e) => {
+          let canvas = document.createElement("canvas");
+          //@ts-ignore
+          let ratio = WIDTH / e.target.width;
+          canvas.width = WIDTH;
+          //@ts-ignore
+          canvas.height = e.target.height * ratio;
+          const context = canvas.getContext("2d");
+          //@ts-ignore
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(
+            (blob) => {
+              //@ts-ignore
+              const new_image = URL.createObjectURL(blob);
+              // Use new_image for your purposes (e.g., saving or displaying)
+              validation.setFieldValue("image", new_image);
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+      };
+    }
+  };
+
+  const handleBrowseClick = () => {
+    const input = document.getElementById("imageInput");
+    if (input) {
+      input.click();
+    }
+  };
 
   return (
-    <div>
-      <div className="flex flex-col w-full ">
+    <div className="flex justify-center items-center">
+      <div className="max-w-xl w-full">
         <Pages />
         <Card className="mt-10">
           <CardHeader>
             <CardTitle>VCard</CardTitle>
             <CardDescription>Create your VCard here</CardDescription>
           </CardHeader>
+          <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
+            <div className="flex flex-col justify-center items-center">
+              <Avatar className="w-32 h-32">
+                <AvatarImage src={validation.values.image} alt="User Image" />
+                <AvatarFallback className="text-[3rem]">
+                  {validation.values.firstName[0]}
+                  {validation.values.lastName[0]}
+                </AvatarFallback>
+              </Avatar>
+          <Button onClick={handleBrowseClick} className="mt-6">
+                  Upload Image 📄
+                </Button>
+            </div>
+            <input
+              id="imageInput"
+              name="image"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+            />
+          </label>
           <CardContent>
-            <form className="" onSubmit={validation.handleSubmit}>
-              <div className="grid grid-cols-2 w-[50%] items-center gap-4">
+            <form onSubmit={validation.handleSubmit} className="space-y-5 mt-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="firstName">
-                    First Name<span className="text-red-700">*</span>
+                    First name <span className="text-xs text-red-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     name="firstName"
-                    placeholder="First Name"
+                    placeholder="First name"
                     value={validation.values.firstName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -210,12 +280,12 @@ END:VCARD
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="lastName">
-                    Last Name<span className="text-red-700">*</span>
+                    Last name <span className="text-xs text-red-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     name="lastName"
-                    placeholder="Last Name"
+                    placeholder="Last name"
                     value={validation.values.lastName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -227,13 +297,13 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">
-                    Email<span className="text-red-700">*</span>
+                  <Label htmlFor="customerEmail">
+                    Email <span className="text-xs text-red-500">*</span>
                   </Label>
                   <Input
-                    type="text"
+                    type="email"
                     name="customerEmail"
-                    placeholder="Email"
+                    placeholder="example@gmail.com"
                     value={validation.values.customerEmail}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -246,38 +316,24 @@ END:VCARD
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="label">
-                    Label<span className="text-red-700">*</span>
+                  <Label htmlFor="tag">
+                    Label <span className="text-xs text-red-500">*</span>
                   </Label>
                   <Input
                     type="text"
                     name="tag"
-                    placeholder="Label"
+                    placeholder="Tag"
                     value={validation.values.tag}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.tag &&
-                  validation.errors.tag ? (
+                  {validation.touched.tag && validation.errors.tag ? (
                     <div className="text-xs text-red-500">
                       {validation.errors.tag}
                     </div>
                   ) : null}
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="url">Website</Label>
-                  <Input
-                    type="text"
-                    name="url"
-                    placeholder="https://"
-                    value={validation.values.url}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.url && validation.errors.url ? (
-                    <div className="text-xs text-red-500">{validation.errors.url}</div>
-                  ) : null}
-                </div>
+
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
                   <Input
@@ -323,6 +379,22 @@ END:VCARD
                   {validation.touched.title && validation.errors.title ? (
                     <div className="text-xs text-red-500">
                       {validation.errors.title}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="url">Website</Label>
+                  <Input
+                    type="url"
+                    name="url"
+                    placeholder="Website"
+                    value={validation.values.url}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                  {validation.touched.url && validation.errors.url ? (
+                    <div className="text-xs text-red-500">
+                      {validation.errors.url}
                     </div>
                   ) : null}
                 </div>
@@ -418,44 +490,35 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.x && validation.errors.x ? (
-                    <div className="text-xs text-red-500">{validation.errors.x}</div>
+                    <div className="text-xs text-red-500">
+                      {validation.errors.x}
+                    </div>
                   ) : null}
                 </div>
+               
               </div>
-                <div className="flex flex-row mt-5">
-                  <Button
-                    className="flex mr-3"
-                    onClick={() => validation.handleSubmit()}
+              <div className="flex flex-row mt-5">
+                <Button className="flex mr-3" type="submit">
+                  Save
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="">Download</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="flex flex-col mt-2"
+                    align="end"
                   >
-                    Save
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button  className="">
-                        Download
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="flex flex-col mt-2" align="end">
-                      <Button className="mb-2" onClick={() => handleDownloadVcard()}>
-                        Download vCard
-                      </Button>
-                      <Button onClick={handleDownload}>VCard PNG</Button>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              <QRCode 
-              className="mt-6 flex container"
-                id="vcard-svg"
-                value={vCardValue}
-                size={450}
-                renderAs="svg"
-                imageSettings={{
-                  src: logo!,
-                  height: 48,
-                  width: 48,
-                  excavate: true,
-                }}
-              />
+                    <Button
+                      className="mb-2"
+                      onClick={() => handleDownloadVcard()}
+                    >
+                      Download vCard
+                    </Button>
+                    <Button onClick={handleDownload}>VCard PNG</Button>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </form>
           </CardContent>
           <CardFooter className="flex justify-between"></CardFooter>

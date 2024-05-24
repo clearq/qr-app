@@ -15,7 +15,7 @@ model Customer {
   phone     String?
   password  String
   company   String?
-  image     String?
+  image     String?  @db.VarChar(4000)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   vcard     VCard[]
@@ -38,8 +38,8 @@ model VCard {
   phone         String?
   company       String?
   title         String?
-  logoType      String?
-  image         String?
+  logoType      String?   @db.VarChar(4000)
+  image         String?   @db.VarChar(4000)
   linkedIn      String?
   x             String?
   facebook      String?

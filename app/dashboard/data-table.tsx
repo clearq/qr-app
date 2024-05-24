@@ -19,22 +19,67 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IQR, IVCARD } from "@/typings";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { IQR } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import { toast } from "@/components/ui/use-toast";
+import * as yup from "yup";
+import QRCode from "qrcode.react";
 
 interface DataTableProps {
-  qrData: IQR[];
-  vData: IVCARD[];
+  qrData: IQR;
   refetchDataTable: () => void;
 }
 
-export const DataTable = ({
-  vData = [],
-  qrData = [],
-  refetchDataTable,
-}: DataTableProps) => {
+export const DataTable = ({ qrData, refetchDataTable }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(5); // Items per page
+
+  const validation = useFormik({
+    initialValues: {
+      url: qrData.url,
+      tag: qrData.tag,
+      logoType: "",
+    },
+    validationSchema: yup.object({
+      url: yup.string().url().nullable(),
+      tag: yup.string().nullable(),
+      logoType: yup.string().url().uuid(),
+    }),
+    onSubmit: (values) => {
+      fetch("/api/qr", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      }).then((data) => {
+        if (data?.status === 201) {
+          toast({
+            title: `Created sucessfully!`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
+          validation.resetForm();
+        } else {
+          toast({
+            variant: "destructive",
+            title: `Something went worng`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
+        }
+      });
+    },
+  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -51,30 +96,25 @@ export const DataTable = ({
       .catch((err) => console.log(err));
   };
 
-  const handleDeleteV = async (id: string) => {
-    await fetch(`/api/saveVcard/${id}`, {
-      method: "DELETE",
-    })
-      .then((data) => data.json())
-      .then(() => {
-        refetchDataTable();
-      })
-      .catch((err) => console.log(err));
-  };
-
   const router = useRouter();
 
   const handleUrl = () => {
     router.push("/");
   };
 
-  const handleVcard = () => {
-    router.push("/vcard");
-  };
-
-  
-
   if (!isMounted) return null;
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  //@ts-ignore
+  const currentData = qrData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // @ts-ignore
+  const totalPages = Math.ceil(qrData.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div>
@@ -92,15 +132,17 @@ export const DataTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {qrData.length === 0 ? (
+          {currentData.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4}>No data available</TableCell>
             </TableRow>
           ) : (
             <>
-              {qrData.map((qr, index: number) => (
+              {currentData.map((qr, index: number) => (
                 <TableRow key={qr.id}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    {index + 1 + (currentPage - 1) * itemsPerPage}
+                  </TableCell>
                   <TableCell>{qr.tag}</TableCell>
                   <TableCell>QR</TableCell>
                   <TableCell>
@@ -109,7 +151,7 @@ export const DataTable = ({
                         <DialogTrigger asChild>
                           <Button variant="outline">✎</Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[550px]">
                           <DialogHeader>
                             <DialogTitle>Edit your QR</DialogTitle>
                             <DialogDescription>
@@ -126,6 +168,8 @@ export const DataTable = ({
                                 id="url"
                                 value={qr.url}
                                 className="col-span-3"
+                                onChange={validation.handleChange}
+                                onBlur={validation.handleBlur}
                               />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
@@ -134,9 +178,26 @@ export const DataTable = ({
                               </Label>
                               <Input
                                 id="username"
-                                value="@peduarte"
+                                value={qr.tag}
                                 className="col-span-3"
                               />
+                            </div>
+                            <QRCode
+                              className="flex flex-col left-12 justify-center items-center mt-5 relative"
+                              id="qr-code-svg"
+                              value={qr.url}
+                              size={400}
+                              renderAs="svg"
+                              // imageSettings={{
+                              //   //@ts-ignore
+                              //   src: null,
+                              //   height: 48,
+                              //   width: 48,
+                              //   excavate: true, // Make the QR code transparent where the logo is placed
+                              // }}
+                            />
+                            <div className="mt-5 flex w-[50%] flex-row gap-4 items-center justify-center sm:w-auto">
+                              <Button className="">Download PNG</Button>
                             </div>
                           </div>
                           <DialogFooter>
@@ -159,201 +220,37 @@ export const DataTable = ({
           )}
         </TableBody>
       </Table>
-      <Table>
-        <TableHeader className="h-12">
-          <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
-            <TableHead>Label</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead className="flex flex-row space-x-7 justify-end items-end">
-              <Button variant="outline" className="" onClick={handleVcard}>
-                Add VCard
-              </Button>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {vData.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4}>No data available</TableCell>
-            </TableRow>
-          ) : (
-            <>
-              {vData.map((vcard, index: number) => (
-                <TableRow key={vcard.id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{vcard.tag}</TableCell>
-                  <TableCell>VCARD</TableCell>
-                  <TableCell>
-                    <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline">✎</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle>Edit your vCard</DialogTitle>
-                            <DialogDescription>
-                              Edit your vCard here and save your changes.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="grid gap-4 py-4">
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="firstName">
-                                First Name
-                                <span className="text-red-700">*</span>
-                              </Label>
-                              <Input
-                                type="text"
-                                name="firstName"
-                                placeholder="First Name"
-                                value={vcard.firstName}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="lastName">
-                                Last Name<span className="text-red-700">*</span>
-                              </Label>
-                              <Input
-                                type="text"
-                                name="lastName"
-                                placeholder="Last Name"
-                                value={vcard.lastName}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="email">
-                                Email<span className="text-red-700">*</span>
-                              </Label>
-                              <Input
-                                type="text"
-                                name="customerEmail"
-                                placeholder="Email"
-                                value={vcard.customerEmail}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="label">
-                                Label<span className="text-red-700">*</span>
-                              </Label>
-                              <Input
-                                type="text"
-                                name="tag"
-                                placeholder="Label"
-                                value={vcard.tag}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="url">Website</Label>
-                              <Input
-                                type="text"
-                                name="url"
-                                placeholder="https://"
-                                value={vcard.url}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="phone">Phone</Label>
-                              <Input
-                                type="text"
-                                name="phone"
-                                placeholder="Tel."
-                                value={vcard.phone}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="company">Company</Label>
-                              <Input
-                                type="text"
-                                name="company"
-                                placeholder="Company"
-                                value={vcard.company}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="title">Title</Label>
-                              <Input
-                                type="text"
-                                name="title"
-                                placeholder="Title"
-                                value={vcard.title}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="linkedIn">LinkedIn</Label>
-                              <Input
-                                type="text"
-                                name="linkedIn"
-                                placeholder="https://"
-                                value={vcard.linkedIn}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="facebook">Facebook</Label>
-                              <Input
-                                type="text"
-                                name="facebook"
-                                placeholder="https://"
-                                value={vcard.facebook}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="instagram">Instagram</Label>
-                              <Input
-                                type="text"
-                                name="instagram"
-                                placeholder="https://"
-                                value={vcard.instagram}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="tiktok">Tiktok</Label>
-                              <Input
-                                type="text"
-                                name="tiktok"
-                                placeholder="https://"
-                                value={vcard.tiktok}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="snapchat">Snapchat</Label>
-                              <Input
-                                type="text"
-                                name="snapchat"
-                                placeholder="https://"
-                                value={vcard.snapchat}
-                              />
-                            </div>
-                            <div className="flex flex-col space-y-1.5">
-                              <Label htmlFor="x">X</Label>
-                              <Input
-                                type="text"
-                                name="x"
-                                placeholder="https://"
-                                value={vcard.x}
-                              />
-                            </div>
-                          </div>
-                          <DialogFooter>
-                            <Button type="submit">Save changes</Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className="hover:bg-red-500"
-                        variant="outline"
-                        onClick={() => handleDeleteV(vcard.id)}
-                      >
-                        🗑️
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
-          )}
-        </TableBody>
-      </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={() => handlePageChange(currentPage - 1)}
+              //@ts-ignore
+              disabled={currentPage === 1}
+            />
+          </PaginationItem>
+          {[...Array(totalPages)].map((_, pageIndex) => (
+            <PaginationItem key={pageIndex}>
+              <PaginationLink
+                href="#"
+                onClick={() => handlePageChange(pageIndex + 1)}
+                isActive={currentPage === pageIndex + 1}
+              >
+                {pageIndex + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={() => handlePageChange(currentPage + 1)}
+              //@ts-ignore
+              disabled={currentPage === totalPages}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

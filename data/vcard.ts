@@ -3,10 +3,10 @@ import { prisma } from "@/lib/db";
 
 export const vCodeById = async (id: string) => {
   try {
-    const vData = await prisma.vCard.findFirst({
+    const vcData = await prisma.vCard.findFirst({
       where: { id },
     });
-    return vData;
+    return vcData;
   } catch {
     return null;
   }
