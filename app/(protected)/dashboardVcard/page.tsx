@@ -32,7 +32,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-4">VCard Dashboard</h1>
-      <DataTable vData={vData} refetchDataTable={refetchDataTable} />
+      <DataTable vcardData={vData} refetchDataTable={refetchDataTable} />
     </div>
   );
 }

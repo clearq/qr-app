@@ -147,3 +147,16 @@ a:link {
   left: 0; /* Position the container at the left */
   z-index: -1; /* Set z-index to send the container behind other content */
 }
+
+
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 20px;
+}

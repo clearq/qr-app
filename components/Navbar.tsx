@@ -18,10 +18,11 @@ import logoImage from "../public/image/clearqr2.svg";
 import { ExtendedUser } from "@/next-auth";
 
 interface Props {
-  user: ExtendedUser;
+  user?: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
+console.log("🚀 ~ Navbar ~ userData:", userData)
 
   // const validation = useFormik({
   //   initialValues: {
@@ -77,6 +78,8 @@ export const Navbar = ({ user: userData }: Props) => {
   const handleSignOut = () => {
     signOut();
   };
+
+  
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">

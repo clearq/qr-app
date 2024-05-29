@@ -20,11 +20,8 @@ import { Progress } from "./ui/progress";
 import QRCode from "qrcode.react";
 import { useSession } from "next-auth/react";
 
-interface Props {
-  vDetails: IVCARD;
-}
 
-export const VcardSingelComponent = ({ vDetails: vData }: Props) => {
+export const VcardSingelComponent = () => {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -35,21 +32,21 @@ export const VcardSingelComponent = ({ vDetails: vData }: Props) => {
 
   const validation = useFormik({
     initialValues: {
-      customerEmail: vData?.customerEmail || "",
-      firstName: vData?.firstName || "",
-      lastName: vData?.lastName || "",
-      phone: vData?.phone || "",
-      company: vData?.company || "",
-      image: vData?.image || undefined,
-      tag: vData?.tag || "",
-      title: vData?.title || "",
-      linkedIn: vData?.linkedIn || "",
-      x: vData?.x || "",
-      facebook: vData?.facebook || "",
-      instagram: vData?.instagram || "",
-      snapchat: vData?.snapchat || "",
-      tiktok: vData?.tiktok || "",
-      url: vData?.url || "",
+      customerEmail: vcardData?.customerEmail || "",
+      firstName: vcardData?.firstName || "",
+      lastName: vcardData?.lastName || "",
+      phone: vcardData?.phone || "",
+      company: vcardData?.company || "",
+      image: vcardData?.image || undefined,
+      tag: vcardData?.tag || "",
+      title: vcardData?.title || "",
+      linkedIn: vcardData?.linkedIn || "",
+      x: vcardData?.x || "",
+      facebook: vcardData?.facebook || "",
+      instagram: vcardData?.instagram || "",
+      snapchat: vcardData?.snapchat || "",
+      tiktok: vcardData?.tiktok || "",
+      url: vcardData?.url || "",
     },
     validationSchema: yup.object({
       customerEmail: yup.string().email().required("Email is required"),

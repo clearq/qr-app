@@ -57,19 +57,19 @@ export async function POST(req: Request) {
   );
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   const user = await auth();
 
   if (!user?.user) {
     return NextResponse.json(
       { error: "You need to log in" },
-      { status: 400 }
+      { status: 401 }
     );
   }
-  const { id } = user.user;
 
   try {
     const {
+      id,
       customerEmail,
       firstName,
       lastName,
@@ -87,13 +87,15 @@ export async function PUT(req: NextRequest) {
       snapchat,
     } = await req.json();
 
-    if (!customerEmail || !firstName || !lastName || !tag) {
+    if (!id || !customerEmail || !firstName || !lastName || !tag) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 403 }
       );
     }
 
+
+    // Update the record
     const updatedUser = await prisma.vCard.update({
       where: { id },
       data: {

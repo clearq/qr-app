@@ -27,7 +27,7 @@ const EmailInput = () => {
           )}&body=${encodeURIComponent(fields.message)}`;
           dispatch({ type: 'SET_QR_VALUE', payload: { value: mailtoLink } });
         } else {
-          dispatch({ type: 'SET_QR_VALUE', payload: { value: "I'm EMPTY" } });
+          dispatch({ type: 'SET_QR_VALUE', payload: { value: "HI" } });
         }
       }, 1000);
     }
