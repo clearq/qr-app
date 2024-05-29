@@ -24,61 +24,78 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  // Check user authentication
   const user = await auth();
-  if (!user?.user) {
+  console.log("User:", user);
+
+  if (!user || !user.user) {
+    console.log("User not authenticated");
     return NextResponse.json(
-      { error: "You need to login in" },
-      { status: 400 }
+      { error: "You need to login" },
+      { status: 401 } 
     );
   }
 
+  // Extract user ID
   const { id } = user.user;
-  const body = await req.json();
+  console.log("User ID:", id); // Log the user ID
 
   if (!id) {
+    console.log("User ID not found");
     return NextResponse.json("You need to login!", { status: 401 });
   }
 
-  const createQr = await createQrCode(body, id);
+  try {
+    // Parse request body
+    const body = await req.json();
+    console.log("Request body:", body);
 
-  if (!createQr) {
-    return NextResponse.json("Cannot create qrCode", { status: 400 });
+    // Create QR code
+    const createQr = await createQrCode(body, id);
+    console.log("QR code creation response:", createQr);
+
+    // Check if QR code creation was successful
+    if (!createQr) {
+      console.log("Failed to create QR code");
+      return NextResponse.json("Cannot create QR code", { status: 400 });
+    }
+
+    // Return success response
+    return NextResponse.json(
+      { success: "Created QR successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating QR code:", error);
+    return NextResponse.json("Internal server error", { status: 500 });
   }
-
-  return NextResponse.json(
-    {
-      success: "Created qr successfully",
-    },
-    { status: 201 }
-  );
 }
 
 export async function PUT(req: Request) {
   const user = await auth();
 
   if (!user?.user) {
-    return NextResponse.json({ error: "You need to login" }, { status: 400 });
+    return NextResponse.json({ error: "You need to login" }, { status: 401 });
   }
-  const { id } = user.user;
 
   try {
-    const { url, tag } = await req.json();
+    const { id, url, tag, logoType } = await req.json();
 
-    if (!url || !tag) {
+    if (!id || !url || !tag || !logoType) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 403 }
       );
     }
 
-    const updatedUser = await prisma.qr.update({
+    const updatedQr = await prisma.qr.update({
       where: { id },
-      data: { url, tag },
+      data: { url, tag, logoType },
     });
 
-    return NextResponse.json(updatedUser, { status: 201 });
+    return NextResponse.json(updatedQr, { status: 201 });
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error updating QR code:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

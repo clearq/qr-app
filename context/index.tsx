@@ -8,7 +8,7 @@ const initialState: IState = {
   background: 'transparent',
   dotColor: '#FFFFFF',
   eyeColor: '#FFFFFF',
-  value: "I'm EMPTY",
+  value: "hi",
   logoImage: '',
 };
 

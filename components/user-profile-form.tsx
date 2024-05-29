@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -14,20 +14,13 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Customer, PrismaClient } from "@prisma/client";
+import { Customer} from "@prisma/client";
 
 interface Props {
   user: Customer;
 }
 
 export const EditProfileForm = ({ user: userData }: Props) => {
-  const { status: sessionStatus } = useSession();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-
-  const router = useRouter();
 
   const validation = useFormik({
     initialValues: {
@@ -123,9 +116,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     }
   };
 
-  if (!userData) {
-    return null;
-  }
 
   return (
     <div className="container mx-auto">

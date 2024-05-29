@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 import bcrypt from 'bcryptjs'
-import Google from 'next-auth/providers/google'
 import Crentials from 'next-auth/providers/credentials'
 
 
@@ -39,11 +38,6 @@ export default {providers : [
           }
           return null;
         },
-      }),
-  
-      Google({
-        clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
       }),
       
 ]}

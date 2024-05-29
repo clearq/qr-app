@@ -1,37 +1,21 @@
-"use client";
-import { ChangeEvent, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Pages from "@/components/Pages";
-import QRCode from "qrcode.react";
-import { useSession } from "next-auth/react";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IVCARD } from "@/typings";
+import React, { ChangeEvent, useState } from 'react'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
+import { Label } from './ui/label'
+import { Input } from './ui/input'
+import { DropdownMenu } from './ui/dropdown-menu'
+import { DropdownMenuContent, DropdownMenuTrigger } from './Dropdown'
+import { useToast } from './ui/use-toast'
+import { useRouter } from 'next/navigation'
+import { useFormik } from 'formik'
+import * as yup from 'yup'
 
-export default function Home() {
-  const { toast } = useToast();
+export const Vcard = () => {
+    const { toast } = useToast();
   const router = useRouter();
   const [logo, setLogo] = useState<string | null>(null);
 
-  const { data: session } = useSession();
 
   const validation = useFormik({
     initialValues: {
@@ -218,18 +202,15 @@ END:VCARD
     }
   };
 
-  const handleBrowseClick = () => {
-    const input = document.getElementById("imageInput");
-    if (input) {
-      input.click();
-    }
-  };
-
+    const handleBrowseClick = () => {
+        const input = document.getElementById("imageInput");
+        if (input) {
+          input.click();
+        }
+      };
   return (
-    <div className="flex justify-center items-center">
-      <div className="max-w-xl w-full">
-        <Pages />
-        <Card className="mt-10">
+    <>
+    <Card className="mt-10">
           <CardHeader>
             <CardTitle>VCard</CardTitle>
             <CardDescription>Create your VCard here</CardDescription>
@@ -499,7 +480,7 @@ END:VCARD
               </div>
               <div className="flex flex-row mt-5">
                 <Button className="flex mr-3" type="submit">
-                  Save
+                  Create
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -523,7 +504,6 @@ END:VCARD
           </CardContent>
           <CardFooter className="flex justify-between"></CardFooter>
         </Card>
-      </div>
-    </div>
-  );
+    </>
+  )
 }
