@@ -1,3 +1,4 @@
+'use client'
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 
@@ -5,7 +6,7 @@ function Pages() {
   const router = useRouter();
 
   const handleUrl = () => {
-    router.push("/");
+    router.push("/qr");
   };
 
   const handleVcard = () => {

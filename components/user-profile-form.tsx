@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,13 +14,16 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
-import { Customer} from "@prisma/client";
+import { Customer } from "@prisma/client";
 
 interface Props {
   user: Customer;
 }
 
 export const EditProfileForm = ({ user: userData }: Props) => {
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+  const qrRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validation = useFormik({
     initialValues: {
@@ -29,7 +32,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       lastName: userData?.lastName,
       phone: userData?.phone || "",
       company: userData?.company || "",
-      image: userData?.image || '',
+      image: userData.image,
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -72,50 +75,69 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     },
   });
 
+  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 40;
+        let width = img.width;
+        let height = img.height;
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const WIDTH = 300;
-  
-      let imgObj = e.target.files[0];
-      let reader = new FileReader();
-      reader.readAsDataURL(imgObj);
-  
-      reader.onload = e => {
-        let imageUrl = e.target?.result;
-        let image = document.createElement("img");
-        //@ts-ignore
-        image.src = imageUrl;
-  
-        image.onload = (e) => {
-          let canvas = document.createElement('canvas');
-        //@ts-ignore
-          let ratio = WIDTH / e.target.width;
-          canvas.width = WIDTH;
-        //@ts-ignore
-          canvas.height = e.target.height * ratio;
-          const context = canvas.getContext("2d");
-        //@ts-ignore
-          context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  
-          canvas.toBlob((blob) => {
-        //@ts-ignore
-            const new_image = URL.createObjectURL(blob);
-            // Use new_image for your purposes (e.g., saving or displaying)
-            validation.setFieldValue('image', new_image);
-          }, 'image/jpeg');
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
         }
-      }
-    }
-  }
 
-  const handleBrowseClick = () => {
-    const input = document.getElementById("imageInput");
-    if (input) {
-      input.click();
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const dataUrl = reader.result as string;
+                callback(dataUrl);
+              };
+              reader.readAsDataURL(blob);
+            }
+          }, "image/png");
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    console.log("🚀 ~ handleImageChange ~ file:", file)
+    if (file) {
+      resizeImage(file, (resizedDataUrl) => {
+        setLogo(resizedDataUrl);
+        validation.setFieldValue("image", resizedDataUrl);
+      });
     }
   };
 
+  const handleRemoveImage = () => {
+    setLogo(null);
+    validation.setFieldValue('image', '');
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <div className="container mx-auto">
@@ -125,9 +147,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           <CardDescription>Update your profile here.</CardDescription>
         </CardHeader>
         <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
-          <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
+          <Avatar
+            ref={qrRef}
+            className="flex flex-col w-[150px] h-[150px] justify-center items-center"
+          >
             <AvatarImage
-              src={validation.values.image}
+              id="qr-code-svg"
+              src={logo ? logo.toString() : userData.image}
               alt="User Image"
             />
             <AvatarFallback className="text-[3rem]">
@@ -143,9 +169,24 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             onChange={handleImageChange}
           />
         </label>
-        <Button onClick={handleBrowseClick} className="mt-6">
-          Browse
-        </Button>
+        <div className="flex items-center space-x-4 mt-4">
+          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary">
+            Browse
+          </label>
+          <input
+            type="file"
+            id="logoType"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+          />
+          {logo && (
+            <Button onClick={handleRemoveImage} className="bg-red-500">
+              Remove Logo
+            </Button>
+          )}
+        </div>
         <CardContent className="mt-10">
           <form
             onSubmit={(e) => {
@@ -161,7 +202,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               <Input
                 name="firstName"
                 placeholder="First Name"
-                value={validation.values.firstName || userData.firstName}
+                value={validation.values.firstName}
                 onChange={validation.handleChange}
               />
             </div>
@@ -172,7 +213,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               <Input
                 name="lastName"
                 placeholder="Last Name"
-                value={validation.values.lastName || userData.lastName}
+                value={validation.values.lastName}
                 onChange={validation.handleChange}
               />
             </div>
@@ -184,7 +225,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 type="email"
                 name="email"
                 placeholder="Email"
-                value={validation.values.email || userData.email}
+                value={validation.values.email}
                 onChange={validation.handleChange}
               />
             </div>
@@ -216,3 +257,5 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     </div>
   );
 };
+            console.log("🚀 ~ EditProfileForm ~ AvatarImage:", AvatarImage)
+            console.log("🚀 ~ EditProfileForm ~ AvatarImage:", AvatarImage)
