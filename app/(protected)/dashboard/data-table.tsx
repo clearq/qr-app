@@ -43,7 +43,7 @@ export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetc
   const router = useRouter();
 
   const handleUrl = () => {
-    router.push("/");
+    router.push("/qr");
   };
 
   if (!isMounted) return null;

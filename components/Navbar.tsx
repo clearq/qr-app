@@ -16,70 +16,30 @@ import {
 import Image from "next/image";
 import logoImage from "../public/image/clearqr2.svg";
 import { ExtendedUser } from "@/next-auth";
+import Pages from "./Pages";
+import { useRouter } from "next/navigation";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./Dropdown";
 
 interface Props {
   user?: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
-console.log("🚀 ~ Navbar ~ userData:", userData)
-
-  // const validation = useFormik({
-  //   initialValues: {
-  //     email: userData?.email,
-  //     firstName: userData?.firstName,
-  //     lastName: userData?.lastName,
-  //     phone: userData?.phone || "",
-  //     company: userData?.company || "",
-  //     image: userData?.image || undefined,
-  //   },
-  //   validationSchema: yup.object({
-  //     email: yup.string().email().required("Email is required"),
-  //     firstName: yup.string().required("First name is required"),
-  //     lastName: yup.string().required("Last name is required"),
-  //     phone: yup.string().nullable(),
-  //     company: yup.string().nullable(),
-  //     image: yup.string().nullable(),
-  //   }),
-  //   onSubmit: (values) => {
-  //     console.log("Form values:", values);
-  //     fetch("/api/profile", {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(values),
-  //     })
-  //       .then(async (response) => {
-  //         if (response.status === 201) {
-  //           toast({
-  //             title: `Updated successfully!`,
-  //             description: `${new Date().toLocaleDateString()}`,
-  //           });
-  //         } else {
-  //           toast({
-  //             variant: "destructive",
-  //             title: `Error updating data`,
-  //             description: `${new Date().toLocaleDateString()}`,
-  //           });
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error:", error);
-  //         toast({
-  //           variant: "destructive",
-  //           title: `Something went wrong`,
-  //           description: `${new Date().toLocaleDateString()}`,
-  //         });
-  //       });
-  //   },
-  // });
+  console.log("🚀 ~ Navbar ~ userData:", userData);
 
   const handleSignOut = () => {
     signOut();
   };
 
-  
+  const router = useRouter();
+
+  const handleUrl = () => {
+    router.push("/qr");
+  };
+
+  const handleVcard = () => {
+    router.push("/vcard");
+  };
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +49,7 @@ console.log("🚀 ~ Navbar ~ userData:", userData)
             <Image
               alt="logo-image "
               src={logoImage}
-              className="cursor-pointer w-[80%] text-base sm:text-lg"
+              className="cursor-pointer w-[80%] text-base justify-start items-start sm:text-lg"
             />
           </Link>
           {!userData ? (
@@ -105,11 +65,33 @@ console.log("🚀 ~ Navbar ~ userData:", userData)
             </>
           ) : (
             <>
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>
-                      <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
+              <div className="flex">
+                <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 max-w-md sm:w-[200px]">
+                  <Button
+                    onClick={handleUrl}
+                    variant="outline"
+                    className="hover:bg-gray-800 hover:text-white"
+                  >
+                    URL
+                  </Button>
+                  <Button
+                    onClick={handleVcard}
+                    variant="outline"
+                    className="hover:bg-gray-800 hover:text-white"
+                  >
+                    Vcard
+                  </Button>
+                </div>
+              </div>
+
+              <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full"
+              >
+                <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
                         <AvatarImage
                           src={userData?.image || ""}
                           alt="User Image"
@@ -119,55 +101,28 @@ console.log("🚀 ~ Navbar ~ userData:", userData)
                           {userData?.lastName ? userData?.lastName[0] : ""}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="hidden sm:inline text-sm sm:text-base">
-                        {userData?.email}
-                      </span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid gap-3 p-6 sm:w-[300px] lg:w-[400px] lg:grid-cols-[.75fr_1fr]">
-                        <li className="row-span-3">
-                          <Link href="/profile">
-                            <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
-                                Profile
-                                <p className="text-sm leading-tight text-muted-foreground">
-                                  You can view your profile and edit the
-                                  information here.
-                                </p>
-                              </a>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                        <li className="row-span-3">
-                          <Link href="/dashboard">
-                            <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
-                                URL
-                                <p className="text-sm leading-tight text-muted-foreground">
-                                  View your QR-code here.
-                                </p>
-                              </a>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                        <li className="row-span-3">
-                          <Link href="/dashboardVcard">
-                            <NavigationMenuLink asChild>
-                              <a className="flex h-full w-full select-none flex-col justify-start rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md">
-                                VCard
-                                <p className="text-sm leading-tight text-muted-foreground">
-                                  View your VCard here.
-                                </p>
-                              </a>
-                            </NavigationMenuLink>
-                          </Link>
-                        </li>
-                      </ul>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-              <li>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link href={'/profile'}>
+              
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              </Link>
+              <DropdownMenuSeparator />
+
+              <Link href={'/dashboard'}>
+              <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
+              </Link>
+
+              <Link href={'/dashboardVcard'}>
+              
+              <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+              {/* <li>
                 <Button
                   onClick={handleSignOut}
                   className="p-2 text-sm sm:text-base hover:text-white px-3 sm:px-5 hover:bg-blue-500"
@@ -176,7 +131,7 @@ console.log("🚀 ~ Navbar ~ userData:", userData)
                   <span className="inline sm:hidden">↩</span>
                   <span className="hidden sm:inline">Logout</span>
                 </Button>
-              </li>
+              </li> */}
             </>
           )}
           <div>

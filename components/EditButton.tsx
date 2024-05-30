@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,12 +22,15 @@ interface EditButtonProps {
 }
 
 export const EditButton = ({ qrData: qr }: EditButtonProps) => {
+
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+
   const validation = useFormik({
     initialValues: {
       id: qr.id,
       url: qr.url || "",
       tag: qr.tag || "",
-      logoType: "",
+      logoType: qr.logoType || "",
     },
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
@@ -106,9 +109,14 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
             </div>
             <QRCode
               className="flex flex-col left-12 justify-center items-center mt-5 relative"
-              id="qr-code-svg"
-              value={validation.values.url}
+              value={validation.values.url ?? validation.values.logoType}
               size={400}
+              imageSettings={{
+                src: logo ? logo.toString() : qr.logoType,
+                height: 55,
+                width: 55,
+                excavate: true,
+              }}
               renderAs="svg"
             />
             <div className="mt-5 flex w-[50%] flex-row gap-4 items-center justify-center sm:w-auto">

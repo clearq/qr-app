@@ -13,9 +13,10 @@ export const publicRoute = [
  * An array of routes that are used for auth users
  * @type {string[]}
  */
-export const privateRoute = [
+export const privateRoute: string[] = [
     "/profile",
     "/vcard",
     "/dashboard",
     "/dashboardVcard",
+    "/qr"
 ]

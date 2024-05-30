@@ -10,6 +10,8 @@ import { useToast } from './ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from './ui/breadcrumb'
+import Pages from './Pages'
 
 export const Vcard = () => {
     const { toast } = useToast();
@@ -209,8 +211,16 @@ END:VCARD
         }
       };
   return (
-    <>
-    <Card className="mt-10">
+    <div className="flex w-full flex-col">
+    <Card>
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+    <Breadcrumb className="hidden md:flex">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+              <Pages/>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
           <CardHeader>
             <CardTitle>VCard</CardTitle>
             <CardDescription>Create your VCard here</CardDescription>
@@ -503,7 +513,8 @@ END:VCARD
             </form>
           </CardContent>
           <CardFooter className="flex justify-between"></CardFooter>
+          </div>
         </Card>
-    </>
+    </div>
   )
 }

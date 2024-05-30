@@ -9,7 +9,6 @@ export default function Home() {
   return (
     <div className="flex justify-center items-center">
       <div className="max-w-xl w-full">
-        <Pages />
         <Vcard/>
       </div>
     </div>
