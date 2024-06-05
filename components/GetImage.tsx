@@ -3,37 +3,34 @@ import React, { useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useFormik } from "formik";
-import { Customer } from "@prisma/client";
+import { Customer, VCard } from "@prisma/client";
 import * as yup from "yup";
 import { toast } from "./ui/use-toast";
 
 interface Props {
-  user: Customer;
+  vData: VCard;
 }
 
-export const ImageUpload = ({ user: userData }: Props) => {
+export const GetImage = ({ vData: vcard }: Props) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validation = useFormik({
     initialValues: {
-        firstName: userData?.firstName,
-        lastName: userData?.lastName,
-      image: userData?.image || "",
+        firstName: vcard?.firstName,
+        lastName: vcard?.lastName,
+      logoType: vcard?.logoType || "",
     },
     validationSchema: yup.object({
-      email: yup.string().email().required("Email is required"),
       firstName: yup.string().required("First name is required"),
       lastName: yup.string().required("Last name is required"),
-      phone: yup.string().nullable(),
-      company: yup.string().nullable(),
-      image: yup.string().nullable(),
+      logoType: yup.string().nullable(),
     }),
     onSubmit: (values) => {
       console.log("Form values:", values);
-      fetch("/api/profile", {
-        method: "POST",
+      fetch("/api/saveVcard", {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
@@ -70,7 +67,7 @@ export const ImageUpload = ({ user: userData }: Props) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const maxSize = 4000;
+        const maxSize = 40;
         let width = img.width;
         let height = img.height;
 
@@ -111,51 +108,30 @@ export const ImageUpload = ({ user: userData }: Props) => {
     reader.readAsDataURL(file);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      resizeImage(file, (resizedDataUrl) => {
-        setLogo(resizedDataUrl);
-        validation.setFieldValue("logoType", resizedDataUrl);
-      });
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setLogo(null);
-    validation.setFieldValue("logoType", "");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   return (
     <>
-      <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
-        <Avatar
-          ref={qrRef}
-          className="flex flex-col w-[150px] h-[150px] justify-center items-center"
-        >
-          <AvatarImage
-            id="qr-code-svg"
-            //@ts-ignore
-            src={logo ? logo.toString() : ''}
-            alt="User Image"
-          />
-          {/* <AvatarFallback className="text-[3rem]">
-            {userData.firstName[0]}
-            {userData.lastName[0]}
-          </AvatarFallback> */}
-        </Avatar>
-        <input
-          id="imageInput"
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageChange}
-        />
-      </label>
-      <div className="flex items-center space-x-4 mt-4">
+      <label
+                htmlFor="imageInput"
+                className="flex justify-center items-center"
+              >
+                <div className="relative w-32 h-32">
+                  <Avatar className="absolute inset-0 flex items-center justify-center w-full h-full">
+                    <AvatarImage
+                      src={validation.values.logoType}
+                      alt="User Image"
+                    />
+                    <AvatarFallback>
+                      {validation.values.firstName
+                        ? validation.values.firstName[0]
+                        : ""}
+                      {validation.values.lastName
+                        ? validation.values.lastName[0]
+                        : ""}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </label>
+      {/* <div className="flex items-center space-x-4 mt-4">
         <label
           htmlFor="logoType"
           className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
@@ -175,7 +151,7 @@ export const ImageUpload = ({ user: userData }: Props) => {
             Remove Logo
           </Button>
         )}
-      </div>
+      </div> */}
     </>
   );
 };

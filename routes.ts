@@ -18,5 +18,6 @@ export const privateRoute: string[] = [
     "/vcard",
     "/dashboard",
     "/dashboardVcard",
-    "/qr"
+    "/qr",
+    "/all"
 ]

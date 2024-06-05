@@ -160,3 +160,8 @@ a:link {
   text-align: center;
   padding: 20px;
 }
+
+.avatarImage {
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}

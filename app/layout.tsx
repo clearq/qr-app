@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: Props) {
             </div>
             <CardFooter className="flex justify-center bottom-auto align-bottom items-center text-center mt-10">
               Powered by{" "}
-              <span className="ml-1 hover:text-teal-400 cursor-pointer transition-colors duration-300 font-semibold">
+              <span className="ml-1 hover:text-cyan-600 cursor-pointer transition-colors duration-300 font-semibold">
                 <a
                   href="https://clearq.se"
                   target="_blank"

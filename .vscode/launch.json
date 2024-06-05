@@ -5,29 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "npm run dev",
-            "name": "Run npm dev",
+            "name": "Server",
+            "type": "node-terminal",
             "request": "launch",
-            "type": "node-terminal"
-        },
-        {
-            "name": "Launch Chrome",
-            "request": "launch",
+            "command": "npm run dev"
+          },
+          {
+            "name": "Client",
             "type": "chrome",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}"
-            ],
-            "name": "Launch Extension",
-            "outFiles": [
-                "${workspaceFolder}/out/**/*.js"
-            ],
-            "preLaunchTask": "npm",
             "request": "launch",
-            "type": "extensionHost"
-        }
+            "url": "http://localhost:3000"
+          }
     ]
 }

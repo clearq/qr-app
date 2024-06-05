@@ -37,21 +37,21 @@ export const Navbar = ({ user: userData }: Props) => {
     router.push("/qr");
   };
 
-  const handleVcard = () => {
-    router.push("/vcard");
+  const handleAll = () => {
+    router.push("/all");
   };
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <ul className="flex flex-wrap justify-between items-center m-4 sm:m-10">
-        <div className="flex items-center gap-4 sm:gap-6">
+      <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
           <Link href="/">
             <Image
-              alt="logo-image "
+              alt="logo-image"
               src={logoImage}
-              className="cursor-pointer w-[80%] text-base justify-start items-start sm:text-lg"
+              className=" w-24 h-auto sm:w-52"
             />
           </Link>
+        <div className="flex items-center gap-4 sm:gap-6">
           {!userData ? (
             <>
               <Link href="/login">
@@ -65,73 +65,50 @@ export const Navbar = ({ user: userData }: Props) => {
             </>
           ) : (
             <>
-              <div className="flex">
-                <div className="grid grid-cols-2 sm:grid-cols-2 gap-3 max-w-md sm:w-[200px]">
-                  <Button
-                    onClick={handleUrl}
-                    variant="outline"
-                    className="hover:bg-gray-800 hover:text-white"
-                  >
-                    URL
-                  </Button>
-                  <Button
-                    onClick={handleVcard}
-                    variant="outline"
-                    className="hover:bg-gray-800 hover:text-white"
-                  >
-                    Vcard
-                  </Button>
-                </div>
-              </div>
-
-              <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-              >
-                <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
-                        <AvatarImage
-                          src={userData?.image || ""}
-                          alt="User Image"
-                        />
-                        <AvatarFallback>
-                          {userData?.firstName ? userData?.firstName[0] : ""}
-                          {userData?.lastName ? userData?.lastName[0] : ""}
-                        </AvatarFallback>
-                      </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <Link href={'/profile'}>
-              
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              </Link>
-              <DropdownMenuSeparator />
-
-              <Link href={'/dashboard'}>
-              <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
-              </Link>
-
-              <Link href={'/dashboardVcard'}>
-              
-              <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-              {/* <li>
+              <li>
                 <Button
-                  onClick={handleSignOut}
-                  className="p-2 text-sm sm:text-base hover:text-white px-3 sm:px-5 hover:bg-blue-500"
-                  variant="outline"
+                  onClick={handleAll}
+                  className="p-2 text-sm sm:text-base px-3 sm:px-5"
+                  variant="link"
                 >
                   <span className="inline sm:hidden">↩</span>
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden sm:inline">Overview</span>
                 </Button>
-              </li> */}
+              </li>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-full"
+                  >
+                    <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
+                      <AvatarImage
+                        src={userData?.image || ""}
+                        alt="User Image"
+                      />
+                      <AvatarFallback>
+                        {userData?.firstName ? userData?.firstName[0] : ""}
+                        {userData?.lastName ? userData?.lastName[0] : ""}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <Link href={'/profile'}>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <Link href={'/dashboard'}>
+                    <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
+                  </Link>
+                  <Link href={'/dashboardVcard'}>
+                    <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           )}
           <div>

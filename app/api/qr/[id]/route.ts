@@ -21,11 +21,3 @@ export async function DELETE(req: NextRequest, context: { params: Params }) {
 
    return NextResponse.json("Removed was successfully!", {status: 200})
 }
-
-
-export async function PUT (req: NextRequest, context: { params: Params }){
-    const id = context.params.id;
-
-
-
-}
