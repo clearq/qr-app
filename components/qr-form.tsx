@@ -8,8 +8,10 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { toast } from '@/components/ui/use-toast';
 import { Label } from '@/components/ui/label';
+import { Qr } from '@prisma/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from './ui/breadcrumb';
+import Pages from './Pages';
 
 export const QrForm = () => {
     const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
@@ -28,8 +30,27 @@ export const QrForm = () => {
             logoType: yup.string().nullable(),
         }),
         onSubmit: async (values) => {
-            const redirectUrl = `https://clearq.se?target=${encodeURIComponent(values.url)}`;
-            window.location.href = redirectUrl;
+            const response = await fetch('/api/qr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            });
+            console.log('Response status:', response.status); // Debugging line
+            if (response.status === 201) {
+                toast({
+                    title: 'Created successfully!',
+                    description: `${new Date().toLocaleDateString()}`,
+                });
+                validation.resetForm();
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Something went wrong',
+                    description: `${new Date().toLocaleDateString()}`,
+                });
+            }
         },
     });
 
@@ -43,6 +64,7 @@ export const QrForm = () => {
                 let width = img.width;
                 let height = img.height;
 
+                // Calculate the new dimensions
                 if (width > height) {
                     if (width > maxSize) {
                         height *= maxSize / width;
@@ -63,6 +85,7 @@ export const QrForm = () => {
                     ctx.drawImage(img, 0, 0, width, height);
                     canvas.toBlob((blob) => {
                         if (blob) {
+                            // Convert the resized image blob to data URL
                             const reader = new FileReader();
                             reader.onloadend = () => {
                                 const dataUrl = reader.result as string;
@@ -190,6 +213,7 @@ export const QrForm = () => {
                                 value={validation.values.url}
                                 size={400}
                                 renderAs="canvas"
+                                // includeMargin={true}
                                 imageSettings={{
                                     src: logo ? logo.toString() : '',
                                     height: 55,
