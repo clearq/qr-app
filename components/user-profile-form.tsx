@@ -56,6 +56,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               title: `Updated successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
+            window.location.reload();
           } else {
             toast({
               variant: "destructive",
@@ -153,6 +154,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           >
             <AvatarImage
               id="qr-code-svg"
+              //@ts-ignore
               src={logo ? logo.toString() : userData.image}
               alt="User Image"
             />

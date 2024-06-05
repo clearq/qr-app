@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,8 +22,8 @@ interface EditButtonProps {
 }
 
 export const EditButton = ({ qrData: qr }: EditButtonProps) => {
-
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(qr.logoType || null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validation = useFormik({
     initialValues: {
@@ -35,7 +35,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
       tag: yup.string().nullable(),
-      logoType: yup.string().url().uuid(),
+      logoType: yup.string().nullable(),
     }),
     onSubmit: (values) => {
       fetch("/api/qr", {
@@ -43,11 +43,11 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, logoType: logo }),
       }).then((response) => {
         if (response.status === 201) {
           toast({
-            title: `Created successfully!`,
+            title: `Updated successfully!`,
             description: `${new Date().toLocaleDateString()}`,
           });
           validation.resetForm();
@@ -62,6 +62,70 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
       });
     },
   });
+  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 40;
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate the new dimensions
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              // Convert the resized image blob to data URL
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const dataUrl = reader.result as string;
+                callback(dataUrl);
+              };
+              reader.readAsDataURL(blob);
+            }
+          }, "image/png");
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      resizeImage(file, (resizedDataUrl) => {
+        setLogo(resizedDataUrl);
+        validation.setFieldValue("logoType", resizedDataUrl);
+      });
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogo(null);
+    validation.setFieldValue('logoType', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <Dialog>
@@ -96,7 +160,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="username" className="text-right">
+              <Label htmlFor="tag" className="text-right">
                 Label
               </Label>
               <Input
@@ -107,12 +171,33 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
                 onBlur={validation.handleBlur}
               />
             </div>
+            <div className="flex flex-col space-x-4">
+              {logo ? (
+                <Button onClick={handleRemoveLogo} className=" bg-red-500">
+                  Remove Logo
+                </Button>
+              ) : (
+                <>
+                  <label htmlFor="logoType" className="text-[15px] px-5 py-2 text-center text-secondary cursor-pointer border rounded-[6px] bg-primary">
+                    Browse
+                  </label>
+                  <input
+                    type="file"
+                    id="logoType"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleLogoUpload}
+                  />
+                </>
+              )}
+            </div>
             <QRCode
               className="flex flex-col left-12 justify-center items-center mt-5 relative"
               value={validation.values.url ?? validation.values.logoType}
               size={400}
               imageSettings={{
-                src: logo ? logo.toString() : qr.logoType,
+                src: logo ? logo.toString() : '',
                 height: 55,
                 width: 55,
                 excavate: true,

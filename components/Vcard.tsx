@@ -1,23 +1,27 @@
-import React, { ChangeEvent, useState } from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Button } from './ui/button'
-import { Label } from './ui/label'
-import { Input } from './ui/input'
-import { DropdownMenu } from './ui/dropdown-menu'
-import { DropdownMenuContent, DropdownMenuTrigger } from './Dropdown'
-import { useToast } from './ui/use-toast'
-import { useRouter } from 'next/navigation'
-import { useFormik } from 'formik'
-import * as yup from 'yup'
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from './ui/breadcrumb'
-import Pages from './Pages'
+import React, { ChangeEvent, useRef, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "./ui/breadcrumb";
 
 export const Vcard = () => {
-    const { toast } = useToast();
+  const { toast } = useToast();
   const router = useRouter();
-  const [logo, setLogo] = useState<string | null>(null);
-
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validation = useFormik({
     initialValues: {
@@ -68,7 +72,7 @@ export const Vcard = () => {
           const data = await response.json();
           if (response.status === 201) {
             toast({
-              title: `Created sucessfully!`,
+              title: `Created successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
 
@@ -93,12 +97,7 @@ export const Vcard = () => {
     },
   });
 
-  const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogo(URL.createObjectURL(file));
-    }
-  };
+
 
   const generateVCardString = (values: any) => {
     return `
@@ -134,90 +133,79 @@ END:VCARD
     URL.revokeObjectURL(url);
   };
 
-  const handleDownload = () => {
-    const svg = document.getElementById("vcard-svg");
-    if (!svg) {
-      return;
-    }
+  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 40;
+        let width = img.width;
+        let height = img.height;
 
-    const svgData = new XMLSerializer().serializeToString(svg);
+        // Calculate the new dimensions
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
 
-    const canvas = document.createElement("canvas");
-    const svgSize = svg.getBoundingClientRect();
-    canvas.width = svgSize.width;
-    canvas.height = svgSize.height;
+        canvas.width = width;
+        canvas.height = height;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return; // Check if context is null
-
-    const img = document.createElement("img");
-
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      const link = document.createElement("a");
-      link.download = "vcard-svg.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    };
-
-    img.src = "data:image/svg+xml;base64," + btoa(svgData);
-  };
-
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const WIDTH = 300;
-      const quality = 0.8; // Adjust quality as needed
-
-      let imgObj = e.target.files[0];
-      let reader = new FileReader();
-      reader.readAsDataURL(imgObj);
-
-      reader.onload = (e) => {
-        let imageUrl = e.target?.result;
-        let image = document.createElement("img");
-        //@ts-ignore
-        image.src = imageUrl;
-
-        image.onload = (e) => {
-          let canvas = document.createElement("canvas");
-          //@ts-ignore
-          let ratio = WIDTH / e.target.width;
-          canvas.width = WIDTH;
-          //@ts-ignore
-          canvas.height = e.target.height * ratio;
-          const context = canvas.getContext("2d");
-          //@ts-ignore
-          context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-          canvas.toBlob(
-            (blob) => {
-              //@ts-ignore
-              const new_image = URL.createObjectURL(blob);
-              // Use new_image for your purposes (e.g., saving or displaying)
-              validation.setFieldValue("image", new_image);
-            },
-            "image/jpeg",
-            quality
-          );
-        };
-      };
-    }
-  };
-
-    const handleBrowseClick = () => {
-        const input = document.getElementById("imageInput");
-        if (input) {
-          input.click();
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              // Convert the resized image blob to data URL
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const dataUrl = reader.result as string;
+                callback(dataUrl);
+              };
+              reader.readAsDataURL(blob);
+            }
+          }, "image/png");
         }
       };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      resizeImage(file, (resizedDataUrl) => {
+        setLogo(resizedDataUrl);
+        validation.setFieldValue("logoType", resizedDataUrl);
+      });
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogo(null);
+    validation.setFieldValue("logoType", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="flex w-full flex-col">
-    <Card>
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-    <Breadcrumb className="hidden md:flex">
+      <Card>
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+          <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
               <BreadcrumbItem>
-              <Pages/>
+                {/* <Pages /> */}
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -228,24 +216,39 @@ END:VCARD
           <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
             <div className="flex flex-col justify-center items-center">
               <Avatar className="w-32 h-32">
-                <AvatarImage src={validation.values.image} alt="User Image" />
+                <AvatarImage
+                  id="qr-code-svg"
+                  src={logo ? logo.toString() : ''}
+                  alt="User Image"
+                  style={{ objectFit: 'contain' }}
+                />
                 <AvatarFallback className="text-[3rem]">
                   {validation.values.firstName[0]}
                   {validation.values.lastName[0]}
                 </AvatarFallback>
               </Avatar>
-          <Button onClick={handleBrowseClick} className="mt-6">
-                  Upload Image 📄
-                </Button>
+              <div className="flex items-center space-x-4">
+                <label
+                  htmlFor="logoType"
+                  className="text-[15px] px-5 mt-4 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
+                >
+                  Browse
+                </label>
+                <input
+                  type="file"
+                  id="logoType"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInputRef}
+                  onChange={handleLogoUpload}
+                />
+                {logo && (
+                  <Button onClick={handleRemoveLogo} className="bg-red-500">
+                    Remove Logo
+                  </Button>
+                )}
+              </div>
             </div>
-            <input
-              id="imageInput"
-              name="image"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleImageChange}
-            />
           </label>
           <CardContent>
             <form onSubmit={validation.handleSubmit} className="space-y-5 mt-5">
@@ -264,9 +267,9 @@ END:VCARD
                   />
                   {validation.touched.firstName &&
                   validation.errors.firstName ? (
-                    <div className="text-xs text-red-500">
+                    <p className="text-xs text-red-500">
                       {validation.errors.firstName}
-                    </div>
+                    </p>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -282,33 +285,14 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.lastName && validation.errors.lastName ? (
-                    <div className="text-xs text-red-500">
+                    <p className="text-xs text-red-500">
                       {validation.errors.lastName}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="customerEmail">
-                    Email <span className="text-xs text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="email"
-                    name="customerEmail"
-                    placeholder="example@gmail.com"
-                    value={validation.values.customerEmail}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.customerEmail &&
-                  validation.errors.customerEmail ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.customerEmail}
-                    </div>
+                    </p>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="tag">
-                    Label <span className="text-xs text-red-500">*</span>
+                    Tag <span className="text-xs text-red-500">*</span>
                   </Label>
                   <Input
                     type="text"
@@ -319,42 +303,9 @@ END:VCARD
                     onBlur={validation.handleBlur}
                   />
                   {validation.touched.tag && validation.errors.tag ? (
-                    <div className="text-xs text-red-500">
+                    <p className="text-xs text-red-500">
                       {validation.errors.tag}
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    type="text"
-                    name="phone"
-                    placeholder="Tel."
-                    value={validation.values.phone}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.phone && validation.errors.phone ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.phone}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="company">Company</Label>
-                  <Input
-                    type="text"
-                    name="company"
-                    placeholder="Company"
-                    value={validation.values.company}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.company && validation.errors.company ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.company}
-                    </div>
+                    </p>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
@@ -367,154 +318,139 @@ END:VCARD
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.title && validation.errors.title ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.title}
-                    </div>
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="customerEmail">
+                    Email address{" "}
+                    <span className="text-xs text-red-500">*</span>
+                  </Label>
+                  <Input
+                    type="email"
+                    name="customerEmail"
+                    placeholder="Email address"
+                    value={validation.values.customerEmail}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                  {validation.touched.customerEmail &&
+                  validation.errors.customerEmail ? (
+                    <p className="text-xs text-red-500">
+                      {validation.errors.customerEmail}
+                    </p>
                   ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="url">Website</Label>
+                  <Label htmlFor="phone">Phone number</Label>
+                  <Input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone number"
+                    value={validation.values.phone}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="company">Company</Label>
+                  <Input
+                    type="text"
+                    name="company"
+                    placeholder="Company"
+                    value={validation.values.company}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="url">URL</Label>
                   <Input
                     type="url"
                     name="url"
-                    placeholder="Website"
+                    placeholder="https://example.com"
                     value={validation.values.url}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.url && validation.errors.url ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.url}
-                    </div>
-                  ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="linkedIn">LinkedIn</Label>
                   <Input
-                    type="url"
+                    type="text"
                     name="linkedIn"
-                    placeholder="https://"
+                    placeholder="LinkedIn"
                     value={validation.values.linkedIn}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.linkedIn && validation.errors.linkedIn ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.linkedIn}
-                    </div>
-                  ) : null}
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="facebook">Facebook</Label>
+                  <Label htmlFor="x">Twitter</Label>
                   <Input
-                    type="url"
-                    name="facebook"
-                    placeholder="https://"
-                    value={validation.values.facebook}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.facebook && validation.errors.facebook ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.facebook}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <Input
-                    type="url"
-                    name="instagram"
-                    placeholder="https://"
-                    value={validation.values.instagram}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.instagram &&
-                  validation.errors.instagram ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.instagram}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tiktok">Tiktok</Label>
-                  <Input
-                    type="url"
-                    name="tiktok"
-                    placeholder="https://"
-                    value={validation.values.tiktok}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.tiktok && validation.errors.tiktok ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.tiktok}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="snapchat">Snapchat</Label>
-                  <Input
-                    type="url"
-                    name="snapchat"
-                    placeholder="https://"
-                    value={validation.values.snapchat}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.snapchat && validation.errors.snapchat ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.snapchat}
-                    </div>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="x">X</Label>
-                  <Input
-                    type="url"
+                    type="text"
                     name="x"
-                    placeholder="https://"
+                    placeholder="Twitter"
                     value={validation.values.x}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                   />
-                  {validation.touched.x && validation.errors.x ? (
-                    <div className="text-xs text-red-500">
-                      {validation.errors.x}
-                    </div>
-                  ) : null}
                 </div>
-               
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="facebook">Facebook</Label>
+                  <Input
+                    type="text"
+                    name="facebook"
+                    placeholder="Facebook"
+                    value={validation.values.facebook}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="instagram">Instagram</Label>
+                  <Input
+                    type="text"
+                    name="instagram"
+                    placeholder="Instagram"
+                    value={validation.values.instagram}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="snapchat">Snapchat</Label>
+                  <Input
+                    type="text"
+                    name="snapchat"
+                    placeholder="Snapchat"
+                    value={validation.values.snapchat}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="tiktok">TikTok</Label>
+                  <Input
+                    type="text"
+                    name="tiktok"
+                    placeholder="TikTok"
+                    value={validation.values.tiktok}
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                  />
+                </div>
               </div>
-              <div className="flex flex-row mt-5">
-                <Button className="flex mr-3" type="submit">
-                  Create
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="">Download</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="flex flex-col mt-2"
-                    align="end"
-                  >
-                    <Button
-                      className="mb-2"
-                      onClick={() => handleDownloadVcard()}
-                    >
-                      Download vCard
-                    </Button>
-                    <Button onClick={handleDownload}>VCard PNG</Button>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+              <Button type="submit" className="bg-primary text-white mt-4">
+                Save
+              </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-between"></CardFooter>
-          </div>
-        </Card>
+          <CardFooter className="flex justify-end">
+            <Button onClick={handleDownloadVcard} className="bg-primary text-white">
+              Download vCard
+            </Button>
+          </CardFooter>
+        </div>
+      </Card>
     </div>
-  )
-}
+  );
+};

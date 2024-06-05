@@ -1,11 +1,14 @@
+import { auth } from "@/auth";
 import { VcardSingelComponent } from "@/components/vcard-singel-component";
 
 
 
-const VCardDetails = () => {
+const VCardDetails = async () => {
+  const session = await auth()
   return (
     <div>
-    <VcardSingelComponent />
+      
+    <VcardSingelComponent user={session?.user} />
     </div>
   );
 };

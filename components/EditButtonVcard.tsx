@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,10 @@ interface EditButtonProps {
 
 const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+  const qrRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   const validation = useFormik({
     initialValues: {
@@ -36,7 +40,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
       company: vData?.company || "",
       title: vData?.title || "",
       logoType: vData?.logoType || "",
-      image: vData?.image || undefined,
+      image: vData.image,
       linkedIn: vData?.linkedIn || "",
       x: vData?.x || "",
       facebook: vData?.facebook || "",
@@ -97,39 +101,67 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     },
   });
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const WIDTH = 300;
+  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const maxSize = 40;
+        let width = img.width;
+        let height = img.height;
 
-      let imgObj = e.target.files[0];
-      let reader = new FileReader();
-      reader.readAsDataURL(imgObj);
+        if (width > height) {
+          if (width > maxSize) {
+            height *= maxSize / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width *= maxSize / height;
+            height = maxSize;
+          }
+        }
 
-      reader.onload = (e) => {
-        let imageUrl = e.target?.result;
-        let image = document.createElement("img");
-        //@ts-ignore
-        image.src = imageUrl;
+        canvas.width = width;
+        canvas.height = height;
 
-        image.onload = (e) => {
-          let canvas = document.createElement("canvas");
-          //@ts-ignore
-          let ratio = WIDTH / e.target.width;
-          canvas.width = WIDTH;
-          //@ts-ignore
-          canvas.height = e.target.height * ratio;
-          const context = canvas.getContext("2d");
-          //@ts-ignore
-          context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
           canvas.toBlob((blob) => {
-            //@ts-ignore
-            const new_image = URL.createObjectURL(blob);
-            // Use new_image for your purposes (e.g., saving or displaying)
-            validation.setFieldValue("image", new_image);
-          }, "image/jpeg");
-        };
+            if (blob) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const dataUrl = reader.result as string;
+                callback(dataUrl);
+              };
+              reader.readAsDataURL(blob);
+            }
+          }, "image/png");
+        }
       };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    console.log("🚀 ~ handleImageChange ~ file:", file)
+    if (file) {
+      resizeImage(file, (resizedDataUrl) => {
+        setLogo(resizedDataUrl);
+        validation.setFieldValue("image", resizedDataUrl);
+      });
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setLogo(null);
+    validation.setFieldValue('image', '');
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
     }
   };
 
@@ -153,7 +185,8 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 <div className="relative w-32 h-32">
                   <Avatar className="absolute inset-0 flex items-center justify-center w-full h-full">
                     <AvatarImage
-                      src={validation.values.image}
+                    //@ts-ignore
+                      src={logo ? logo.toString() : vData.logoType}
                       alt="User Image"
                     />
                     <AvatarFallback>
@@ -174,6 +207,24 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   />
                 </div>
               </label>
+              <div className="flex items-center space-x-4 mt-4">
+          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 justify-center items-center ml-[40%] mt-3 text-secondary cursor-pointer border rounded-[6px] bg-primary">
+            Browse
+          </label>
+          <input
+            type="file"
+            id="logoType"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+          />
+          {logo && (
+            <Button onClick={handleRemoveImage} className="bg-red-500">
+              Remove Logo
+            </Button>
+          )}
+        </div>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
               <div className="flex flex-col space-y-1.5">
