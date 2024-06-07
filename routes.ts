@@ -6,18 +6,19 @@ export const publicRoute = [
     "/",
     "/login",
     "/register",
-    "/cookiespolicy"
+    "/cookiespolicy",
 ]
 
 /**
  * An array of routes that are used for auth users
  * @type {string[]}
- */
+*/
 export const privateRoute: string[] = [
     "/profile",
     "/vcard",
     "/dashboard",
     "/dashboardVcard",
     "/qr",
-    "/all"
+    "/all",
+    "/redirect"
 ]

@@ -44,13 +44,15 @@ export const Navbar = ({ user: userData }: Props) => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
+        <div className="mr-auto"> {/* Add this div and the mr-auto class */}
           <Link href="/">
             <Image
               alt="logo-image"
               src={logoImage}
-              className=" w-24 h-auto sm:w-52"
+              className="w-24 h-auto sm:w-52"
             />
           </Link>
+        </div>
         <div className="flex items-center gap-4 sm:gap-6">
           {!userData ? (
             <>

@@ -11,7 +11,7 @@ import CookieConsentBanner from "@/components/Cookies";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "QR- Generator",
+  title: "QR-Generator",
   description: "Powered by ClearQ",
 };
 

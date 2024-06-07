@@ -76,7 +76,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
       image: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values);
+
       fetch("/api/saveVcard", {
         method: "PUT",
         headers: {
@@ -110,6 +110,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   });
 
   const fetchData = useCallback(() => {
+    // put analyes action to increment the views number
     fetch(`/api/saveVcard/${id}`)
       .then((res) => res.json())
       .then((data) => {

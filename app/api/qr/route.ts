@@ -60,9 +60,9 @@ export async function POST(req: Request) {
       return NextResponse.json("Cannot create QR code", { status: 400 });
     }
 
-    // Return success response
+    // Return success response with QR code ID
     return NextResponse.json(
-      { success: "Created QR successfully" },
+      { success: "Created QR successfully", qrId: createQr },
       { status: 201 }
     );
   } catch (error) {
