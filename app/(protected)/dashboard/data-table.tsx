@@ -10,6 +10,7 @@ import QRCode from "qrcode.react";
 import { useFormik } from "formik";
 import * as yup from 'yup'
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -112,6 +113,14 @@ export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetc
                   </TableCell>
                   <TableCell>
                     <div className="m-3 flex flex-row space-x-7 justify-end items-end">
+                    <Button
+                        onClick={() =>
+                          router.replace(`qr/details?id=${qr.id}`)
+                        }
+                        variant="outline"
+                      >
+                        👁️‍🗨️
+                      </Button>
                       <EditButton qrData={qr} />
                       <DeleteButton id={qr.id} onDelete={handleDelete} />
                     </div>

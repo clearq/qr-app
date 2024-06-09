@@ -19,13 +19,12 @@ import * as yup from "yup";
 import { Progress } from "./ui/progress";
 import QRCode from "qrcode.react";
 import { useSession } from "next-auth/react";
-import { VCard } from "@prisma/client";
 import { GetImage } from "./GetImage";
 import { saveAs } from "file-saver";
 import { ExtendedUser } from "@/next-auth";
 
 interface Props {
-  user? : ExtendedUser
+  user?: ExtendedUser;
 }
 
 export const VcardSingelComponent = ({ user }: Props) => {
@@ -76,7 +75,6 @@ export const VcardSingelComponent = ({ user }: Props) => {
       image: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-
       fetch("/api/saveVcard", {
         method: "PUT",
         headers: {
@@ -111,6 +109,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
 
   const fetchData = useCallback(() => {
     // put analyes action to increment the views number
+
     fetch(`/api/saveVcard/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -154,33 +153,6 @@ X-SNAPCHAT:${values.snapchat ?? ""}
 X-TIKTOK:${values.tiktok ?? ""}
 END:VCARD
     `.trim();
-  };
-
-  const handleDownload = () => {
-    const svg = document.getElementById("qr-code-svg");
-    if (!svg) return; // Check if svg is null
-
-    const svgData = new XMLSerializer().serializeToString(svg);
-
-    const canvas = document.createElement("canvas");
-    const svgSize = svg.getBoundingClientRect();
-    canvas.width = svgSize.width;
-    canvas.height = svgSize.height;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return; // Check if context is null
-
-    const img = document.createElement("img");
-
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0);
-      const link = document.createElement("a");
-      link.download = "qr-code.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    };
-
-    img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
   const handleDownloadVcard = () => {
@@ -386,41 +358,40 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-          {user?.id === vcardData.customerId && 
-          
-          <Card className="flex flex-col items-center mt-6">
-            <CardHeader>
-              <CardTitle>QR Code</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div
-                ref={qrRef}
-                className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 mt-8 md:mt-0"
-              >
-                <QRCode
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcardData.id}`}
-                  size={600}
-                  renderAs="canvas"
-                  // includeMargin={true}
-                  imageSettings={{
-                    //@ts-ignore
-                    src: logo ? logo.toString() : vcardData.logoType,
-                    height: 55,
-                    width: 55,
-                    excavate: true,
-                  }}
-                  bgColor="rgba(0,0,0,0)"
-                  fgColor="#000000"
-                />
-                <div className="flex flex-row space-x-4 justify-center items-center mt-4">
-                  <Button onClick={() => downloadQRCode("png")} className="">
-                    Download PNG
-                  </Button>
+          {user?.id === vcardData.customerId && (
+            <Card className="flex flex-col items-center mt-6">
+              <CardHeader>
+                <CardTitle>QR Code</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div
+                  ref={qrRef}
+                  className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 mt-8 md:mt-0"
+                >
+                  <QRCode
+                    value={`https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`}
+                    size={600}
+                    renderAs="canvas"
+                    // includeMargin={true}
+                    imageSettings={{
+                      //@ts-ignore
+                      src: logo ? logo.toString() : vcardData.logoType,
+                      height: 55,
+                      width: 55,
+                      excavate: true,
+                    }}
+                    bgColor="rgba(0,0,0,0)"
+                    fgColor="#000000"
+                  />
+                  <div className="flex flex-row space-x-4 justify-center items-center mt-4">
+                    <Button onClick={() => downloadQRCode("png")} className="">
+                      Download PNG
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          }
+              </CardContent>
+            </Card>
+          )}
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">
