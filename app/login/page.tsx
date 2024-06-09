@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(() => {
       if(session){
-          router.replace("/all")
+          router.replace("/dashboard")
       }
   },[session, router])
 

@@ -24,39 +24,29 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  // Check user authentication
   const user = await auth();
-  console.log("User:", user);
 
-  if (!user || !user.user) {
-    console.log("User not authenticated");
+  if (!user?.user) {
     return NextResponse.json(
       { error: "You need to login" },
-      { status: 401 } 
+      { status: 400 } 
     );
   }
 
-  // Extract user ID
   const { id } = user.user;
-  console.log("User ID:", id); // Log the user ID
 
   if (!id) {
-    console.log("User ID not found");
     return NextResponse.json("You need to login!", { status: 401 });
   }
 
   try {
     // Parse request body
     const body = await req.json();
-    console.log("Request body:", body);
 
     // Create QR code
     const createQr = await createQrCode(body, id);
-    console.log("QR code creation response:", createQr);
 
-    // Check if QR code creation was successful
     if (!createQr) {
-      console.log("Failed to create QR code");
       return NextResponse.json("Cannot create QR code", { status: 400 });
     }
 

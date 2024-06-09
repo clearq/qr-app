@@ -1,37 +1,33 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ui/modeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "./ui/navigation-menu";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./Dropdown";
 import Image from "next/image";
 import logoImage from "../public/image/clearqr2.svg";
 import { ExtendedUser } from "@/next-auth";
-import Pages from "./Pages";
 import { useRouter } from "next/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./Dropdown";
 
 interface Props {
   user?: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
-  console.log("🚀 ~ Navbar ~ userData:", userData);
+  const router = useRouter();
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     signOut();
   };
-
-  const router = useRouter();
 
   const handleUrl = () => {
     router.push("/qr");
@@ -41,10 +37,15 @@ export const Navbar = ({ user: userData }: Props) => {
     router.push("/all");
   };
 
+  // Use useEffect to handle the navbar refresh after login
+  useEffect(() => {
+    router.refresh(); // This will force the page to refresh
+  }, [userData, router]);
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
-        <div className="mr-auto"> {/* Add this div and the mr-auto class */}
+        <div className="mr-auto">
           <Link href="/">
             <Image
               alt="logo-image"
@@ -67,7 +68,7 @@ export const Navbar = ({ user: userData }: Props) => {
             </>
           ) : (
             <>
-              <li>
+              {/* <li>
                 <Button
                   onClick={handleAll}
                   className="p-2 text-sm sm:text-base px-3 sm:px-5"
@@ -76,7 +77,7 @@ export const Navbar = ({ user: userData }: Props) => {
                   <span className="inline sm:hidden">↩</span>
                   <span className="hidden sm:inline">Overview</span>
                 </Button>
-              </li>
+              </li> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -97,14 +98,14 @@ export const Navbar = ({ user: userData }: Props) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <Link href={'/profile'}>
+                  <Link href="/profile">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   </Link>
                   <DropdownMenuSeparator />
-                  <Link href={'/dashboard'}>
+                  <Link href="/dashboard">
                     <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
                   </Link>
-                  <Link href={'/dashboardVcard'}>
+                  <Link href="/dashboardVcard">
                     <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />

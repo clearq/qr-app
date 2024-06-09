@@ -23,7 +23,7 @@ export const RegisterForm = () => {
    },
    validationSchema : yup.object({
     email : yup.string().required(),
-    password : yup.string().required(),
+    password : yup.string().required().matches(/(?=.*[0-9])/, 'Password must contain at least one number'),
     firstName : yup.string().required(),
     lastName : yup.string().required(),
    }),
@@ -101,6 +101,9 @@ export const RegisterForm = () => {
             autoComplete="new-password"
             required
           />
+          {validation.touched.password && validation.errors.password && (
+                  <div className="text-red-500">{validation.errors.password}</div>
+                )}
           <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
             Register
           </button>

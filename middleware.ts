@@ -19,10 +19,10 @@ export default auth((req) => {
         return
     }
 
-    if (!isLoggedIn && !isPublic) {
+    // if (!isLoggedIn && !isPublic) {
      
-      return NextResponse.redirect(new URL("/", nextUrl))
-    }
+    //   return NextResponse.redirect(new URL("/", nextUrl))
+    // }
 
 })
 

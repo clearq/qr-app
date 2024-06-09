@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import QRCode from "qrcode.react";
 import { saveAs } from "file-saver";
 import { Input } from "@/components/ui/input";
@@ -8,69 +8,74 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
-import { Qr } from "@prisma/client";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "./ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "./ui/breadcrumb";
-import Pages from "./Pages";
+import { useRouter, useSearchParams } from "next/navigation";
+import { IQR } from "@/typings";
+
+
 
 export const QrForm = () => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [qrcodeData, setQrCodeData] = useState<IQR>();
+  const params = useSearchParams();
+  const id = params.get("id");
+  const router = useRouter()
+
 
   const validation = useFormik({
     initialValues: {
-      url: "",
-      tag: "",
-      logoType: "",
+      url: qrcodeData?.url || "",
+      tag: qrcodeData?.tag || "",
+      logoType: qrcodeData?.logoType || "",
     },
     validationSchema: yup.object({
       url: yup.string().url("Invalid URL").required("URL is required"),
       tag: yup.string().nullable(),
       logoType: yup.string().nullable(),
     }),
-    onSubmit: async (values) => {
-      const response = await fetch("/api/qr", {
+    onSubmit: (values) => {
+      fetch("/api/qr", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
-      });
-  
-      const responseData = await response.json();
-      console.log("Response status:", response.status); // Debugging line
-  
-      if (response.status === 201) {
-        toast({
-          title: "Created successfully!",
-          description: `${new Date().toLocaleDateString()}`,
+      })
+        .then(async (response) => {
+          const data = await response.json();
+          if (response.status === 201) {
+            toast({
+              title: `Created successfully!`,
+              description: `${new Date().toLocaleDateString()}`,
+            });
+
+            router.replace(`/dashboard`);
+          } else {
+            toast({
+              variant: "destructive",
+              title: `Error creating vCard`,
+              description: `${new Date().toLocaleDateString()}`,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          toast({
+            variant: "destructive",
+            title: `Something went wrong`,
+            description: `${new Date().toLocaleDateString()}`,
+          });
         });
-  
-        // Set the generated QR code URL
-        const qrUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/redirect/${responseData.qrId}`;
-        validation.setFieldValue("url", qrUrl);
-  
-        validation.resetForm();
-  
-        // Redirect to the desired URL
-        window.location.href = "/redirect"; // Adjust the URL as needed
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Something went wrong",
-          description: `${new Date().toLocaleDateString()}`,
-        });
-      }
     },
   });
-
   
 
   const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
