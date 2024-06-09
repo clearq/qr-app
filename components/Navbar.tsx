@@ -25,7 +25,7 @@ interface Props {
 export const Navbar = ({ user: userData }: Props) => {
   const router = useRouter();
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     signOut();
   };
 
