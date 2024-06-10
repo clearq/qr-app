@@ -135,6 +135,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   }, [fetchData]);
 
   const generateVCardString = (values: any) => {
+    const photo = values.logoType ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}` : '';
     return `
 BEGIN:VCARD
 VERSION:3.0
@@ -191,9 +192,26 @@ END:VCARD
     }
   };
 
+  const copyUrlToClipboard = () => {
+    //@ts-ignore
+    const url = `https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: "URL copied to clipboard",
+        description: `${new Date().toLocaleDateString()}`,
+      });
+    }).catch((error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to copy URL",
+        description: `${new Date().toLocaleDateString()}`,
+      });
+    });
+  };
+
   if (!vcardData) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
         <Progress className="text-center" value={33} />
       </div>
     );
@@ -366,11 +384,11 @@ END:VCARD
               <CardContent className="p-4">
                 <div
                   ref={qrRef}
-                  className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 mt-8 md:mt-0"
+                  className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
                 >
                   <QRCode
                     value={`https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`}
-                    size={600}
+                    size={window.innerWidth > 768 ? 500 : 300}
                     renderAs="canvas"
                     // includeMargin={true}
                     imageSettings={{
@@ -383,10 +401,11 @@ END:VCARD
                     bgColor="rgba(0,0,0,0)"
                     fgColor="#000000"
                   />
-                  <div className="flex flex-row space-x-4 justify-center items-center mt-4">
+                  <div className="flex flex-row space-x-4 justify-center items-center mt-6">
                     <Button onClick={() => downloadQRCode("png")} className="">
                       Download PNG
                     </Button>
+                    <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                   </div>
                 </div>
               </CardContent>

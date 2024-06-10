@@ -240,11 +240,12 @@ export const QrForm = () => {
             </form>
             <div
               ref={qrRef}
-              className="flex flex-col items-center p-0 justify-center w-full md:w-1/2 md:ml-8 mt-8 md:mt-0"
+              className="flex flex-col items-center justify-center md:w-1/2 md:ml-8 md:mr-8 mt-6"
             >
               <QRCode
                 value={validation.values.url}
-                size={400}
+                size={window.innerWidth > 768 ? 500 : 300}
+                    // includeMargin={true}
                 renderAs="canvas"
                 imageSettings={{
                   src: logo ? logo.toString() : "",
@@ -255,13 +256,13 @@ export const QrForm = () => {
                 bgColor="rgba(0,0,0,0)"
                 fgColor="#000000"
               />
-              <div className="flex flex-row space-x-4 justify-center items-center mt-4">
+              <div className="flex flex-row space-x-4 justify-center items-center mb-9 mt-4">
                 <Button onClick={() => downloadQRCode("png")} className="">
                   Download PNG
                 </Button>
-                <Button onClick={() => downloadQRCode("svg")} className="">
+                {/* <Button onClick={() => downloadQRCode("svg")} className="">
                   Download SVG
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>

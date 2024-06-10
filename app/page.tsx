@@ -12,15 +12,14 @@ function Home() {
       return (
         <>
           <div className="flex gap-10 items-center justify-center">
-
               <>
                 <div className="text-left">
-                  <h1 className="mt-32 mb-16 text-center text-5xl font-bold">
-                    QR Generator
+                  <h1 className="mt-16 mb-16 text-center text-5xl font-bold">
+                    QrGen
                   </h1>
-                  <div className="mb-16 text-gray-600">
+                  <div className="mb-16 md:text-2xl text-lg text-gray-600 ml-9 mr-9">
                     <p>
-                      Välkommen till vår QR-generator! Vi erbjuder en kraftfull
+                      Välkommen till vår QrGen! Vi erbjuder en kraftfull
                       verktyg för att skapa QR-koder som kan användas för olika
                       ändamål. Oavsett om du behöver skapa QR-koder för att dela
                       forskningsartiklar, länkar till online-resurser, eller
@@ -50,7 +49,7 @@ function Home() {
                     med målgruppen!
                   </div>
                   <Link href="/register">
-                    <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white ml-9 font-bold py-2 px-4 rounded mt-4">
                       Register
                     </Button>
                   </Link>

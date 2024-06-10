@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { IQR } from "@/typings";
 import { useRouter } from "next/navigation";
 import { AddButton } from "@/components/AddButton";
@@ -8,7 +22,7 @@ import { EditButton } from "@/components/EditButton";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
 import { useFormik } from "formik";
-import * as yup from 'yup'
+import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 
@@ -17,16 +31,25 @@ interface DataTableProps {
   refetchDataTable: () => void;
 }
 
-const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <PaginationItem>
-    <PaginationLink href="#" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none', color: '#ccc' }}>
+    <PaginationLink
+      href="#"
+      onClick={(e) => e.preventDefault()}
+      style={{ pointerEvents: "none", color: "#ccc" }}
+    >
       {children}
     </PaginationLink>
   </PaginationItem>
 );
 
-export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetchDataTable }) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null)
+export const DataTable: React.FC<DataTableProps> = ({
+  qrData: qrcodeData,
+  refetchDataTable,
+}) => {
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5); // Items per page
@@ -94,29 +117,26 @@ export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetc
                   <TableCell>{qr.tag}</TableCell>
                   <TableCell>QR</TableCell>
                   <TableCell>
-                  
-                            <QRCode
-                                value={qr.url}
-                                size={70}
-                                renderAs="canvas"
-                                // includeMargin={true}
-                                imageSettings={{
-                                  //@ts-ignore
-                                    src: logo ? logo.toString() : qr.logoType,
-                                    height: 20,
-                                    width: 20,
-                                    excavate: true,
-                                }}
-                                bgColor="rgba(0,0,0,0)"
-                                fgColor='#000000'
-                            />
+                    <QRCode
+                      value={qr.url}
+                      size={70}
+                      renderAs="canvas"
+                      // includeMargin={true}
+                      imageSettings={{
+                        //@ts-ignore
+                        src: logo ? logo.toString() : qr.logoType,
+                        height: 20,
+                        width: 20,
+                        excavate: true,
+                      }}
+                      bgColor="rgba(0,0,0,0)"
+                      fgColor="#000000"
+                    />
                   </TableCell>
                   <TableCell>
                     <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                    <Button
-                        onClick={() =>
-                          router.replace(`qr/details?id=${qr.id}`)
-                        }
+                      <Button
+                        onClick={() => router.replace(`qr/details?id=${qr.id}`)}
                         variant="outline"
                       >
                         👁️‍🗨️
@@ -137,7 +157,10 @@ export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetc
             <DisabledPaginationItem>&lt;</DisabledPaginationItem>
           ) : (
             <PaginationItem>
-              <PaginationPrevious href="#" onClick={() => handlePageChange(currentPage - 1)} />
+              <PaginationPrevious
+                href="#"
+                onClick={() => handlePageChange(currentPage - 1)}
+              />
             </PaginationItem>
           )}
           {[...Array(totalPages)].map((_, pageIndex) => (
@@ -155,7 +178,10 @@ export const DataTable: React.FC<DataTableProps> = ({ qrData: qrcodeData, refetc
             <DisabledPaginationItem>&gt;</DisabledPaginationItem>
           ) : (
             <PaginationItem>
-              <PaginationNext href="#" onClick={() => handlePageChange(currentPage + 1)} />
+              <PaginationNext
+                href="#"
+                onClick={() => handlePageChange(currentPage + 1)}
+              />
             </PaginationItem>
           )}
         </PaginationContent>

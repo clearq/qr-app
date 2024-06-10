@@ -37,7 +37,7 @@ const RedirectForm = ({ url }: RedirectProps) => {
 
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex mr-9 ml-9 flex-col items-center justify-center min-h-screen">
       <h1>Redirecting in {countdown} seconds...</h1>
       <Progress value={progress} className="w-[60%]" />
     </div>
