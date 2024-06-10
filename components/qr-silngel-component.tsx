@@ -132,9 +132,27 @@ export const QrSingelComponent = ({ user }: Props) => {
     }
   };
 
+  const copyUrlToClipboard = () => {
+    //@ts-ignore
+    const url = validation.values.url;
+    // const url = `https://qrgen.clearq.se/qr/details?id=${qrcodeData.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast({
+        title: "URL copied to clipboard",
+        description: `${new Date().toLocaleDateString()}`,
+      });
+    }).catch((error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to copy URL",
+        description: `${new Date().toLocaleDateString()}`,
+      });
+    });
+  };
+
   if (!qrcodeData) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
         <Progress className="text-center" value={33} />
       </div>
     );
@@ -150,18 +168,20 @@ export const QrSingelComponent = ({ user }: Props) => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {user?.id === qrcodeData.customerId && 
           
-          <Card className="flex flex-col items-center mt-52">
+          <Card className="flex flex-col items-center">
             <CardHeader>
               <CardTitle>QR Code</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div
                 ref={qrRef}
-                className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 mt-8 md:mt-0"
+                className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
               >
                 <QRCode
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/qr/details?id=${qrcodeData.id}`}
-                  size={600}
+                  value={validation.values.url}
+                  // value={`${process.env.NEXT_PUBLIC_APP_URL}/qr/details?id=${qrcodeData.id}`}
+                size={window.innerWidth > 768 ? 500 : 300}
+                  
                   renderAs="canvas"
                   // includeMargin={true}
                   imageSettings={{
@@ -178,6 +198,7 @@ export const QrSingelComponent = ({ user }: Props) => {
                   <Button onClick={() => downloadQRCode("png")} className="">
                     Download PNG
                   </Button>
+                  <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                 </div>
               </div>
             </CardContent>

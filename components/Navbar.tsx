@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "./Dropdown";
 import Image from "next/image";
-import logoImage from "../public/image/clearqr2.svg";
+import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
 import { useRouter } from "next/navigation";
 
@@ -50,7 +50,7 @@ export const Navbar = ({ user: userData }: Props) => {
             <Image
               alt="logo-image"
               src={logoImage}
-              className="w-24 h-auto sm:w-52"
+              className="w-24 h-auto sm:w-24"
             />
           </Link>
         </div>

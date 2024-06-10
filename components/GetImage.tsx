@@ -28,7 +28,6 @@ export const GetImage = ({ vData: vcard }: Props) => {
       logoType: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values);
       fetch("/api/saveVcard", {
         method: "GET",
         headers: {

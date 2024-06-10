@@ -67,7 +67,6 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
       tiktok: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values);
       fetch("/api/saveVcard", {
         method: "PUT",
         headers: {
@@ -148,7 +147,6 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
-    console.log("🚀 ~ handleImageChange ~ file:", file)
     if (file) {
       resizeImage(file, (resizedDataUrl) => {
         setLogo(resizedDataUrl);
@@ -208,7 +206,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 </div>
               </label>
               <div className="flex items-center space-x-4 mt-4">
-          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 justify-center items-center ml-[40%] mt-3 text-secondary cursor-pointer border rounded-[6px] bg-primary">
+          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 justify-center items-center sm:ml-[40%] ml-[35%] mt-3 text-secondary cursor-pointer border rounded-[6px] bg-primary">
             Browse
           </label>
           <input
@@ -323,6 +321,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 <Label htmlFor="linkedIn">LinkedIn</Label>
                 <Input
                   id="linkedIn"
+                  placeholder="https://"
                   value={validation.values.linkedIn}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}

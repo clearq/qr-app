@@ -100,6 +100,7 @@ export const Vcard = () => {
 
 
   const generateVCardString = (values: any) => {
+    const photo = values.logoType ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}` : '';
     return `
 BEGIN:VCARD
 VERSION:3.0
@@ -439,13 +440,13 @@ END:VCARD
                   />
                 </div>
               </div>
-              <Button type="submit" className="bg-primary text-white mt-4">
+              <Button type="submit" className="bg-primary mt-4">
                 Save
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button onClick={handleDownloadVcard} className="bg-primary text-white">
+            <Button onClick={handleDownloadVcard} className="bg-primary">
               Download vCard
             </Button>
           </CardFooter>

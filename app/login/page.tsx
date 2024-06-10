@@ -66,6 +66,7 @@ const Login = () => {
   if (sessionStatus === "loading") {
     return (
       <div
+      className="mr-9 ml-9"
         style={{
           display: "flex",
           justifyContent: "center",

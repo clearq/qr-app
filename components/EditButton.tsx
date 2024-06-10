@@ -128,6 +128,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
   };
 
   return (
+    <div className="flex mr-9 ">
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">✎</Button>
@@ -193,9 +194,9 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
               )}
             </div>
             <QRCode
-              className="flex flex-col left-12 justify-center items-center mt-5 relative"
+              className="flex flex-col left-5 md:left-1 justify-center items-center mt-5 relative"
               value={validation.values.url ?? validation.values.logoType}
-              size={400}
+              size={window.innerWidth > 768 ? 500 : 300}
               imageSettings={{
                 src: logo ? logo.toString() : '',
                 height: 55,
@@ -214,5 +215,6 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
         </form>
       </DialogContent>
     </Dialog>
+    </div>
   );
 };

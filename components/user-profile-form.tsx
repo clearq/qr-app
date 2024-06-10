@@ -15,6 +15,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
+import Images from "next/image";
 
 interface Props {
   user: Customer;
@@ -42,7 +43,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       company: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values);
       fetch("/api/profile", {
         method: "PUT",
         headers: {
@@ -123,7 +123,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
-    console.log("🚀 ~ handleImageChange ~ file:", file)
     if (file) {
       resizeImage(file, (resizedDataUrl) => {
         setLogo(resizedDataUrl);
@@ -259,5 +258,3 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     </div>
   );
 };
-            console.log("🚀 ~ EditProfileForm ~ AvatarImage:", AvatarImage)
-            console.log("🚀 ~ EditProfileForm ~ AvatarImage:", AvatarImage)
