@@ -1,5 +1,4 @@
-"use client";
-import React, { useEffect } from "react";
+'use client'
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -37,10 +36,6 @@ export const Navbar = ({ user: userData }: Props) => {
     router.push("/all");
   };
 
-  // Use useEffect to handle the navbar refresh after login
-  useEffect(() => {
-    router.refresh(); // This will force the page to refresh
-  }, [userData, router]);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,7 +50,42 @@ export const Navbar = ({ user: userData }: Props) => {
           </Link>
         </div>
         <div className="flex items-center gap-4 sm:gap-6">
-          {!userData ? (
+          {userData ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full"
+                >
+                  <Avatar className="flex justify-center items-center w-8 h-8 sm:w-15 sm:h-15">
+                    <AvatarImage
+                      src={userData?.image || ""}
+                      alt="User Image"
+                    />
+                    <AvatarFallback>
+                      {userData?.firstName ? userData?.firstName[0] : ""}
+                      {userData?.lastName ? userData?.lastName[0] : ""}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <Link href="/profile">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link href="/dashboard">
+                  <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
+                </Link>
+                <Link href="/dashboardVcard">
+                  <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
             <>
               <Link href="/login">
                 <li className="cursor-pointer text-sm sm:text-base">Login</li>
@@ -65,53 +95,6 @@ export const Navbar = ({ user: userData }: Props) => {
                   Register
                 </li>
               </Link>
-            </>
-          ) : (
-            <>
-              {/* <li>
-                <Button
-                  onClick={handleAll}
-                  className="p-2 text-sm sm:text-base px-3 sm:px-5"
-                  variant="link"
-                >
-                  <span className="inline sm:hidden">↩</span>
-                  <span className="hidden sm:inline">Overview</span>
-                </Button>
-              </li> */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <Avatar className="flex justify-center items-center mr-2 w-8 h-8 sm:w-10 sm:h-10">
-                      <AvatarImage
-                        src={userData?.image || ""}
-                        alt="User Image"
-                      />
-                      <AvatarFallback>
-                        {userData?.firstName ? userData?.firstName[0] : ""}
-                        {userData?.lastName ? userData?.lastName[0] : ""}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <Link href="/profile">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <Link href="/dashboard">
-                    <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
-                  </Link>
-                  <Link href="/dashboardVcard">
-                    <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </>
           )}
           <div>

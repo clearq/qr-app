@@ -29,28 +29,29 @@ const Login = () => {
     e.preventDefault();
     const email = e.target[0].value;
     const password = e.target[1].value;
-
+  
     if (!isValidEmail(email)) {
       setError("Email is invalid");
       return;
     }
-
+  
     if (!password || password.length < 8) {
       setError("Password is invalid");
       return;
     }
     try {
-      
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
-    if (res?.error) {
-      setError("Invalid email or password");
-    } else {
-      setError("");
-    }
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+      if (res?.error) {
+        setError("Invalid email or password");
+      } else {
+        setError("");
+        // Reload the page
+        window.location.reload();
+      }
     } catch (error) {
       if (error instanceof AuthError) {
         switch (error.type) {
