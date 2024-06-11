@@ -15,14 +15,14 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
-import Images from "next/image";
 
 interface Props {
   user: Customer;
 }
 
 export const EditProfileForm = ({ user: userData }: Props) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
+  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(userData.image);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,15 +48,18 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, highQualityImage: highQualityLogo }),
       })
         .then(async (response) => {
           if (response.status === 201) {
+            const data = await response.json();
+            setLogo(data.image); // Update the image with the resized version
+            setHighQualityLogo(data.highQualityImage); // Update the high-quality image
             toast({
               title: `Updated successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-            window.location.reload();
+            window.location.reload()
           } else {
             toast({
               variant: "destructive",
@@ -124,6 +127,14 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
+      // Read the high-quality image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setHighQualityLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Resize the image for storage
       resizeImage(file, (resizedDataUrl) => {
         setLogo(resizedDataUrl);
         validation.setFieldValue("image", resizedDataUrl);
@@ -133,10 +144,14 @@ export const EditProfileForm = ({ user: userData }: Props) => {
 
   const handleRemoveImage = () => {
     setLogo(null);
+    setHighQualityLogo(null);
     validation.setFieldValue('image', '');
     if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      fileInputRef.current.value = '';
     }
+
+    // Submit the form to update the server immediately after removing the image
+    validation.handleSubmit();
   };
 
   return (
@@ -149,15 +164,15 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
           <Avatar
             ref={qrRef}
-            className="flex flex-col w-[150px] h-[150px] justify-center items-center"
+            className="flex flex-col w-[100px] h-[100px] justify-center items-center"
           >
             <AvatarImage
               id="qr-code-svg"
               //@ts-ignore
-              src={logo ? logo.toString() : userData.image}
+              src={highQualityLogo ? highQualityLogo.toString() : userData.image}
               alt="User Image"
             />
-            <AvatarFallback className="text-[3rem]">
+            <AvatarFallback className="text-[2rem]">
               {userData.firstName[0]}
               {userData.lastName[0]}
             </AvatarFallback>
