@@ -16,6 +16,8 @@ import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
 
+
+
 interface Props {
   user: Customer;
 }
@@ -34,11 +36,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       phone: userData?.phone || "",
       company: userData?.company || "",
       image: userData.image,
+      password:'',
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
       firstName: yup.string().required("First name is required"),
       lastName: yup.string().required("Last name is required"),
+      password: yup.string(),
       phone: yup.string().nullable(),
       company: yup.string().nullable(),
     }),
@@ -53,13 +57,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         .then(async (response) => {
           if (response.status === 201) {
             const data = await response.json();
-            setLogo(data.image); // Update the image with the resized version
-            setHighQualityLogo(data.highQualityImage); // Update the high-quality image
+            setLogo(data.image); 
+            setHighQualityLogo(data.highQualityImage);
             toast({
               title: `Updated successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-            window.location.reload()
+            window.location.reload();
           } else {
             toast({
               variant: "destructive",
@@ -145,9 +149,9 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   const handleRemoveImage = () => {
     setLogo(null);
     setHighQualityLogo(null);
-    validation.setFieldValue('image', '');
+    validation.setFieldValue("image", "");
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
 
     // Submit the form to update the server immediately after removing the image
@@ -164,12 +168,23 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
           <Avatar
             ref={qrRef}
-            className="flex flex-col w-[100px] h-[100px] justify-center items-center"
+            className="flex flex-col w-[100px] h-[100px] justify-center items-center relative"
           >
+
+            {/* First image for storage */}
             <AvatarImage
               id="qr-code-svg"
               //@ts-ignore
-              src={highQualityLogo ? highQualityLogo.toString() : userData.image}
+              src={logo ? logo.toString() : userData.image}
+              alt="User Image"
+              className="absolute inset-0 opacity-0"
+            />
+            {/* Second image for display */}
+            <AvatarImage
+              //@ts-ignore
+              src={
+                highQualityLogo ? highQualityLogo.toString() : userData.image
+              }
               alt="User Image"
             />
             <AvatarFallback className="text-[2rem]">
@@ -186,7 +201,10 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           />
         </label>
         <div className="flex items-center space-x-4 mt-4">
-          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary">
+          <label
+            htmlFor="logoType"
+            className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
+          >
             Browse
           </label>
           <input
@@ -261,6 +279,34 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 name="company"
                 placeholder="Company"
                 value={validation.values.company}
+                onChange={validation.handleChange}
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="pasword">Current Password</Label>
+              <Input
+                name="password"
+                placeholder="Password"
+                value={validation.values.password}
+                onChange={validation.handleChange}
+              />
+            </div>
+            
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="pasword">New Password</Label>
+              <Input
+                name="password"
+                placeholder="Password"
+                value={validation.values.password}
+                onChange={validation.handleChange}
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="pasword">Confirm Password</Label>
+              <Input
+                name="password"
+                placeholder="Password"
+                value={validation.values.password}
                 onChange={validation.handleChange}
               />
             </div>

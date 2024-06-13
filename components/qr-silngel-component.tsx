@@ -24,7 +24,7 @@ import { saveAs } from "file-saver";
 import { ExtendedUser } from "@/next-auth";
 
 interface Props {
-  user? : ExtendedUser
+  user?: ExtendedUser;
 }
 
 export const QrSingelComponent = ({ user }: Props) => {
@@ -49,7 +49,6 @@ export const QrSingelComponent = ({ user }: Props) => {
       logoType: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-
       fetch("/api/qr", {
         method: "PUT",
         headers: {
@@ -83,7 +82,6 @@ export const QrSingelComponent = ({ user }: Props) => {
   });
 
   const fetchData = useCallback(() => {
-
     fetch(`/api/qr/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -107,7 +105,6 @@ export const QrSingelComponent = ({ user }: Props) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
 
   const downloadQRCode = (format: "png" | "svg") => {
     if (!qrRef.current) return;
@@ -136,18 +133,25 @@ export const QrSingelComponent = ({ user }: Props) => {
     //@ts-ignore
     const url = validation.values.url;
     // const url = `https://qrgen.clearq.se/qr/details?id=${qrcodeData.id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: "URL copied to clipboard",
-        description: `${new Date().toLocaleDateString()}`,
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        toast({
+          title: "URL copied to clipboard",
+          description: `${new Date().toLocaleDateString()}`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Failed to copy URL",
+          description: `${new Date().toLocaleDateString()}`,
+        });
       });
-    }).catch((error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to copy URL",
-        description: `${new Date().toLocaleDateString()}`,
-      });
-    });
+  };
+
+  const handleBack = () => {
+    router.push("/dashboard");
   };
 
   if (!qrcodeData) {
@@ -166,48 +170,52 @@ export const QrSingelComponent = ({ user }: Props) => {
     <div>
       {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {user?.id === qrcodeData.customerId && 
-          
-          <Card className="flex flex-col items-center">
-            <CardHeader>
-              <CardTitle>QR Code</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div
-                ref={qrRef}
-                className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
-              >
-                <QRCode
-                  value={validation.values.url}
-                  // value={`${process.env.NEXT_PUBLIC_APP_URL}/qr/details?id=${qrcodeData.id}`}
-                size={window.innerWidth > 768 ? 500 : 300}
-                  
-                  renderAs="canvas"
-                  // includeMargin={true}
-                  imageSettings={{
-                    //@ts-ignore
-                    src: logo ? logo.toString() : qrcodeData.logoType,
-                    height: 55,
-                    width: 55,
-                    excavate: true,
-                  }}
-                  bgColor="rgba(0,0,0,0)"
-                  fgColor="#000000"
-                />
-                <div className="flex flex-row space-x-4 justify-center items-center mt-4">
-                  <Button onClick={() => downloadQRCode("png")} className="">
-                    Download PNG
-                  </Button>
-                  <Button onClick={copyUrlToClipboard}>Copy URL</Button>
+          <Button
+            onClick={() => handleBack()}
+            className="flex mb-4 font-light text-4xl justify-start items-start"
+            variant={"link"}
+          >
+            {"<-"}
+          </Button>
+          {user?.id === qrcodeData.customerId && (
+            <Card className="flex flex-col items-center">
+              <CardHeader>
+                <CardTitle>QR Code</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div
+                  ref={qrRef}
+                  className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
+                >
+                  <QRCode
+                    value={validation.values.url}
+                    // value={`${process.env.NEXT_PUBLIC_APP_URL}/qr/details?id=${qrcodeData.id}`}
+                    size={window.innerWidth > 768 ? 500 : 300}
+                    renderAs="canvas"
+                    // includeMargin={true}
+                    imageSettings={{
+                      //@ts-ignore
+                      src: logo ? logo.toString() : qrcodeData.logoType,
+                      height: 55,
+                      width: 55,
+                      excavate: true,
+                    }}
+                    bgColor="rgba(0,0,0,0)"
+                    fgColor="#000000"
+                  />
+                  <div className="flex flex-row space-x-4 justify-center items-center mt-4">
+                    <Button onClick={() => downloadQRCode("png")} className="">
+                      Download PNG
+                    </Button>
+                    <Button onClick={copyUrlToClipboard}>Copy URL</Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          }
+              </CardContent>
+            </Card>
+          )}
         </div>
       ) : (
-        <div className="flex justify-center items-center h-screen">
-        </div>
+        <div className="flex justify-center items-center h-screen"></div>
       )}
     </div>
   );

@@ -20,7 +20,7 @@ export const GetImage = ({ vData: vcard }: Props) => {
     initialValues: {
         firstName: vcard?.firstName,
         lastName: vcard?.lastName,
-      logoType: vcard?.logoType || "",
+      logoType: vcard?.logoType || vcard.logoType,
     },
     validationSchema: yup.object({
       firstName: yup.string().required("First name is required"),
@@ -116,7 +116,7 @@ export const GetImage = ({ vData: vcard }: Props) => {
                 <div className="relative w-32 h-32">
                   <Avatar className="absolute inset-0 flex items-center justify-center w-full h-full">
                     <AvatarImage
-                      src={validation.values.logoType}
+                      src={validation.values.logoType || ""}
                       alt="User Image"
                     />
                     <AvatarFallback>

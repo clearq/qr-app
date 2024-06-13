@@ -31,12 +31,12 @@ const Login = () => {
     const password = e.target[1].value;
   
     if (!isValidEmail(email)) {
-      setError("Email is invalid");
+      setError("Invalid email or password");
       return;
     }
   
     if (!password || password.length < 8) {
-      setError("Password is invalid");
+      setError("Invalid email or password");
       return;
     }
     try {
