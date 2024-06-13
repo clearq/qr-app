@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[Customer] (
     [phone] NVARCHAR(1000),
     [password] NVARCHAR(1000) NOT NULL,
     [company] NVARCHAR(1000),
-    [image] VARCHAR(4000),
+    [image] NVARCHAR(max),
     [createdAt] DATETIME2 NOT NULL CONSTRAINT [Customer_createdAt_df] DEFAULT CURRENT_TIMESTAMP,
     [updatedAt] DATETIME2 NOT NULL,
     CONSTRAINT [Customer_pkey] PRIMARY KEY CLUSTERED ([id]),
@@ -28,8 +28,8 @@ CREATE TABLE [dbo].[VCard] (
     [phone] NVARCHAR(1000),
     [company] NVARCHAR(1000),
     [title] NVARCHAR(1000),
-    [logoType] VARCHAR(4000),
-    [image] VARCHAR(4000),
+    [logoType] NVARCHAR(max),
+    [image] NVARCHAR(max),
     [linkedIn] NVARCHAR(1000),
     [x] NVARCHAR(1000),
     [facebook] NVARCHAR(1000),
@@ -46,7 +46,7 @@ CREATE TABLE [dbo].[Qr] (
     [id] NVARCHAR(1000) NOT NULL,
     [url] NVARCHAR(1000) NOT NULL,
     [tag] NVARCHAR(1000) NOT NULL,
-    [logoType] NVARCHAR(1000),
+    [logoType] NVARCHAR(max),
     [customerId] NVARCHAR(1000) NOT NULL,
     CONSTRAINT [Qr_pkey] PRIMARY KEY CLUSTERED ([id])
 );

@@ -54,3 +54,21 @@ export const createCustomer = async (values : {
         
       }
 }
+
+export const removeCustomer = async (id : string) => {
+  try {
+      if (!id) {
+          return {
+              error : "Id is required!"
+          }
+      }
+
+      await prisma.customer.delete({
+          where: {id}
+      })
+
+      return "Removed qrcode successfully"
+  } catch {
+      return null;
+  }
+}

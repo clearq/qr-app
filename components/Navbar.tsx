@@ -24,7 +24,6 @@ interface Props {
 }
 
 export const Navbar = ({ user: userData }: Props) => {
-  const [uData, setUData] = useState<ICUSTOMER>();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -38,7 +37,6 @@ export const Navbar = ({ user: userData }: Props) => {
   const handleAll = () => {
     router.push("/all");
   };
-
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +65,7 @@ export const Navbar = ({ user: userData }: Props) => {
                       alt="User Image"
                     />
                     <AvatarFallback>
-                      {uData?.firstName ? uData?.firstName[0] : ""}
+                      {userData?.firstName ? userData?.firstName[0] : ""}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

@@ -15,7 +15,7 @@ model Customer {
   phone     String?
   password  String
   company   String?
-  image     String?  @db.VarChar(4000)
+  image     String?  @db.NVarChar(MAX)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   vcard     VCard[]
@@ -38,8 +38,8 @@ model VCard {
   phone         String?
   company       String?
   title         String?
-  logoType      String?   @db.VarChar(4000)
-  image         String?   @db.VarChar(4000)
+  logoType      String?   @db.NVarChar(MAX)
+  image         String?   @db.NVarChar(MAX)
   linkedIn      String?
   x             String?
   facebook      String?
@@ -47,7 +47,7 @@ model VCard {
   snapchat      String?
   tiktok        String?
   url           String?
-  customer      Customer? @relation(fields: [customerId], references: [id])
+  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId    String
 }
 
@@ -55,7 +55,7 @@ model Qr {
   id         String    @id @default(cuid())
   url        String
   tag        String
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  logoType   String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  logoType   String?   @db.NVarChar(MAX)
   customerId String
 }
