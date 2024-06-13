@@ -19,9 +19,10 @@ import * as yup from "yup";
 import { Progress } from "./ui/progress";
 import QRCode from "qrcode.react";
 import { useSession } from "next-auth/react";
-import { GetImage } from "./GetImage";
 import { saveAs } from "file-saver";
 import { ExtendedUser } from "@/next-auth";
+import { Separator } from "./ui/separator";
+import EditButton from "./EditButtonVcardSingle";
 
 interface Props {
   user?: ExtendedUser;
@@ -46,7 +47,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
       lastName: vcardData?.lastName || "",
       phone: vcardData?.phone || "",
       company: vcardData?.company || "",
-      image: vcardData?.image || undefined,
+      image: vcardData?.image,
       tag: vcardData?.tag || "",
       title: vcardData?.title || "",
       linkedIn: vcardData?.linkedIn || "",
@@ -135,7 +136,9 @@ export const VcardSingelComponent = ({ user }: Props) => {
   }, [fetchData]);
 
   const generateVCardString = (values: any) => {
-    const photo = values.logoType ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}` : '';
+    const photo = values.logoType
+      ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}`
+      : "";
     return `
 BEGIN:VCARD
 VERSION:3.0
@@ -195,18 +198,25 @@ END:VCARD
   const copyUrlToClipboard = () => {
     //@ts-ignore
     const url = `https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      toast({
-        title: "URL copied to clipboard",
-        description: `${new Date().toLocaleDateString()}`,
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        toast({
+          title: "URL copied to clipboard",
+          description: `${new Date().toLocaleDateString()}`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Failed to copy URL",
+          description: `${new Date().toLocaleDateString()}`,
+        });
       });
-    }).catch((error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to copy URL",
-        description: `${new Date().toLocaleDateString()}`,
-      });
-    });
+  };
+
+  const handleBack = () => {
+    router.push("/dashboardVcard");
   };
 
   if (!vcardData) {
@@ -225,154 +235,137 @@ END:VCARD
     <div>
       {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Button
+            onClick={() => handleBack()}
+            className="flex mb-4 font-light text-4xl justify-start items-start"
+            variant={"link"}
+          >
+            {"<-"}
+          </Button>
           <Card className="flex flex-col justify-center items-center">
             <CardHeader>
               <CardTitle>VCard Details</CardTitle>
               <CardDescription></CardDescription>
             </CardHeader>
-            <GetImage vData={vcardData} />
+            <Avatar className="flex justify-center items-center w-24 h-24 sm:w-52 sm:h-52">
+                    <AvatarImage
+                      src={vcardData?.image || ""}
+                      alt="User Image"
+                    />
+                    <AvatarFallback>
+                      {vcardData?.firstName ? vcardData?.firstName[0] : ""}
+                      {vcardData?.lastName ? vcardData?.lastName[0] : ""}
+                    </AvatarFallback>
+                  </Avatar>
             <CardContent className="mt-10 w-full">
               <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="firstName">
-                    First Name<span className="text-red-700">*</span>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.firstName || "First Name"}
                   </Label>
-                  <Input
-                    name="firstName"
-                    placeholder="First Name"
-                    value={validation.values.firstName}
-                    readOnly
-                  />
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="lastName">
-                    Last Name<span className="text-red-700">*</span>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.lastName || "Last Name"}
                   </Label>
-                  <Input
-                    name="lastName"
-                    placeholder="Last Name"
-                    value={validation.values.lastName}
-                    readOnly
-                  />
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">
-                    Email<span className="text-red-700">*</span>
+                  <Label htmlFor="email">Email</Label>
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.customerEmail || "Email"}
                   </Label>
-                  <Input
-                    name="email"
-                    placeholder="Email"
-                    value={validation.values.customerEmail}
-                    readOnly
-                  />
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    name="phone"
-                    placeholder="Phone"
-                    value={validation.values.phone ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.phone || "Phone"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="company">Company</Label>
-                  <Input
-                    name="company"
-                    placeholder="Company"
-                    value={validation.values.company ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.company || "Company"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="title">Title</Label>
-                  <Input
-                    name="title"
-                    placeholder="Title"
-                    value={validation.values.title ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.title || "Title"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="tag">Tag</Label>
-                  <Input
-                    name="tag"
-                    placeholder="Tag"
-                    value={validation.values.tag ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.tag || "Tag"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="url">URL</Label>
-                  <Input
-                    name="url"
-                    placeholder="URL"
-                    value={validation.values.url ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.url || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="linkedIn">LinkedIn</Label>
-                  <Input
-                    name="linkedIn"
-                    placeholder="LinkedIn"
-                    value={validation.values.linkedIn ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.linkedIn || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="x">X</Label>
-                  <Input
-                    name="x"
-                    placeholder="X"
-                    value={validation.values.x ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.x || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="facebook">Facebook</Label>
-                  <Input
-                    name="facebook"
-                    placeholder="Facebook"
-                    value={validation.values.facebook ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.facebook || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="instagram">Instagram</Label>
-                  <Input
-                    name="instagram"
-                    placeholder="Instagram"
-                    value={validation.values.instagram ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.instagram || "Instagram"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="snapchat">Snapchat</Label>
-                  <Input
-                    name="snapchat"
-                    placeholder="Snapchat"
-                    value={validation.values.snapchat ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.snapchat || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="tiktok">Tiktok</Label>
-                  <Input
-                    name="tiktok"
-                    placeholder="Tiktok"
-                    value={validation.values.tiktok ?? ""}
-                    readOnly
-                  />
+                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    {validation.values.tiktok || "https://"}
+                  </Label>
+                  <Separator />
                 </div>
               </form>
-              <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+              <div className="flex flex-col sm:flex-row items-center mt-4">
                 <Button
                   onClick={handleDownloadVcard}
                   className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
                 >
                   Download vCard
                 </Button>
+                <EditButton vcardData={vcardData} />
               </div>
             </CardContent>
           </Card>
@@ -393,9 +386,9 @@ END:VCARD
                     // includeMargin={true}
                     imageSettings={{
                       //@ts-ignore
-                      src: logo ? logo.toString() : vcardData.logoType,
-                      height: 55,
-                      width: 55,
+                      src: logo ? logo.toString() : vcardData.image,
+                      height: 75,
+                      width: 75,
                       excavate: true,
                     }}
                     bgColor="rgba(0,0,0,0)"
@@ -448,9 +441,7 @@ END:VCARD
               <CardContent className="mt-10 w-full">
                 <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="firstName">
-                      First Name<span className="text-red-700">*</span>
-                    </Label>
+                    <Label htmlFor="firstName">First Name</Label>
                     <Input
                       name="firstName"
                       placeholder="First Name"
@@ -459,9 +450,7 @@ END:VCARD
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="lastName">
-                      Last Name<span className="text-red-700">*</span>
-                    </Label>
+                    <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       name="lastName"
                       placeholder="Last Name"
@@ -470,10 +459,9 @@ END:VCARD
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="email">
-                      Email<span className="text-red-700">*</span>
-                    </Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
+                      className="outline-none"
                       name="email"
                       placeholder="Email"
                       value={validation.values.customerEmail}

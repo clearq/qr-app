@@ -16,12 +16,15 @@ import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ICUSTOMER } from "@/typings";
 
 interface Props {
   user?: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
+  const [uData, setUData] = useState<ICUSTOMER>();
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -64,8 +67,7 @@ export const Navbar = ({ user: userData }: Props) => {
                       alt="User Image"
                     />
                     <AvatarFallback>
-                      {userData?.firstName ? userData?.firstName[0] : ""}
-                      {userData?.lastName ? userData?.lastName[0] : ""}
+                      {uData?.firstName ? uData?.firstName[0] : ""}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
