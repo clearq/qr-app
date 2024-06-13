@@ -15,8 +15,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
-
-
+import { DeleteUser } from "./DeleteUser";
 
 interface Props {
   user: Customer;
@@ -24,7 +23,9 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
-  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(userData.image);
+  const [highQualityLogo, setHighQualityLogo] = useState<
+    string | ArrayBuffer | null
+  >(userData.image);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +37,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       phone: userData?.phone || "",
       company: userData?.company || "",
       image: userData.image,
-      password:'',
+      password: "",
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -57,7 +58,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         .then(async (response) => {
           if (response.status === 201) {
             const data = await response.json();
-            setLogo(data.image); 
+            setLogo(data.image);
             setHighQualityLogo(data.highQualityImage);
             toast({
               title: `Updated successfully!`,
@@ -170,7 +171,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             ref={qrRef}
             className="flex flex-col w-[100px] h-[100px] justify-center items-center relative"
           >
-
             {/* First image for storage */}
             <AvatarImage
               id="qr-code-svg"
@@ -289,9 +289,10 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Password"
                 value={validation.values.password}
                 onChange={validation.handleChange}
+                readOnly
               />
             </div>
-            
+            {/*             
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="pasword">New Password</Label>
               <Input
@@ -309,10 +310,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 value={validation.values.password}
                 onChange={validation.handleChange}
               />
-            </div>
+            </div> */}
             <Button type="submit" className="mt-4 w-full">
               Save changes
             </Button>
+            <div className="mt-4 w-[full]">
+              <DeleteUser user={userData} />
+            </div>
           </form>
         </CardContent>
       </Card>

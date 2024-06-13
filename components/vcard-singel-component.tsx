@@ -365,7 +365,7 @@ END:VCARD
                 >
                   Download vCard
                 </Button>
-                <EditButton vcardData={vcardData} />
+                {user?.id === vcardData.customerId && ( <EditButton vcardData={vcardData} />)}
               </div>
             </CardContent>
           </Card>
