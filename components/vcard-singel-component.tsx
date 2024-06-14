@@ -121,7 +121,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
           });
         }
         setVcardData(data);
-        validation.setValues(data); // Ensure formik values are set
+        validation.setValues(data);
       })
       .catch((err) =>
         toast({

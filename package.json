@@ -27,6 +27,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@shadcn/ui": "^0.0.4",
+    "@uploadthing/react": "^6.6.0",
     "@vercel/blob": "^0.23.3",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
@@ -50,6 +51,7 @@
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
+    "uploadthing": "^6.12.0",
     "vcf": "^2.1.2",
     "yup": "^1.4.0"
   },

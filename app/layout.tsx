@@ -8,6 +8,12 @@ import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/toaster";
 import { CardFooter } from "@/components/ui/card";
 import CookieConsentBanner from "@/components/Cookies";
+import "@uploadthing/react/styles.css";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+ 
+import { ourFileRouter } from "../app/api/upladingthings/core";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -33,7 +39,10 @@ export default async function RootLayout({ children }: Props) {
           <SessionProvider session={session}>
             <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
               <Toaster />
-            <Navbar user={session?.user} />
+            <NextSSRPlugin
+         routerConfig={extractRouterConfig(ourFileRouter)}
+        />
+          <Navbar user={session?.user} />
               {children}
             </div>
             <CardFooter className="flex justify-center bottom-auto align-bottom items-center text-center mt-10">
