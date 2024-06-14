@@ -248,115 +248,140 @@ END:VCARD
               <CardDescription></CardDescription>
             </CardHeader>
             <Avatar className="flex justify-center items-center w-24 h-24 sm:w-52 sm:h-52">
-                    <AvatarImage
-                      src={vcardData?.image || ""}
-                      alt="User Image"
-                    />
-                    <AvatarFallback>
-                      {vcardData?.firstName ? vcardData?.firstName[0] : ""}
-                      {vcardData?.lastName ? vcardData?.lastName[0] : ""}
-                    </AvatarFallback>
-                  </Avatar>
+              <AvatarImage src={vcardData?.image || ""} alt="User Image" />
+              <AvatarFallback>
+                {vcardData?.firstName ? vcardData?.firstName[0] : ""}
+                {vcardData?.lastName ? vcardData?.lastName[0] : ""}
+              </AvatarFallback>
+            </Avatar>
             <CardContent className="mt-10 w-full">
               <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.firstName || "First Name"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.lastName || "Last Name"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">Email</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.customerEmail || "Email"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.phone || "Phone"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="company">Company</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.company || "Company"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="title">Title</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.title || "Title"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tag">Tag</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.tag || "Tag"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="url">URL</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.url || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="linkedIn">LinkedIn</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.linkedIn || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="x">X</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.x || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="facebook">Facebook</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.facebook || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.instagram || "Instagram"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="snapchat">Snapchat</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.snapchat || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tiktok">Tiktok</Label>
-                  <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
-                    {validation.values.tiktok || "https://"}
-                  </Label>
-                  <Separator />
-                </div>
+                {validation.values.firstName && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.firstName}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.lastName && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.lastName}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.customerEmail && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="email">Email</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.customerEmail}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.phone && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.phone}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.company && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="company">Company</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.company}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.title && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="title">Title</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.title}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.tag && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="tag">Tag</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.tag}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.url && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="url">URL</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.url}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.linkedIn && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="linkedIn">LinkedIn</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.linkedIn}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.x && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="x">X</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.x}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.facebook && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="facebook">Facebook</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.facebook}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.instagram && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="instagram">Instagram</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.instagram}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.snapchat && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="snapchat">Snapchat</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.snapchat}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
+                {validation.values.tiktok && (
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="tiktok">Tiktok</Label>
+                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                      {validation.values.tiktok}
+                    </Label>
+                    <Separator />
+                  </div>
+                )}
               </form>
               <div className="flex flex-col sm:flex-row items-center mt-4">
                 <Button
@@ -365,7 +390,9 @@ END:VCARD
                 >
                   Download vCard
                 </Button>
-                {user?.id === vcardData.customerId && ( <EditButton vcardData={vcardData} />)}
+                {user?.id === vcardData.customerId && (
+                  <EditButton vcardData={vcardData} />
+                )}
               </div>
             </CardContent>
           </Card>
@@ -440,133 +467,132 @@ END:VCARD
               </label>
               <CardContent className="mt-10 w-full">
                 <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      name="firstName"
-                      placeholder="First Name"
-                      value={validation.values.firstName}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      name="lastName"
-                      placeholder="Last Name"
-                      value={validation.values.lastName}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      className="outline-none"
-                      name="email"
-                      placeholder="Email"
-                      value={validation.values.customerEmail}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      name="phone"
-                      placeholder="Phone"
-                      value={validation.values.phone ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="company">Company</Label>
-                    <Input
-                      name="company"
-                      placeholder="Company"
-                      value={validation.values.company ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="title">Title</Label>
-                    <Input
-                      name="title"
-                      placeholder="Title"
-                      value={validation.values.title ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="tag">Tag</Label>
-                    <Input
-                      name="tag"
-                      placeholder="Tag"
-                      value={validation.values.tag ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="url">URL</Label>
-                    <Input
-                      name="url"
-                      placeholder="URL"
-                      value={validation.values.url ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="linkedIn">LinkedIn</Label>
-                    <Input
-                      name="linkedIn"
-                      placeholder="LinkedIn"
-                      value={validation.values.linkedIn ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="x">X</Label>
-                    <Input
-                      name="x"
-                      placeholder="X"
-                      value={validation.values.x ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="facebook">Facebook</Label>
-                    <Input
-                      name="facebook"
-                      placeholder="Facebook"
-                      value={validation.values.facebook ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="instagram">Instagram</Label>
-                    <Input
-                      name="instagram"
-                      placeholder="Instagram"
-                      value={validation.values.instagram ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="snapchat">Snapchat</Label>
-                    <Input
-                      name="snapchat"
-                      placeholder="Snapchat"
-                      value={validation.values.snapchat ?? ""}
-                      readOnly
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="tiktok">Tiktok</Label>
-                    <Input
-                      name="tiktok"
-                      placeholder="Tiktok"
-                      value={validation.values.tiktok ?? ""}
-                      readOnly
-                    />
-                  </div>
+                  {validation.values.firstName && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.firstName}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.lastName && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.lastName}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.customerEmail && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="email">Email</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.customerEmail}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.phone && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.phone}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.company && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="company">Company</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.company}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.title && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="title">Title</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.title}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.tag && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="tag">Tag</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.tag}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.url && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="url">URL</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.url}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.linkedIn && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="linkedIn">LinkedIn</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.linkedIn}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.x && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="x">X</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.x}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.facebook && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="facebook">Facebook</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.facebook}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.instagram && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="instagram">Instagram</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.instagram}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.snapchat && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="snapchat">Snapchat</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.snapchat}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
+                  {validation.values.tiktok && (
+                    <div className="flex flex-col space-y-1.5">
+                      <Label htmlFor="tiktok">Tiktok</Label>
+                      <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                        {validation.values.tiktok}
+                      </Label>
+                      <Separator />
+                    </div>
+                  )}
                 </form>
                 <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
                   <Button
