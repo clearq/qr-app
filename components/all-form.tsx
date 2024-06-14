@@ -45,11 +45,42 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-
+import { ICUSTOMER } from "@/typings";
+import { useRouter } from "next/navigation";
 
 
 export default function AllForm() {
+  const [userData, setUserData] = React.useState(null);
+  const router = useRouter()
+
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch('/api/profile'); 
+      const data = await res.json();
+      setUserData(data);
+    };
+
+    fetchData();
+  }, []);
+
+  const handleProfile = () => {
+    router.push("/profile");
+  };
+  const handleVcard = () => {
+    router.push("/dashboardVcard");
+  };
+  const handleQr = () => {
+    router.push("/dashboard");
+  };
+
+  if (!userData) {
+    return (
+      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
+        <Progress className="text-center" value={33} />
+      </div>
+    );
+  }
   
   return (
     <div className="flex w-full flex-col bg-muted/40">
@@ -63,42 +94,60 @@ export default function AllForm() {
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
                 <Card className="sm:col-span-2" x-chunk="dashboard-05-chunk-0">
                   <CardHeader className="pb-3">
-                    <CardTitle>#1</CardTitle>
+                    <CardTitle>
+                      {
+                        //@ts-ignore
+                      userData?.firstName
+                      } {
+                        //@ts-ignore
+                        userData?.lastName}</CardTitle>
                     <CardDescription className="max-w-lg text-balance leading-relaxed">
-                      Introducing Our Dynamic Orders Dashboard for Seamless
-                      Management and Insightful Analysis.
-                    </CardDescription>
+                    {//@ts-ignore
+                    userData?.email}
+                    <br />
+                    {//@ts-ignore
+                    userData?.phone}
+                    <br />
+                    {//@ts-ignore
+                    userData?.company}
+                    <br />
+
+                    </CardDescription> 
                   </CardHeader>
                   <CardFooter>
-                    <Button>Create New Order</Button>
+                    <Button onClick={() => handleProfile()}>View Your Profile</Button>
                   </CardFooter>
                 </Card>
                 <Card x-chunk="dashboard-05-chunk-1">
                   <CardHeader className="pb-2">
-                    <CardDescription>#2</CardDescription>
-                    <CardTitle className="text-4xl">#4</CardTitle>
+                    <CardDescription>QR</CardDescription>
+                    <CardTitle className="text-4xl">{//@ts-ignore
+                    userData._count.qr}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
-                      +25% from last week
+                      Check here:
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Progress value={25} aria-label="25% increase" />
+                  <Button onClick={() => handleQr()}>{'->'}</Button>
+                    {/* <Progress value={userData._count.qr} aria-label="25% increase" /> */}
                   </CardFooter>
                 </Card>
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
-                    <CardDescription>#3</CardDescription>
-                    <CardTitle className="text-4xl">#5</CardTitle>
+                    <CardDescription>VCard</CardDescription>
+                    <CardTitle className="text-4xl">{//@ts-ignore
+                    userData._count.vcard}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
-                      +10% from last month
+                    Check here:
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Progress value={12} aria-label="12% increase" />
+                    <Button onClick={() => handleVcard()}>{'->'}</Button>
+                    {/* <Progress value={userData._count.vcard} aria-label="12% increase" /> */}
                   </CardFooter>
                 </Card>
               </div>

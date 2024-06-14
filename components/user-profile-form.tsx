@@ -201,6 +201,18 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           />
         </label>
         <div className="flex items-center space-x-4 mt-4">
+        {/* <UploadButton
+        endpoint="imageUploader"
+        onClientUploadComplete={(res) => {
+          // Do something with the response
+          console.log("Files: ", res);
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      /> */}
           <label
             htmlFor="logoType"
             className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"

@@ -5,20 +5,28 @@ import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 type Params = {
-  id : string;
-}
+  id: string;
+};
 
 export async function GET() {
   const user = await auth();
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to login in" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "You need to login" }, { status: 400 });
   }
 
   const { id } = user.user;
-  const userData = await userById(id);
+
+  const userData = await prisma.customer.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: {
+          qr: true,
+          vcard: true,
+        },
+      },
+    },
+  });
 
   if (!userData) {
     return NextResponse.json("User data not found!", { status: 404 });
@@ -31,10 +39,7 @@ export async function PUT(req: NextRequest) {
   const user = await auth();
 
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to login" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "You need to login" }, { status: 400 });
   }
   const { id } = user.user;
 
@@ -57,7 +62,7 @@ export async function PUT(req: NextRequest) {
         lastName: lastName,
         phone: phone,
         company: company,
-        image: image, 
+        image: image,
       },
     });
 
@@ -70,7 +75,6 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-
 
 export async function DELETE(req: NextRequest, context: { params: Params }) {
   const id = context.params.id;
