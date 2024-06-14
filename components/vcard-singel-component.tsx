@@ -394,7 +394,7 @@ END:VCARD
             </CardContent>
           </Card>
               <div className="flex flex-row mt-2">
-                {user?.id === vcardData.customerId && (
+                {vcardData.customerId && (
                   <EditButton vcardData={vcardData} />
                 )}
               </div>
