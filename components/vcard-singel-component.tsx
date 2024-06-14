@@ -383,19 +383,21 @@ END:VCARD
                   </div>
                 )}
               </form>
-              <div className="flex flex-col sm:flex-row items-center mt-4">
+              <div className="flex flex-row sm:flex-row items-center mt-4">
                 <Button
                   onClick={handleDownloadVcard}
                   className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
                 >
                   Download vCard
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+              <div className="flex flex-row mt-2">
                 {user?.id === vcardData.customerId && (
                   <EditButton vcardData={vcardData} />
                 )}
               </div>
-            </CardContent>
-          </Card>
           {user?.id === vcardData.customerId && (
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>

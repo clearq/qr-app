@@ -172,7 +172,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     <>
       <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
         <DialogTrigger>
-          <Button variant="outline">✎</Button>
+          <Button variant="outline">Edit you profile</Button>
         </DialogTrigger>
         <DialogContent>
           <form onSubmit={validation.handleSubmit}>
