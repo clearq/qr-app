@@ -6,20 +6,18 @@ import { toast } from "./ui/use-toast";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+
 import { Button } from "./ui/button";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Progress } from "./ui/progress";
 import QRCode from "qrcode.react";
 import { useSession } from "next-auth/react";
-import { GetImage } from "./GetImage";
+
 import { saveAs } from "file-saver";
 import { ExtendedUser } from "@/next-auth";
 

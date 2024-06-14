@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef} from "react";
 import QRCode from "qrcode.react";
 import { saveAs } from "file-saver";
 import { Input } from "@/components/ui/input";

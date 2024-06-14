@@ -16,8 +16,7 @@ import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ICUSTOMER } from "@/typings";
+
 
 interface Props {
   user?: ExtendedUser;
@@ -28,14 +27,6 @@ export const Navbar = ({ user: userData }: Props) => {
 
   const handleSignOut = async () => {
     signOut();
-  };
-
-  const handleUrl = () => {
-    router.push("/qr");
-  };
-
-  const handleAll = () => {
-    router.push("/all");
   };
 
   return (
