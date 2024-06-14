@@ -16,7 +16,6 @@ import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
-import { UploadButton } from "@/utils/uploadthing";
 
 interface Props {
   user: Customer;
