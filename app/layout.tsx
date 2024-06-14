@@ -12,7 +12,6 @@ import "@uploadthing/react/styles.css";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
  
-import { ourFileRouter } from "../app/api/upladingthings/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,10 +38,7 @@ export default async function RootLayout({ children }: Props) {
           <SessionProvider session={session}>
             <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
               <Toaster />
-            <NextSSRPlugin
-         routerConfig={extractRouterConfig(ourFileRouter)}
-        />
-          <Navbar user={session?.user} />
+                      <Navbar user={session?.user} />
               {children}
             </div>
             <CardFooter className="flex justify-center bottom-auto align-bottom items-center text-center mt-10">

@@ -94,13 +94,22 @@ export default function AllForm() {
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
                 <Card className="sm:col-span-2" x-chunk="dashboard-05-chunk-0">
                   <CardHeader className="pb-3">
-                    <CardTitle>{userData?.firstName} {userData?.lastName}</CardTitle>
+                    <CardTitle>
+                      {
+                        //@ts-ignore
+                      userData?.firstName
+                      } {
+                        //@ts-ignore
+                        userData?.lastName}</CardTitle>
                     <CardDescription className="max-w-lg text-balance leading-relaxed">
-                    {userData?.email}
+                    {//@ts-ignore
+                    userData?.email}
                     <br />
-                    {userData?.phone}
+                    {//@ts-ignore
+                    userData?.phone}
                     <br />
-                    {userData?.company}
+                    {//@ts-ignore
+                    userData?.company}
                     <br />
 
                     </CardDescription> 
@@ -112,7 +121,8 @@ export default function AllForm() {
                 <Card x-chunk="dashboard-05-chunk-1">
                   <CardHeader className="pb-2">
                     <CardDescription>QR</CardDescription>
-                    <CardTitle className="text-4xl">{userData._count.qr}</CardTitle>
+                    <CardTitle className="text-4xl">{//@ts-ignore
+                    userData._count.qr}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -127,7 +137,8 @@ export default function AllForm() {
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
                     <CardDescription>VCard</CardDescription>
-                    <CardTitle className="text-4xl">{userData._count.vcard}</CardTitle>
+                    <CardTitle className="text-4xl">{//@ts-ignore
+                    userData._count.vcard}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
