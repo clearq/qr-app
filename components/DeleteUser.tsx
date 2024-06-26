@@ -118,7 +118,7 @@ export const DeleteUser = ({ user: userData}: Props) => {
   
 
   return (
-    <div className="flex mr-9 ">
+    <div className="flex mr-9 mt-5 ">
       <Dialog>
         <DialogTrigger asChild>
           <Button className="hover:bg-red-500" variant="outline">

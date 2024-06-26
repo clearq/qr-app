@@ -7,16 +7,16 @@ export const publicRoute = [
   "/cookiespolicy",
   "/qr/details",
   "/vcard/details",
-  ];
-  
-  /**
-   * An array of routes that are used for auth users
-   * @type {string[]}
-  */
- export const privateRoute: string[] = [
-   "/profile",
-   "/dashboardVcard",
-   "/dashboard",
+];
+
+/**
+ * An array of routes that are used for auth users
+ * @type {string[]}
+ */
+export const privateRoute: string[] = [
+  "/profile",
+  "/dashboardVcard",
+  "/dashboard",
   "/vcard",
   "/qr",
   "/all",

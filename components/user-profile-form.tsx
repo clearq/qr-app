@@ -1,12 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,6 +10,7 @@ import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
+import  {ChangePasswordForm}  from "./change-password-form";
 
 interface Props {
   user: Customer;
@@ -23,9 +18,7 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
-  const [highQualityLogo, setHighQualityLogo] = useState<
-    string | ArrayBuffer | null
-  >(userData.image);
+  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(userData.image);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -37,13 +30,11 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       phone: userData?.phone || "",
       company: userData?.company || "",
       image: userData.image,
-      password: "",
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
       firstName: yup.string().required("First name is required"),
       lastName: yup.string().required("Last name is required"),
-      password: yup.string(),
       phone: yup.string().nullable(),
       company: yup.string().nullable(),
     }),
@@ -182,9 +173,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             {/* Second image for display */}
             <AvatarImage
               //@ts-ignore
-              src={
-                highQualityLogo ? highQualityLogo.toString() : userData.image
-              }
+              src={highQualityLogo ? highQualityLogo.toString() : userData.image}
               alt="User Image"
             />
             <AvatarFallback className="text-[2rem]">
@@ -201,18 +190,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           />
         </label>
         <div className="flex items-center space-x-4 mt-4">
-        {/* <UploadButton
-        endpoint="imageUploader"
-        onClientUploadComplete={(res) => {
-          // Do something with the response
-          console.log("Files: ", res);
-          alert("Upload Completed");
-        }}
-        onUploadError={(error: Error) => {
-          // Do something with the error.
-          alert(`ERROR! ${error.message}`);
-        }}
-      /> */}
           <label
             htmlFor="logoType"
             className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
@@ -294,42 +271,16 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 onChange={validation.handleChange}
               />
             </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pasword">Current Password</Label>
-              <Input
-                name="password"
-                placeholder="Password"
-                value={validation.values.password}
-                onChange={validation.handleChange}
-                readOnly
-              />
-            </div>
-            {/*             
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pasword">New Password</Label>
-              <Input
-                name="password"
-                placeholder="Password"
-                value={validation.values.password}
-                onChange={validation.handleChange}
-              />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pasword">Confirm Password</Label>
-              <Input
-                name="password"
-                placeholder="Password"
-                value={validation.values.password}
-                onChange={validation.handleChange}
-              />
-            </div> */}
             <Button type="submit" className="mt-4 w-full">
               Save changes
             </Button>
-            <div className="mt-4 w-[full]">
-              <DeleteUser user={userData} />
+            <div className="mt-4 w-full">
             </div>
           </form>
+          <ChangePasswordForm 
+          //@ts-ignore
+          user={userData} />
+              <DeleteUser user={userData} />
         </CardContent>
       </Card>
     </div>
