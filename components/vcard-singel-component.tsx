@@ -13,7 +13,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Progress } from "./ui/progress";
@@ -38,7 +37,6 @@ export const VcardSingelComponent = ({ user }: Props) => {
   const { data: session } = useSession();
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validation = useFormik({
     initialValues: {
@@ -76,6 +74,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
       image: yup.string().nullable(),
     }),
     onSubmit: (values) => {
+      console.log("Form values:", values);
       fetch("/api/saveVcard", {
         method: "PUT",
         headers: {
@@ -109,8 +108,6 @@ export const VcardSingelComponent = ({ user }: Props) => {
   });
 
   const fetchData = useCallback(() => {
-    // put analyes action to increment the views number
-
     fetch(`/api/saveVcard/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -125,6 +122,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
       })
       .catch((err) =>
         toast({
+          variant: "destructive",
           title: "Something went wrong",
           description: `${new Date().toLocaleDateString()}`,
         })
@@ -233,7 +231,7 @@ END:VCARD
 
   return (
     <div>
-      {session ? (
+      { session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Button
             onClick={() => handleBack()}
@@ -248,7 +246,7 @@ END:VCARD
               <CardDescription></CardDescription>
             </CardHeader>
             <Avatar className="flex justify-center items-center w-24 h-24 sm:w-52 sm:h-52">
-              <AvatarImage src={vcardData?.image || ""} alt="User Image" />
+              <AvatarImage src={vcardData?.logoType || ""} alt="User Image" />
               <AvatarFallback>
                 {vcardData?.firstName ? vcardData?.firstName[0] : ""}
                 {vcardData?.lastName ? vcardData?.lastName[0] : ""}
@@ -394,7 +392,7 @@ END:VCARD
             </CardContent>
           </Card>
               <div className="flex flex-row mt-2">
-                {vcardData.customerId && (
+                {user?.id === vcardData.customerId && (
                   <EditButton vcardData={vcardData} />
                 )}
               </div>
@@ -415,7 +413,7 @@ END:VCARD
                     // includeMargin={true}
                     imageSettings={{
                       //@ts-ignore
-                      src: logo ? logo.toString() : vcardData.image,
+                      src: logo ? logo.toString() : vcardData.logoType,
                       height: 75,
                       width: 75,
                       excavate: true,
@@ -443,8 +441,9 @@ END:VCARD
                 <CardDescription></CardDescription>
               </CardHeader>
               <label htmlFor="imageInput" className="cursor-pointer">
+
                 <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
-                  <AvatarImage src={validation.values.image} alt="User Image" />
+                  <AvatarImage src={vcardData.logoType || ""} alt="User Image" />
                   <AvatarFallback>
                     {vcardData.firstName ? vcardData.firstName[0] : ""}
                     {vcardData.lastName ? vcardData.lastName[0] : ""}

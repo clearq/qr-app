@@ -13,11 +13,20 @@ export default auth((req) => {
 
     const isApiAuthRoute = nextUrl.pathname.startsWith(apiRoutes);
     const isPublic = publicRoute.includes(nextUrl.pathname);
+    // const isPrivate = privateRoute.includes(nextUrl.pathname);
 
     if (isApiAuthRoute) {
        
         return
     }
+
+  //   if (isPrivate) {
+  //     if (isLoggedIn) {
+
+  //         return Response.redirect(new URL("/profile", nextUrl))
+  //     }
+  //   return;
+  // }
 
     if (!isLoggedIn && !isPublic) {
      

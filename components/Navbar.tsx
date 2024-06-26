@@ -66,6 +66,9 @@ export const Navbar = ({ user: userData }: Props) => {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 </Link>
                 <DropdownMenuSeparator />
+                <Link href="/all">
+                  <DropdownMenuItem className="cursor-pointer">Overview</DropdownMenuItem>
+                </Link>
                 <Link href="/dashboard">
                   <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
                 </Link>
