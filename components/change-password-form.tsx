@@ -114,7 +114,7 @@ export const ChangePasswordForm = () => {
         </span>
       </div>
       <Button type="submit" className="mt-4 w-full">
-        Change Password
+        Save Password
       </Button>
     </form>
   );

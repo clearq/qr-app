@@ -1,6 +1,12 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,7 +16,8 @@ import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
-import  {ChangePasswordForm}  from "./change-password-form";
+import { ChangePasswordForm } from "./change-password-form";
+import ImageUpload from "./uploadImage";
 
 interface Props {
   user: Customer;
@@ -18,7 +25,9 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
-  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(userData.image);
+  const [highQualityLogo, setHighQualityLogo] = useState<
+    string | ArrayBuffer | null
+  >(userData.image);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -30,6 +39,11 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       phone: userData?.phone || "",
       company: userData?.company || "",
       image: userData.image,
+      orgNumber: userData?.orgNumber || "",
+      address: userData?.address || "",
+      country: userData?.country || "",
+      city: userData?.city || "",
+      zip: userData?.zip || "",
     },
     validationSchema: yup.object({
       email: yup.string().email().required("Email is required"),
@@ -37,6 +51,11 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       lastName: yup.string().required("Last name is required"),
       phone: yup.string().nullable(),
       company: yup.string().nullable(),
+      orgNumber: yup.string().nullable(),
+      address: yup.string().nullable(),
+      country: yup.string().nullable(),
+      city: yup.string().nullable(),
+      zip: yup.string().nullable(),
     }),
     onSubmit: (values) => {
       fetch("/api/profile", {
@@ -173,7 +192,9 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             {/* Second image for display */}
             <AvatarImage
               //@ts-ignore
-              src={highQualityLogo ? highQualityLogo.toString() : userData.image}
+              src={
+                highQualityLogo ? highQualityLogo.toString() : userData.image
+              }
               alt="User Image"
             />
             <AvatarFallback className="text-[2rem]">
@@ -189,6 +210,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             onChange={handleImageChange}
           />
         </label>
+        {/* <ImageUpload/> */}
         <div className="flex items-center space-x-4 mt-4">
           <label
             htmlFor="logoType"
@@ -271,16 +293,53 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 onChange={validation.handleChange}
               />
             </div>
-            <Button type="submit" className="mt-4 w-full">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="orgNumber">Org.Number</Label>
+              <Input
+                name="orgNumber"
+                placeholder="123456-7890"
+                value={validation.values.orgNumber}
+                onChange={validation.handleChange}
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="address">Address</Label>
+              <Input
+                name="address"
+                placeholder="1017 Airline Dr"
+                value={validation.values.address}
+                onChange={validation.handleChange}
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="city">City</Label>
+              <Input
+                name="city"
+                placeholder="Kenner"
+                value={validation.values.city}
+                onChange={validation.handleChange}
+              />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="zip">Zip/Postal Code</Label>
+              <Input
+                name="zip"
+                placeholder="70062"
+                value={validation.values.zip}
+                onChange={validation.handleChange}
+              />
+            </div>   
+            <Button type="submit" className="mt-[25px] mb-4 w-full">
               Save changes
             </Button>
-            <div className="mt-4 w-full">
-            </div>
+            <div className="mt-4 w-full"></div>
           </form>
-          <ChangePasswordForm 
-          //@ts-ignore
-          user={userData} />
-              <DeleteUser user={userData} />
+          <CardTitle>Change password</CardTitle>
+          <ChangePasswordForm
+            //@ts-ignore
+            user={userData}
+          />
+          <DeleteUser user={userData} />
         </CardContent>
       </Card>
     </div>

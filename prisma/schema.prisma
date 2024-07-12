@@ -14,23 +14,23 @@ model Customer {
   lastName  String
   phone     String?
   password  String
+  orgNumber String?
+  address   String?
+  country   String?
+  city      String?
+  zip       String?
   company   String?
   image     String?  @db.NVarChar(MAX)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
   vcard     VCard[]
   qr        Qr[]
 }
 
-// model TypeOfQrCode {
-//   id     String      @id @default(cuid())
-//   name   String
-//   vcard VCard[]
-//   qr Qr[]
-// }
-
 model VCard {
-  id            String    @id @default(cuid())
+  id            String    @id @unique @default(cuid())
   firstName     String
   lastName      String
   tag           String
@@ -58,4 +58,21 @@ model Qr {
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   logoType   String?   @db.NVarChar(MAX)
   customerId String
+  scans      Scan[]
+}
+
+model Scan {
+  id         String   @id @default(cuid())
+  qr         Qr?      @relation(fields: [qrId], references: [id], onDelete: Cascade)
+  qrId       String
+  ipAddress  String
+  latitude   Float
+  longitude  Float
+  scannedAt  DateTime @default(now())
+}
+
+model Role {
+  id    String      @id @default(cuid())
+  name  String      @unique
+  customers Customer[]
 }

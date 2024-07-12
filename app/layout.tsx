@@ -8,6 +8,8 @@ import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/toaster";
 import { CardFooter } from "@/components/ui/card";
 import CookieConsentBanner from "@/components/Cookies";
+import "@uploadthing/react/styles.css";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -31,7 +33,7 @@ export default async function RootLayout({ children }: Props) {
           disableTransitionOnChange
         >
           <SessionProvider session={session}>
-            <div className="mx-auto max-w-5xl text-2xl gap-2 mb-10">
+            <div className="mx-auto max-w-7xl text-2xl gap-2 mb-10">
               <Toaster />
             <Navbar user={session?.user} />
               {children}

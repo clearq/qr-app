@@ -1,4 +1,16 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -15,16 +27,19 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { IQR } from "@/typings";
+import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
-import { AddButton } from "@/components/AddButton";
-import { EditButton } from "@/components/EditButton";
+import { useEffect, useRef, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { toast } from "@/components/ui/use-toast";
+import EditButton from "@/components/EditButtonVcard";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
-import { Button } from "@/components/ui/button";
 
 interface DataTableProps {
-  qrData: IQR[];
+  vcardData: IVCARD[];
   refetchDataTable: () => void;
 }
 
@@ -42,21 +57,21 @@ const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
   </PaginationItem>
 );
 
-export const DataTable: React.FC<DataTableProps> = ({
-  qrData: qrcodeData,
+export const DataTable = ({
+  vcardData: vData,
   refetchDataTable,
-}) => {
+}: DataTableProps) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(5); // Items per page
+  const [itemsPerPage] = useState<number>(5);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/qr/${id}`, {
+    await fetch(`/api/saveVcard/${id}`, {
       method: "DELETE",
     })
       .then((data) => data.json())
@@ -68,34 +83,35 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   const router = useRouter();
 
-  const handleUrl = () => {
-    router.push("/qr");
+  const handleVcard = () => {
+    router.push("/vcard");
   };
 
   if (!isMounted) return null;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = qrcodeData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(qrcodeData.length / itemsPerPage);
+  const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(vData.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    setCurrentPage(page);
   };
 
   return (
     <div>
-      <Table className="mb-10">
+      <Table>
         <TableHeader className="h-12">
           <TableRow>
             <TableHead className="w-[100px]">ID</TableHead>
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="flex flex-row space-x-20 relative justify-end items-end">
-              <AddButton onClick={handleUrl} />
+            <TableHead className="flex flex-row space-x-7 justify-end items-end">
+              <Button variant="outline" className="" onClick={handleVcard}>
+                Add VCard
+              </Button>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -106,22 +122,22 @@ export const DataTable: React.FC<DataTableProps> = ({
             </TableRow>
           ) : (
             <>
-              {currentData.map((qr, index: number) => (
-                <TableRow key={qr.id}>
+              {currentData.map((vcard, index: number) => (
+                <TableRow key={vcard.id}>
                   <TableCell>
                     {index + 1 + (currentPage - 1) * itemsPerPage}
                   </TableCell>
-                  <TableCell>{qr.tag}</TableCell>
-                  <TableCell>QR</TableCell>
+                  <TableCell>{vcard.tag}</TableCell>
+                  <TableCell>VCARD</TableCell>
                   <TableCell>
                     <QRCode
-                      value={qr.url}
+                      value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
                       size={70}
                       renderAs="canvas"
                       // includeMargin={true}
                       imageSettings={{
                         //@ts-ignore
-                        src: logo ? logo.toString() : qr.logoType,
+                        src: logo ? logo.toString() : vcard.logoType,
                         height: 20,
                         width: 20,
                         excavate: true,
@@ -133,13 +149,15 @@ export const DataTable: React.FC<DataTableProps> = ({
                   <TableCell>
                     <div className="m-3 flex flex-row space-x-7 justify-end items-end">
                       <Button
-                        onClick={() => router.replace(`qr/details?id=${qr.id}`)}
+                        onClick={() =>
+                          router.replace(`vcard/details?id=${vcard.id}`)
+                        }
                         variant="outline"
                       >
                         👁️‍🗨️
                       </Button>
-                      <EditButton qrData={qr} />
-                      <DeleteButton id={qr.id} onDelete={handleDelete} />
+                      <EditButton vcardData={vcard} />
+                      <DeleteButton id={vcard.id} onDelete={handleDelete} />
                     </div>
                   </TableCell>
                 </TableRow>
