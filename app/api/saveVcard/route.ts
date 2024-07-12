@@ -1,8 +1,7 @@
-import { createQrCode } from "@/actions/qr";
 import { auth } from "@/auth";
 import { getAllVData } from "@/data/vcard";
 import { prisma } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 
 export async function GET() {
   const user = await auth();
@@ -17,7 +16,7 @@ export async function GET() {
   const vData = await getAllVData(id);
 
   if (!vData) {
-    return NextResponse.json("Qr data not found!", { status: 400 });
+    return NextResponse.json("Vcard data not found!", { status: 400 });
   }
 
   return NextResponse.json(vData, { status: 200 });

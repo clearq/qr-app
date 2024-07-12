@@ -13,7 +13,7 @@ interface Params extends ParsedUrlQuery {
 
 const RedirectForm = ({ url }: RedirectProps) => {
   const [countdown, setCountdown] = useState(5);
-  const [progress, setProgress] = useState(43)
+  const [progress, setProgress] = useState(75)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,7 +31,7 @@ const RedirectForm = ({ url }: RedirectProps) => {
   }, [url]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(95), 4000)
+    const timer = setTimeout(() => setProgress(99), 4000)
     return () => clearTimeout(timer)
   }, [])
 

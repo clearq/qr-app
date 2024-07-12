@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 
 export const vCodeById = async (id: string) => {
   try {
-    const vcData = await prisma.vCard.findFirst({
+    const vcData = await prisma.vCard.findUnique({
       where: { id },
     });
     return vcData;

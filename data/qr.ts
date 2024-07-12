@@ -5,6 +5,9 @@ export const qrCodeById = async (id: string) => {
   try {
     const qrData = await prisma.qr.findFirst({
       where: { id },
+      include: {
+        scans: true,
+      },
     });
     return qrData;
   } catch {
@@ -18,7 +21,10 @@ export const getAllQrData = async (id: string) => {
     const qrData = await prisma.qr.findMany({
       where:{
         customerId: id
-      }
+      },
+      include: {
+        scans: true,
+      },
     });
 
     return qrData

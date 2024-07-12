@@ -27,14 +27,14 @@ interface Props {
   user?: ExtendedUser;
 }
 
-export const VcardSingelComponent = ({ user }: Props) => {
+export const VcardSingelComponent  = ({ user }: Props) => {
   const params = useSearchParams();
   const router = useRouter();
 
   const id = params.get("id");
   const [vcardData, setVcardData] = useState<IVCARD>();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession(); // Check session status
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +133,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
     fetchData();
   }, [fetchData]);
 
+
   const generateVCardString = (values: any) => {
     const photo = values.logoType
       ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}`
@@ -217,16 +218,25 @@ END:VCARD
     router.push("/dashboardVcard");
   };
 
-  if (!vcardData) {
+  if (status === "loading") {
     return (
       <div className="flex mr-9 ml-9 justify-center items-center h-screen">
-        <Progress className="text-center" value={33} />
+        <Progress className="text-center" value={77} />
       </div>
     );
   }
-
+  
   if (!id) {
     router.replace("/dashboardVcard");
+    return null;
+  }
+  
+  if (!vcardData) {
+    return (
+      <div className="flex flex-col mr-9 ml-9 justify-center items-center h-screen">
+        <Progress className="text-center" value={77} />
+      </div>
+    );
   }
 
   return (
@@ -427,6 +437,9 @@ END:VCARD
                     </Button>
                     <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                   </div>
+                    {/* <Link href={'/'}>
+                    <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
+                    </Link> */}
                 </div>
               </CardContent>
             </Card>

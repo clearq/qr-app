@@ -57,6 +57,7 @@ export const Navbar = ({ user: userData }: Props) => {
                     />
                     <AvatarFallback>
                       {userData?.firstName ? userData?.firstName[0] : ""}
+                      {userData?.lastName ? userData?.lastName[0] : ""}
                     </AvatarFallback>
                   </Avatar>
                 </Button>

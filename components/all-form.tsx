@@ -44,19 +44,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { saveAs } from "file-saver";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ICUSTOMER } from "@/typings";
-import { useRouter } from "next/navigation";
-
+import { ICUSTOMER, IVCARD } from "@/typings";
+import { useRouter, useSearchParams } from "next/navigation";
+import QRCode from "qrcode.react";
+import { toast } from "./ui/use-toast";
 
 export default function AllForm() {
+  const params = useSearchParams();
+
+
+  const id = params.get("id");
   const [userData, setUserData] = React.useState(null);
-  const router = useRouter()
+  const router = useRouter();
+  const [vcardData, setVcardData] = React.useState<IVCARD>();
+  const [logo, setLogo] = React.useState<string | ArrayBuffer | null>(null);
+  const qrRef = React.useRef<HTMLDivElement>(null);
 
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch('/api/profile'); 
+      const res = await fetch("/api/profile");
       const data = await res.json();
       setUserData(data);
     };
@@ -74,6 +90,48 @@ export default function AllForm() {
     router.push("/dashboard");
   };
 
+  const downloadQRCode = (format: "png" | "svg") => {
+    if (!qrRef.current) return;
+    const canvas = qrRef.current.querySelector("canvas");
+    if (canvas) {
+      if (format === "png") {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            saveAs(blob, `qrcode.${format}`);
+          }
+        }, "image/png");
+      } else if (format === "svg") {
+        const svg = qrRef.current.querySelector("svg");
+        if (svg) {
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const blob = new Blob([svgData], {
+            type: "image/svg+xml;charset=utf-8",
+          });
+          saveAs(blob, `qrcode.${format}`);
+        }
+      }
+    }
+  };
+
+  const copyUrlToClipboard = () => {
+    //@ts-ignore
+    const url = `https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        toast({
+          title: "URL copied to clipboard",
+          description: `${new Date().toLocaleDateString()}`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Failed to copy URL",
+          description: `${new Date().toLocaleDateString()}`,
+        });
+      });
+  };
   if (!userData) {
     return (
       <div className="flex mr-9 ml-9 justify-center items-center h-screen">
@@ -81,7 +139,7 @@ export default function AllForm() {
       </div>
     );
   }
-  
+
   return (
     <div className="flex w-full flex-col bg-muted/40">
       <Card>
@@ -97,32 +155,46 @@ export default function AllForm() {
                     <CardTitle>
                       {
                         //@ts-ignore
-                      userData?.firstName
-                      } {
+                        userData?.firstName
+                      }{" "}
+                      {
                         //@ts-ignore
-                        userData?.lastName}</CardTitle>
+                        userData?.lastName
+                      }
+                    </CardTitle>
                     <CardDescription className="max-w-lg text-balance leading-relaxed">
-                    {//@ts-ignore
-                    userData?.email}
-                    <br />
-                    {//@ts-ignore
-                    userData?.phone}
-                    <br />
-                    {//@ts-ignore
-                    userData?.company}
-                    <br />
-
-                    </CardDescription> 
+                      {
+                        //@ts-ignore
+                        userData?.email
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
+                        userData?.phone
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
+                        userData?.company
+                      }
+                      <br />
+                    </CardDescription>
                   </CardHeader>
                   <CardFooter>
-                    <Button onClick={() => handleProfile()}>View Your Profile</Button>
+                    <Button onClick={() => handleProfile()}>
+                      View Your Profile
+                    </Button>
                   </CardFooter>
                 </Card>
                 <Card x-chunk="dashboard-05-chunk-1">
                   <CardHeader className="pb-2">
                     <CardDescription>QR</CardDescription>
-                    <CardTitle className="text-4xl">{//@ts-ignore
-                    userData._count.qr}</CardTitle>
+                    <CardTitle className="text-4xl">
+                      {
+                        //@ts-ignore
+                        userData._count.qr
+                      }
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
@@ -130,23 +202,27 @@ export default function AllForm() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                  <Button onClick={() => handleQr()}>{'->'}</Button>
+                    <Button onClick={() => handleQr()}>{"->"}</Button>
                     {/* <Progress value={userData._count.qr} aria-label="25% increase" /> */}
                   </CardFooter>
                 </Card>
                 <Card x-chunk="dashboard-05-chunk-2">
                   <CardHeader className="pb-2">
                     <CardDescription>VCard</CardDescription>
-                    <CardTitle className="text-4xl">{//@ts-ignore
-                    userData._count.vcard}</CardTitle>
+                    <CardTitle className="text-4xl">
+                      {
+                        //@ts-ignore
+                        userData._count.vcard
+                      }
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-xs text-muted-foreground">
-                    Check here:
+                      Check here:
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button onClick={() => handleVcard()}>{'->'}</Button>
+                    <Button onClick={() => handleVcard()}>{"->"}</Button>
                     {/* <Progress value={userData._count.vcard} aria-label="12% increase" /> */}
                   </CardFooter>
                 </Card>
@@ -196,213 +272,58 @@ export default function AllForm() {
                 </div>
                 <TabsContent value="week">
                   <Card x-chunk="dashboard-05-chunk-3">
-                    <CardHeader className="px-7">
-                      <CardTitle>Orders</CardTitle>
-                      <CardDescription>
-                        Recent orders from your store.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Customer</TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Type
-                            </TableHead>
-                            <TableHead className="hidden sm:table-cell">
-                              Status
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell">
-                              Date
-                            </TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          <TableRow className="bg-accent">
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $250.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $150.00
-                            </TableCell>
-                          </TableRow>
-                          {/* <TableRow>
-                          <TableCell>
-                            <div className="font-medium">Liam Johnson</div>
-                            <div className="hidden text-sm text-muted-foreground md:inline">
-                              liam@example.com
+                    <Carousel>
+                      <CarouselContent>
+                        <CarouselItem>
+                          <div
+                            ref={qrRef}
+                            className="flex flex-col items-center justify-center mt-7 mb-7"
+                          >
+                            <QRCode
+                              value={`https://qrgen.clearq.se/vcard/details?id=${vcardData?.id}`}
+                              size={window.innerWidth > 768 ? 500 : 300}
+                              renderAs="canvas"
+                              // includeMargin={true}
+                              imageSettings={{
+                                //@ts-ignore
+                                src: logo
+                                  ? logo.toString()
+                                  : vcardData?.logoType,
+                                height: 75,
+                                width: 75,
+                                excavate: true,
+                              }}
+                              bgColor="rgba(0,0,0,0)"
+                              fgColor="#000000"
+                            />
+                            <div className="flex flex-row space-x-4 justify-center items-center mt-6">
+                              <Button
+                                onClick={() => downloadQRCode("png")}
+                                className=""
+                              >
+                                Download PNG
+                              </Button>
+                              <Button onClick={copyUrlToClipboard}>
+                                Copy URL
+                              </Button>
                             </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            Sale
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <Badge className="text-xs" variant="secondary">
-                              Fulfilled
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            2023-06-23
-                          </TableCell>
-                          <TableCell className="text-right">$250.00</TableCell>
-                        </TableRow> */}
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Noah Williams</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                noah@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Subscription
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-25
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $350.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $450.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $250.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $150.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $450.00
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </CardContent>
+                            {/* <Link href={'/'}>
+                    <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
+                    </Link> */}
+                          </div>
+                        </CarouselItem>
+                        <CarouselItem>...</CarouselItem>
+                        <CarouselItem>...</CarouselItem>
+                      </CarouselContent>
+                      <CarouselPrevious />
+                      <CarouselNext />
+                    </Carousel>
                   </Card>
                 </TabsContent>
               </Tabs>
             </div>
             <div>
-              <Card className="overflow-hidden" x-chunk="dashboard-05-chunk-4">
+              {/* <Card className="overflow-hidden" x-chunk="dashboard-05-chunk-4">
                 <CardHeader className="flex flex-row items-start bg-muted/50">
                   <div className="grid gap-0.5">
                     <CardTitle className="group flex items-center gap-2 text-lg">
@@ -564,7 +485,7 @@ export default function AllForm() {
                     </PaginationContent>
                   </Pagination>
                 </CardFooter>
-              </Card>
+              </Card> */}
             </div>
           </main>
         </div>

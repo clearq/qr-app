@@ -18,20 +18,20 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
 interface EditButtonProps {
-  vcardData: VCard;
+  vcardData?: VCard;
 }
 
 const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
-  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(vData.image);
+  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(vData?.image? vData.image : null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
 
   const validation = useFormik({
     initialValues: {
-      id: vData.id,
+      id: vData?.id,
       url: vData?.url || "",
       customerEmail: vData?.customerEmail || "",
       firstName: vData?.firstName || "",
@@ -41,7 +41,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
       company: vData?.company || "",
       title: vData?.title || "",
       logoType: vData?.logoType || "",
-      image: vData.image,
+      image: vData?.image,
       linkedIn: vData?.linkedIn || "",
       x: vData?.x || "",
       facebook: vData?.facebook || "",
@@ -203,7 +203,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
             <AvatarImage
               //@ts-ignore
               src={
-                highQualityLogo ? highQualityLogo.toString() : vData.image
+                highQualityLogo ? highQualityLogo.toString() : vData?.image
               }
               alt="User Image"
             />

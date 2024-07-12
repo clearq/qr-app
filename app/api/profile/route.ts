@@ -44,8 +44,19 @@ export async function PUT(req: NextRequest) {
   const { id } = user.user;
 
   try {
-    const { email, firstName, lastName, phone, company, image } =
-      await req.json();
+    const {
+      email,
+      firstName,
+      lastName,
+      phone,
+      company,
+      image,
+      orgNumber,
+      address,
+      country,
+      city,
+      zip,
+    } = await req.json();
 
     if (!email || !firstName || !lastName) {
       return NextResponse.json(
@@ -63,6 +74,11 @@ export async function PUT(req: NextRequest) {
         phone: phone,
         company: company,
         image: image,
+        orgNumber: orgNumber,
+        address: address,
+        country: country,
+        city: city,
+        zip: zip,
       },
     });
 
