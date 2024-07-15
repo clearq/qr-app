@@ -27,12 +27,12 @@ interface Props {
   user?: ExtendedUser;
 }
 
-export const VcardSingelComponent  = ({ user }: Props) => {
+export const VcardSingelComponent = ({ user }: Props) => {
   const params = useSearchParams();
   const router = useRouter();
 
   const id = params.get("id");
-  const [vcardData, setVcardData] = useState<IVCARD>();
+  const [vcardData, setVcardData] = useState<IVCARD | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: session, status } = useSession(); // Check session status
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
@@ -108,7 +108,7 @@ export const VcardSingelComponent  = ({ user }: Props) => {
   });
 
   const fetchData = useCallback(() => {
-    fetch(`/api/saveVcard/${id}`)
+    fetch(`/api/saveVcard?id=${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
@@ -116,9 +116,10 @@ export const VcardSingelComponent  = ({ user }: Props) => {
             title: `${data.error}`,
             description: `${new Date().toLocaleDateString()}`,
           });
+        } else {
+          setVcardData(data);
+          validation.setValues(data);
         }
-        setVcardData(data);
-        validation.setValues(data);
       })
       .catch((err) =>
         toast({
@@ -132,7 +133,6 @@ export const VcardSingelComponent  = ({ user }: Props) => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
 
   const generateVCardString = (values: any) => {
     const photo = values.logoType
@@ -225,12 +225,12 @@ END:VCARD
       </div>
     );
   }
-  
+
   if (!id) {
     router.replace("/dashboardVcard");
     return null;
   }
-  
+
   if (!vcardData) {
     return (
       <div className="flex flex-col mr-9 ml-9 justify-center items-center h-screen">
@@ -241,7 +241,7 @@ END:VCARD
 
   return (
     <div>
-      { session ? (
+      {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Button
             onClick={() => handleBack()}
@@ -401,11 +401,11 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-              <div className="flex flex-row mt-2">
-                {user?.id === vcardData.customerId && (
-                  <EditButton vcardData={vcardData} />
-                )}
-              </div>
+          <div className="flex flex-row mt-2">
+            {user?.id === vcardData.customerId && (
+              <EditButton vcardData={vcardData} />
+            )}
+          </div>
           {user?.id === vcardData.customerId && (
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>
@@ -437,7 +437,7 @@ END:VCARD
                     </Button>
                     <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                   </div>
-                    {/* <Link href={'/'}>
+                  {/* <Link href={'/'}>
                     <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
                     </Link> */}
                 </div>
@@ -454,9 +454,11 @@ END:VCARD
                 <CardDescription></CardDescription>
               </CardHeader>
               <label htmlFor="imageInput" className="cursor-pointer">
-
                 <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
-                  <AvatarImage src={vcardData.logoType || ""} alt="User Image" />
+                  <AvatarImage
+                    src={vcardData.logoType || ""}
+                    alt="User Image"
+                  />
                   <AvatarFallback>
                     {vcardData.firstName ? vcardData.firstName[0] : ""}
                     {vcardData.lastName ? vcardData.lastName[0] : ""}
