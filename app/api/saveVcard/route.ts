@@ -1,10 +1,29 @@
+import { prisma } from "@/lib/db";
+import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getAllVData } from "@/data/vcard";
-import { prisma } from "@/lib/db";
-import {  NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+
+  if (id) {
+    const vCard = await prisma.vCard.findUnique({
+      where: { id },
+    });
+
+    if (!vCard) {
+      return NextResponse.json(
+        { error: "Vcard data not found!" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(vCard, { status: 200 });
+  }
+
   const user = await auth();
+
   if (!user?.user) {
     return NextResponse.json(
       { error: "You need to log in" },
@@ -12,8 +31,8 @@ export async function GET() {
     );
   }
 
-  const { id } = user.user;
-  const vData = await getAllVData(id);
+  const { id: userId } = user.user;
+  const vData = await getAllVData(userId);
 
   if (!vData) {
     return NextResponse.json("Vcard data not found!", { status: 400 });
@@ -45,7 +64,6 @@ export async function POST(req: Request) {
   if (!createdVcard) {
     return NextResponse.json({ error: "Cannot create vCard" }, { status: 400 });
   }
-
 
   return NextResponse.json(
     {
@@ -92,7 +110,6 @@ export async function PUT(req: Request) {
         { status: 403 }
       );
     }
-
 
     // Update the record
     const updatedUser = await prisma.vCard.update({
