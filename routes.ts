@@ -15,8 +15,8 @@ export const publicRoute = [
 */
 export const privateRoute: string[] = [
   "/profile",
-  "/dashboard",
   "/vcard",
+  "/dashboard",
   "/coDashboard/dashboardStamp",
   "/dashboardVcard",
   "/qr",

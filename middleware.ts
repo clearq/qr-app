@@ -23,6 +23,7 @@ export default auth((req) => {
   //   if (isPrivate) {
   //     if (isLoggedIn) {
 
+  
   //         return Response.redirect(new URL("/profile", nextUrl))
   //     }
   //   return;

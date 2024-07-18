@@ -108,7 +108,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   });
 
   const fetchData = useCallback(() => {
-    fetch(`/api/saveVcard?id=${id}`)
+    fetch(`/api/saveVcard/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
@@ -225,12 +225,12 @@ END:VCARD
       </div>
     );
   }
-
+  
   if (!id) {
     router.replace("/dashboardVcard");
     return null;
   }
-
+  
   if (!vcardData) {
     return (
       <div className="flex flex-col mr-9 ml-9 justify-center items-center h-screen">
@@ -241,7 +241,7 @@ END:VCARD
 
   return (
     <div>
-      {session ? (
+      { session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Button
             onClick={() => handleBack()}
@@ -401,11 +401,11 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-          <div className="flex flex-row mt-2">
-            {user?.id === vcardData.customerId && (
+          {user?.id === vcardData.customerId && (
+            <div className="flex flex-row mt-2">
               <EditButton vcardData={vcardData} />
-            )}
-          </div>
+            </div>
+          )}
           {user?.id === vcardData.customerId && (
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>
@@ -437,9 +437,6 @@ END:VCARD
                     </Button>
                     <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                   </div>
-                  {/* <Link href={'/'}>
-                    <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
-                    </Link> */}
                 </div>
               </CardContent>
             </Card>
@@ -455,10 +452,7 @@ END:VCARD
               </CardHeader>
               <label htmlFor="imageInput" className="cursor-pointer">
                 <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
-                  <AvatarImage
-                    src={vcardData.logoType || ""}
-                    alt="User Image"
-                  />
+                  <AvatarImage src={vcardData.logoType || ""} alt="User Image" />
                   <AvatarFallback>
                     {vcardData.firstName ? vcardData.firstName[0] : ""}
                     {vcardData.lastName ? vcardData.lastName[0] : ""}
