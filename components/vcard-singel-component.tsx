@@ -74,7 +74,6 @@ export const VcardSingelComponent = ({ user }: Props) => {
       image: yup.string().nullable(),
     }),
     onSubmit: (values) => {
-      console.log("Form values:", values);
       fetch("/api/saveVcard", {
         method: "PUT",
         headers: {
@@ -401,12 +400,12 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-          
+          {user?.id === vcardData.customerId && (
             <div className="flex flex-row mt-2">
               <EditButton vcardData={vcardData} />
             </div>
-         
-          
+          )}
+          {user?.id === vcardData.customerId && (
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>
                 <CardTitle>QR Code</CardTitle>
@@ -440,10 +439,10 @@ END:VCARD
                 </div>
               </CardContent>
             </Card>
-         
+          )}
         </div>
       ) : (
-        <div className="flex justify-center items-center h-screen">
+        <div className="">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Card className="flex flex-col justify-center items-center">
               <CardHeader>
@@ -604,7 +603,7 @@ END:VCARD
                     </div>
                   )}
                 </form>
-                <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+                <div className="flex flex-col sm:flex-row items-start justify-between mt-4">
                   <Button
                     onClick={handleDownloadVcard}
                     className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"

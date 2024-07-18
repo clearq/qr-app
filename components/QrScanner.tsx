@@ -27,7 +27,6 @@ const QrScanner = () => {
         }
 
         const result = await response.json();
-        console.log('Scan registered:', result);
       } catch (error) {
         console.error(error);
       }

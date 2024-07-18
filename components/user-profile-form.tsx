@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
 import { ChangePasswordForm } from "./change-password-form";
 import ImageUpload from "./uploadImage";
+import { useRouter } from "next/navigation";
 
 interface Props {
   user: Customer;
@@ -30,6 +31,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   >(userData.image);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!userData) {
+      router.replace('/');
+    }
+  }, [userData, router]);
 
   const validation = useFormik({
     initialValues: {
@@ -168,6 +176,8 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     // Submit the form to update the server immediately after removing the image
     validation.handleSubmit();
   };
+
+  if (!userData) return null;
 
   return (
     <div className="container mx-auto">

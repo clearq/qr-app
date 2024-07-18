@@ -13,7 +13,6 @@ export default function ImageUpload() {
       }}
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
-          console.log("Files: ", res);
           alert("Upload Completed");
         }}
         onUploadError={(error: Error) => {
