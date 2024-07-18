@@ -161,7 +161,7 @@ export const QrSingelComponent = ({ user }: Props) => {
   }
 
   if (!id) {
-    router.replace("/dashboard");
+    router.replace("/");
   }
 
   return (

@@ -37,6 +37,10 @@ export function RegisterForm2() {
     const lastName = formData.get('lastName') as string;
     const company = formData.get('company') as string;
     const orgNumber = formData.get('orgNumber') as string;
+    const address = formData.get('address') as string;
+    const city = formData.get('city') as string;
+    const phone = formData.get('phone') as string;
+    const zip = formData.get('zip') as string;
 
     if (!isValidEmail(email)) {
       setError("Invalid email");
@@ -58,6 +62,10 @@ export function RegisterForm2() {
         lastName,
         company,
         orgNumber,
+        address,
+        city,
+        phone,
+        zip,
         roleId
       });
 
