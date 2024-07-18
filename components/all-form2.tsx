@@ -62,68 +62,71 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from "recharts"
 
 
-export default function AllForm() {
-  const params = useSearchParams();
-  
-  const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 190, fill: "var(--color-other)" },
-  ]
-  
-  const chartConfig = {
-    visitors: {
-      label: "Visitors",
-    },
-    chrome: {
-      label: "Chrome",
-      color: "hsl(var(--chart-1))",
-    },
+export default function AllForm2() {
+    
+    const chartData = [
+        { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+        { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+        { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
+        { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+        { browser: "other", visitors: 190, fill: "var(--color-other)" },
+    ]
+    
+    const chartConfig = {
+        visitors: {
+            label: "Visitors",
+        },
+        chrome: {
+            label: "Chrome",
+            color: "hsl(var(--chart-1))",
+        },
     safari: {
-      label: "Safari",
-      color: "hsl(var(--chart-2))",
+        label: "Safari",
+        color: "hsl(var(--chart-2))",
     },
     firefox: {
-      label: "Firefox",
-      color: "hsl(var(--chart-3))",
+        label: "Firefox",
+        color: "hsl(var(--chart-3))",
     },
     edge: {
-      label: "Edge",
-      color: "hsl(var(--chart-4))",
+        label: "Edge",
+        color: "hsl(var(--chart-4))",
     },
     other: {
-      label: "Other",
-      color: "hsl(var(--chart-5))",
+        label: "Other",
+        color: "hsl(var(--chart-5))",
     },
-  } satisfies ChartConfig
-  
-  const chartDatas = [
+} satisfies ChartConfig
+
+const chartDatas = [
     { month: "January", desktop: 186 },
     { month: "February", desktop: 305 },
     { month: "March", desktop: 237 },
     { month: "April", desktop: 73 },
     { month: "May", desktop: 209 },
     { month: "June", desktop: 214 },
-  ]
-  const chartConfigs = {
+]
+const chartConfigs = {
     desktop: {
-      label: "Desktop",
-      color: "hsl(var(--chart-1))",
+        label: "Desktop",
+        color: "hsl(var(--chart-1))",
     },
-  } satisfies ChartConfig
-  
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [])
+} satisfies ChartConfig
 
-  const id = params.get("id");
-  const [userData, setUserData] = React.useState(null);
-  const router = useRouter();
-  const [vcardData, setVcardData] = React.useState<IVCARD>();
-  const [logo, setLogo] = React.useState<string | ArrayBuffer | null>(null);
+const totalVisitors = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
+}, [])
+
+const params = useSearchParams();
+const id = params.get("id");
+const qrId = params.get("qrId");
+const [userData, setUserData] = React.useState(null);
+const router = useRouter();
+const [vcardData, setVcardData] = React.useState<IVCARD>();
+const [logo, setLogo] = React.useState<string | ArrayBuffer | null>(null);
   const qrRef = React.useRef<HTMLDivElement>(null);
+  const [scanData, setScanData] = React.useState([]);
+  
 
 
   React.useEffect(() => {

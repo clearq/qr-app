@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   return NextResponse.json(
     {
       success: "Created vCard successfully",
-      id: createdVcard.id, // Include the ID in the response
+      id: createdVcard.id,
     },
     { status: 201 }
   );

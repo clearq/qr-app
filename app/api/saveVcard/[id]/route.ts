@@ -14,8 +14,9 @@ export async function GET(req: NextRequest, context: { params: Params }) {
   }
 
   try {
+    console.log("api: Id: ", id)
     const vCardData = await vCodeById(id);
-
+    console.log("api: data: ", vCardData)
     if (!vCardData) {
       return NextResponse.json({ error: "Not found!" }, { status: 404 });
     }
