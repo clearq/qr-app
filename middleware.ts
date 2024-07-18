@@ -24,15 +24,15 @@ export default auth((req) => {
   //     if (isLoggedIn) {
 
   
-  //         return Response.redirect(new URL("/profile", nextUrl))
+  //         return Response.redirect(new URL("/", nextUrl))
   //     }
   //   return;
   // }
 
-    if (!isLoggedIn && !isPublic) {
+    // if (!isLoggedIn && !isPublic) {
      
-      return NextResponse.redirect(new URL("/", nextUrl))
-    }
+    //   return NextResponse.redirect(new URL("/", nextUrl))
+    // }
 
 })
 

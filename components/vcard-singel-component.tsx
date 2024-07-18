@@ -232,13 +232,13 @@ END:VCARD
   }
   
   if (!vcardData) {
-    return (
+    return(
       <div className="flex flex-col mr-9 ml-9 justify-center items-center h-screen">
         <Progress className="text-center" value={77} />
       </div>
-    );
+    )
+    
   }
-
   return (
     <div>
       { session ? (
@@ -401,12 +401,12 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-          {user?.id === vcardData.customerId && (
+          
             <div className="flex flex-row mt-2">
               <EditButton vcardData={vcardData} />
             </div>
-          )}
-          {user?.id === vcardData.customerId && (
+         
+          
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>
                 <CardTitle>QR Code</CardTitle>
@@ -417,7 +417,7 @@ END:VCARD
                   className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
                 >
                   <QRCode
-                    value={`https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`}
+                    value={`https://qrgen.clearq.se/vcard/details?id=${vcardData?.id}`}
                     size={window.innerWidth > 768 ? 500 : 300}
                     renderAs="canvas"
                     // includeMargin={true}
@@ -440,7 +440,7 @@ END:VCARD
                 </div>
               </CardContent>
             </Card>
-          )}
+         
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">
