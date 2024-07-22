@@ -20,20 +20,6 @@ export default auth((req) => {
         return
     }
 
-  //   if (isPrivate) {
-  //     if (isLoggedIn) {
-
-  
-  //         return Response.redirect(new URL("/", nextUrl))
-  //     }
-  //   return;
-  // }
-
-    // if (!isLoggedIn && !isPublic) {
-     
-    //   return NextResponse.redirect(new URL("/", nextUrl))
-    // }
-
 })
 
 export const config = {
