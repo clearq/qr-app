@@ -9,6 +9,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { CardFooter } from "@/components/ui/card";
 import CookieConsentBanner from "@/components/Cookies";
 import "@uploadthing/react/styles.css";
+import { cn } from "@/lib/utils";
+import DotPattern from "@/components/magicui/dot-pattern";
+
 
 const inter = Inter({ subsets: ["latin"] });
 

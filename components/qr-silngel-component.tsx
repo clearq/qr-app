@@ -28,7 +28,7 @@ interface Props {
 export const QrSingelComponent = ({ user }: Props) => {
   const params = useSearchParams();
   const router = useRouter();
-
+  
   const id = params.get("id");
   const [qrcodeData, setQrCodeData] = useState<IVCARD>();
   const { data: session } = useSession();
@@ -129,8 +129,8 @@ export const QrSingelComponent = ({ user }: Props) => {
 
   const copyUrlToClipboard = () => {
     //@ts-ignore
-    const url = validation.values.url;
-    // const url = `https://qrgen.clearq.se/qr/details?id=${qrcodeData.id}`;
+    // const url = `https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}`;
+    const url = `localhost:3000/redirect?id=${qrcodeData?.id}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -186,11 +186,9 @@ export const QrSingelComponent = ({ user }: Props) => {
                   className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
                 >
                   <QRCode
-                    value={validation.values.url}
-                    // value={`${process.env.NEXT_PUBLIC_APP_URL}/qr/details?id=${qrcodeData.id}`}
+                    value={`https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}`}
                     size={window.innerWidth > 768 ? 500 : 300}
                     renderAs="canvas"
-                    // includeMargin={true}
                     imageSettings={{
                       //@ts-ignore
                       src: logo ? logo.toString() : qrcodeData.logoType,
