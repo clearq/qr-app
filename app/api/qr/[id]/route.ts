@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, context: { params: Params }) {
      return NextResponse.json({error : "ID is required!"}, {status: 400})
     }
  
- 
+    
     const qrData = await qrCodeById(id);
  
     if (!qrData) {

@@ -13,13 +13,16 @@ export async function GET() {
     );
   }
 
+
+
   const { id } = user.user;
   const qrData = await getAllQrData(id);
-
+  
   if (!qrData) {
     return NextResponse.json("Qr data not found!", { status: 400 });
   }
 
+  
   return NextResponse.json(qrData, { status: 200 });
 }
 

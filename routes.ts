@@ -7,6 +7,7 @@ export const publicRoute = [
   "/cookiespolicy",
   "/qr/details",
   "/vcard/details",
+  "/redirect",
 ];
 
 /**
@@ -21,6 +22,5 @@ export const privateRoute: string[] = [
   "/dashboardVcard",
   "/qr",
   "/all",
-  "/redirect",
   "/card"
 ];

@@ -15,7 +15,7 @@ import {
 import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 
 interface Props {
@@ -45,22 +45,22 @@ export const Navbar = ({ user: userData }: Props) => {
           {userData ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-full"
-                >
-                  <Avatar className="flex justify-center items-center w-8 h-8 sm:w-15 sm:h-15">
+                {/* <Button
+                  // variant="outline"
+                  // size="icon"
+                  // className="rounded-full"
+                > */}
+                  <Avatar className="flex justify-center cursor-pointer items-center w-8 h-8 sm:w-15 sm:h-15">
                     <AvatarImage
                       src={userData?.image || ""}
                       alt="User Image"
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="text-[5px]">
                       {userData?.firstName ? userData?.firstName[0] : ""}
-                      {userData?.lastName ? userData?.lastName[0] : ""}
+                      {/* {userData?.lastName ? userData?.lastName[0] : ""} */}
                     </AvatarFallback>
                   </Avatar>
-                </Button>
+                {/* </Button> */}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <Link href="/profile">
