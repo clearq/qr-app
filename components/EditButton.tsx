@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -16,6 +17,7 @@ import * as yup from "yup";
 import QRCode from "qrcode.react";
 import { toast } from "@/components/ui/use-toast";
 import { Qr } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 interface EditButtonProps {
   qrData: Qr;
@@ -24,6 +26,7 @@ interface EditButtonProps {
 export const EditButton = ({ qrData: qr }: EditButtonProps) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(qr.logoType || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter()
 
   const validation = useFormik({
     initialValues: {
@@ -127,6 +130,10 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
     }
   };
 
+  const handleCancel = () =>{
+    router.replace('https://qrgen.clearq.se/dashboardVcard')
+  }
+
   return (
     <div className="flex mr-9 ">
     <Dialog>
@@ -195,7 +202,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
             </div>
             <QRCode
               className="flex flex-col left-5 md:left-1 justify-center items-center mt-5 relative"
-              value={validation.values.url ?? validation.values.logoType}
+              value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
               size={window.innerWidth > 768 ? 500 : 300}
               imageSettings={{
                 src: logo ? logo.toString() : '',
@@ -205,14 +212,15 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
               }}
               renderAs="svg"
             />
-            <div className="mt-5 flex w-[50%] flex-row gap-4 items-center justify-center sm:w-auto">
+            {/* <div className="mt-5 flex w-[50%] flex-row gap-4 items-center justify-center sm:w-auto">
               <Button className="">Download PNG</Button>
-            </div>
+            </div> */}
           </div>
           <DialogFooter>
             <Button type="submit">Save changes</Button>
           </DialogFooter>
         </form>
+            <Button variant={"destructive"} className="top-" onClick={handleCancel}>Cancel</Button>
       </DialogContent>
     </Dialog>
     </div>

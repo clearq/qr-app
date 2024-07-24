@@ -115,7 +115,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                   <TableCell>QR</TableCell>
                   <TableCell>
                     <QRCode
-                      value={qr.url}
+                      value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
                       size={70}
                       renderAs="canvas"
                       // includeMargin={true}

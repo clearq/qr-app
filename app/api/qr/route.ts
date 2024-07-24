@@ -74,7 +74,7 @@ export async function PUT(req: Request) {
   try {
     const { id, url, tag, logoType } = await req.json();
 
-    if (!id || !url || !tag || !logoType) {
+    if (!id || !url || !tag) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 403 }
