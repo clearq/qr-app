@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
 import { redirect, useRouter } from "next/navigation";
-
 
 interface Props {
   user?: ExtendedUser;
@@ -50,16 +49,13 @@ export const Navbar = ({ user: userData }: Props) => {
                   // size="icon"
                   // className="rounded-full"
                 > */}
-                  <Avatar className="flex justify-center cursor-pointer items-center w-8 h-8 sm:w-15 sm:h-15">
-                    <AvatarImage
-                      src={userData?.image || ""}
-                      alt="User Image"
-                    />
-                    <AvatarFallback className="text-[5px]">
-                      {userData?.firstName ? userData?.firstName[0] : ""}
-                      {/* {userData?.lastName ? userData?.lastName[0] : ""} */}
-                    </AvatarFallback>
-                  </Avatar>
+                <Avatar className="flex justify-center cursor-pointer items-center w-8 h-8 sm:w-15 sm:h-15">
+                  <AvatarImage src={userData?.image || ""} alt="User Image" />
+                  <AvatarFallback className="text-[5px]">
+                    {userData?.firstName ? userData?.firstName[0] : ""}
+                    {/* {userData?.lastName ? userData?.lastName[0] : ""} */}
+                  </AvatarFallback>
+                </Avatar>
                 {/* </Button> */}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -71,13 +67,22 @@ export const Navbar = ({ user: userData }: Props) => {
                   <DropdownMenuItem className="cursor-pointer">Overview</DropdownMenuItem>
                 </Link> */}
                 <Link href="/dashboard">
-                  <DropdownMenuItem className="cursor-pointer">Qr Dashboard</DropdownMenuItem>
+                  <DropdownMenuItem className=" cursor-pointer">
+                    URL
+                  </DropdownMenuItem>
                 </Link>
                 <Link href="/dashboardVcard">
-                  <DropdownMenuItem className="cursor-pointer">VCard Dashboard</DropdownMenuItem>
+                  <DropdownMenuItem className=" cursor-pointer">
+                    VCard
+                  </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>Logout</DropdownMenuItem>
+                <DropdownMenuItem
+                  className=" cursor-pointer"
+                  onClick={handleSignOut}
+                >
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

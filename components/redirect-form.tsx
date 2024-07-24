@@ -20,7 +20,7 @@ const RedirectForm = () => {
   const id = params.get("id");
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(1);
   const [progress, setProgress] = useState(75);
 
   useEffect(() => {

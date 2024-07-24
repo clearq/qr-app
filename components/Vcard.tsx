@@ -199,8 +199,19 @@ END:VCARD
     }
   };
 
+  const handleBack = () => {
+    router.push("/dashboardVcard");
+  };
+
   return (
     <div className="flex w-full flex-col">
+      <Button
+            onClick={() => handleBack()}
+            className="flex mb-4 font-light text-4xl justify-start items-start"
+            variant={"link"}
+          >
+            {"<-"}
+          </Button>
       <Card>
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <Breadcrumb className="hidden md:flex">
