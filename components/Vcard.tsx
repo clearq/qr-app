@@ -143,8 +143,6 @@ END:VCARD
         const maxSize = 40;
         let width = img.width;
         let height = img.height;
-
-        // Calculate the new dimensions
         if (width > height) {
           if (width > maxSize) {
             height *= maxSize / width;
@@ -165,7 +163,6 @@ END:VCARD
           ctx.drawImage(img, 0, 0, width, height);
           canvas.toBlob((blob) => {
             if (blob) {
-              // Convert the resized image blob to data URL
               const reader = new FileReader();
               reader.onloadend = () => {
                 const dataUrl = reader.result as string;
