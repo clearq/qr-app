@@ -131,7 +131,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
   };
 
   const handleCancel = () =>{
-    router.replace('https://qrgen.clearq.se/dashboardVcard')
+    router.replace('https://qrgen.clearq.se/dashboard')
   }
 
   return (
@@ -212,9 +212,6 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
               }}
               renderAs="svg"
             />
-            {/* <div className="mt-5 flex w-[50%] flex-row gap-4 items-center justify-center sm:w-auto">
-              <Button className="">Download PNG</Button>
-            </div> */}
           </div>
           <DialogFooter>
             <Button type="submit">Save changes</Button>

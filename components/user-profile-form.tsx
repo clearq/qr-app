@@ -17,7 +17,6 @@ import { toast } from "@/components/ui/use-toast";
 import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
 import { ChangePasswordForm } from "./change-password-form";
-import ImageUpload from "./uploadImage";
 import { redirect } from "next/navigation";
 
 interface Props {
