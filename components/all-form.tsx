@@ -54,12 +54,13 @@ import {
 } from "@/components/ui/carousel";
 import { saveAs } from "file-saver";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ICUSTOMER, IVCARD } from "@/typings";
+import { ICUSTOMER, IQR, IVCARD } from "@/typings";
 import { useRouter, useSearchParams } from "next/navigation";
 import QRCode from "qrcode.react";
 import { toast } from "./ui/use-toast";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 import { Area, AreaChart, CartesianGrid, Label, Pie, PieChart, XAxis } from "recharts"
+import { Qr, VCard } from "@prisma/client";
 
 
 export default function AllForm() {
@@ -121,7 +122,8 @@ export default function AllForm() {
   const id = params.get("id");
   const [userData, setUserData] = React.useState(null);
   const router = useRouter();
-  const [vcardData, setVcardData] = React.useState<IVCARD>();
+  const [vcardData, setVcardData] = React.useState<VCard>();
+  const [qrData, setQRData] = React.useState<Qr>();
   const [logo, setLogo] = React.useState<string | ArrayBuffer | null>(null);
   const qrRef = React.useRef<HTMLDivElement>(null);
 
@@ -231,7 +233,27 @@ export default function AllForm() {
                       <br />
                       {
                         //@ts-ignore
+                        userData?.address
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
+                        userData?.city
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
+                        userData?.zip
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
                         userData?.company
+                      }
+                      <br />
+                      {
+                        //@ts-ignore
+                        userData?.orgNumber
                       }
                       <br />
                     </CardDescription>
@@ -283,12 +305,12 @@ export default function AllForm() {
                   </CardFooter>
                 </Card>
               </div>
-              <Tabs defaultValue="week">
+              <Tabs defaultValue="Qr">
                 <div className="flex items-center">
                   <TabsList>
-                    <TabsTrigger value="week">Week</TabsTrigger>
-                    <TabsTrigger value="month">Month</TabsTrigger>
-                    <TabsTrigger value="year">Year</TabsTrigger>
+                    <TabsTrigger value="Qr">Qr</TabsTrigger>
+                    <TabsTrigger value="month">VCard</TabsTrigger>
+                    <TabsTrigger value="year">Analys</TabsTrigger>
                   </TabsList>
                   <div className="ml-auto flex items-center gap-2">
                     <DropdownMenu>
@@ -326,17 +348,20 @@ export default function AllForm() {
                     </Button>
                   </div>
                 </div>
-                <TabsContent value="week">
+                <TabsContent value="Qr">
                   <Card x-chunk="dashboard-05-chunk-3">
                     <Carousel>
                       <CarouselContent>
                         <CarouselItem>
+                          <div>
+                          {qrData?.tag}
+                          </div>
                           <div
                             ref={qrRef}
                             className="flex flex-col items-center justify-center mt-7 mb-7"
                           >
                             <QRCode
-                              value={`https://qrgen.clearq.se/vcard/details?id=${vcardData?.id}`}
+                              value={`https://qrgen.clearq.se/qr/details?id=${qrData?.id}`}
                               size={window.innerWidth > 768 ? 500 : 300}
                               renderAs="canvas"
                               // includeMargin={true}
@@ -344,7 +369,7 @@ export default function AllForm() {
                                 //@ts-ignore
                                 src: logo
                                   ? logo.toString()
-                                  : vcardData?.logoType,
+                                  : qrData?.logoType,
                                 height: 75,
                                 width: 75,
                                 excavate: true,
@@ -368,8 +393,88 @@ export default function AllForm() {
                     </Link> */}
                           </div>
                         </CarouselItem>
-                        <CarouselItem>...</CarouselItem>
-                        <CarouselItem>...</CarouselItem>
+                        <CarouselItem>
+                        <div>
+                          {qrData?.tag}
+                          </div>
+                          <div
+                            ref={qrRef}
+                            className="flex flex-col items-center justify-center mt-7 mb-7"
+                          >
+                            <QRCode
+                              value={`https://qrgen.clearq.se/qr/details?id=${qrData?.id}`}
+                              size={window.innerWidth > 768 ? 500 : 300}
+                              renderAs="canvas"
+                              // includeMargin={true}
+                              imageSettings={{
+                                //@ts-ignore
+                                src: logo
+                                  ? logo.toString()
+                                  : qrData?.logoType,
+                                height: 75,
+                                width: 75,
+                                excavate: true,
+                              }}
+                              bgColor="rgba(0,0,0,0)"
+                              fgColor="#000000"
+                            />
+                            <div className="flex flex-row space-x-4 justify-center items-center mt-6">
+                              <Button
+                                onClick={() => downloadQRCode("png")}
+                                className=""
+                              >
+                                Download PNG
+                              </Button>
+                              <Button onClick={copyUrlToClipboard}>
+                                Copy URL
+                              </Button>
+                            </div>
+                            {/* <Link href={'/'}>
+                    <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
+                    </Link> */}
+                          </div>
+                        </CarouselItem>
+                        <CarouselItem>
+                          <div>
+                          {qrData?.tag}
+                          </div>
+                          <div
+                            ref={qrRef}
+                            className="flex flex-col items-center justify-center mt-7 mb-7"
+                          >
+                            <QRCode
+                              value={`https://qrgen.clearq.se/qr/details?id=${qrData?.id}`}
+                              size={window.innerWidth > 768 ? 500 : 300}
+                              renderAs="canvas"
+                              // includeMargin={true}
+                              imageSettings={{
+                                //@ts-ignore
+                                src: logo
+                                  ? logo.toString()
+                                  : qrData?.logoType,
+                                height: 75,
+                                width: 75,
+                                excavate: true,
+                              }}
+                              bgColor="rgba(0,0,0,0)"
+                              fgColor="#000000"
+                            />
+                            <div className="flex flex-row space-x-4 justify-center items-center mt-6">
+                              <Button
+                                onClick={() => downloadQRCode("png")}
+                                className=""
+                              >
+                                Download PNG
+                              </Button>
+                              <Button onClick={copyUrlToClipboard}>
+                                Copy URL
+                              </Button>
+                            </div>
+                            {/* <Link href={'/'}>
+                    <Image className="mt-5" alt="appleWallet" width={150} height={150} src={'/image/appleWallet.svg'} />
+                    </Link> */}
+                          </div>
+                        </CarouselItem>
                       </CarouselContent>
                       <CarouselPrevious />
                       <CarouselNext />
