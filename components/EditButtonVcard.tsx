@@ -278,11 +278,11 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="url">Website</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
-                  id="url"
-                  placeholder="https://"
-                  value={validation.values.url}
+                  id="title"
+                  placeholder="Title"
+                  value={validation.values.title}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
@@ -308,11 +308,11 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="url">Website</Label>
                 <Input
-                  id="title"
-                  placeholder="Title"
-                  value={validation.values.title}
+                  id="url"
+                  placeholder="https://"
+                  value={validation.values.url}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />

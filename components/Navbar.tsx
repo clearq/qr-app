@@ -1,38 +1,49 @@
 "use client";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ui/modeToggle";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./Dropdown";
 import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import React from "react";
 
 interface Props {
   user?: ExtendedUser;
 }
 
 export const Navbar = ({ user: userData }: Props) => {
+  const [user, setUser] = React.useState(null);
+
   const router = useRouter();
 
   const handleSignOut = async () => {
     signOut();
   };
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch("/api/profile");
+      const data = await res.json();
+      setUser(data);
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="">
       <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
         <div className="mr-auto">
-          <Link href="/">
+          <Link href="/all">
             <Image
               alt="logo-image"
               src={logoImage}
@@ -42,49 +53,48 @@ export const Navbar = ({ user: userData }: Props) => {
         </div>
         <div className="flex items-center gap-4 sm:gap-6">
           {userData ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                {/* <Button
-                  // variant="outline"
-                  // size="icon"
-                  // className="rounded-full"
-                > */}
-                <Avatar className="flex justify-center cursor-pointer items-center w-8 h-8 sm:w-15 sm:h-15">
-                  <AvatarImage src={userData?.image || ""} alt="User Image" />
-                  <AvatarFallback className="text-[5px]">
-                    {userData?.firstName ? userData?.firstName[0] : ""}
-                    {/* {userData?.lastName ? userData?.lastName[0] : ""} */}
-                  </AvatarFallback>
-                </Avatar>
-                {/* </Button> */}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <Link href="/profile">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                </Link>
-                <DropdownMenuSeparator />
-                {/* <Link href="/all">
-                  <DropdownMenuItem className="cursor-pointer">Overview</DropdownMenuItem>
-                </Link> */}
-                <Link href="/dashboard">
-                  <DropdownMenuItem className=" cursor-pointer">
-                    URL
-                  </DropdownMenuItem>
-                </Link>
-                <Link href="/dashboardVcard">
-                  <DropdownMenuItem className=" cursor-pointer">
-                    VCard
-                  </DropdownMenuItem>
-                </Link>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className=" cursor-pointer"
-                  onClick={handleSignOut}
-                >
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuContent></NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/all" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      Overview
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/profile" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      {
+                        //@ts-ignore
+                        user?.firstName
+                      }{" "}
+                      {
+                        //@ts-ignore
+                        user?.lastName
+                      }
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <span className="cursor-pointer">
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      onClick={handleSignOut}
+                    >
+                      Logout
+                    </NavigationMenuLink>
+                  </span>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           ) : (
             <>
               <Link href="/login">

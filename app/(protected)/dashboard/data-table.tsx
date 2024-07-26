@@ -17,11 +17,13 @@ import {
 } from "@/components/ui/pagination";
 import { IQR } from "@/typings";
 import { useRouter } from "next/navigation";
-import { AddButton } from "@/components/AddButton";
 import { EditButton } from "@/components/EditButton";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
 import { Button } from "@/components/ui/button";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { QrForm } from "@/components/qr-form";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -68,10 +70,6 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   const router = useRouter();
 
-  const handleUrl = () => {
-    router.push("/qr");
-  };
-
   if (!isMounted) return null;
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -95,7 +93,14 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
             <TableHead className="flex flex-row space-x-20 relative justify-end items-end">
-              <AddButton onClick={handleUrl} />
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Add Url</Button>
+                </DialogTrigger>
+                <DialogContent className="">
+                  <QrForm />
+                </DialogContent>
+              </Dialog>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -112,7 +117,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                     {index + 1 + (currentPage - 1) * itemsPerPage}
                   </TableCell>
                   <TableCell>{qr.tag}</TableCell>
-                  <TableCell>QR</TableCell>
+                  <TableCell>URL</TableCell>
                   <TableCell>
                     <QRCode
                       value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}

@@ -131,7 +131,7 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
   };
 
   const handleCancel = () =>{
-    router.replace('https://qrgen.clearq.se/dashboard')
+    window.location.reload()
   }
 
   return (

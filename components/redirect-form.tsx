@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ParsedUrlQuery } from "querystring";
-import { Progress } from "@/components/ui/progress";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CardHeader } from "./ui/card";
 import { toast } from "./ui/use-toast";
 
 interface RedirectProps {
@@ -20,8 +18,7 @@ const RedirectForm = () => {
   const id = params.get("id");
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(1);
-  const [progress, setProgress] = useState(75);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,16 +32,12 @@ const RedirectForm = () => {
     if (qrUrl) {
       const timeout = setTimeout(() => {
         router.replace(qrUrl)
-      }, 5000);
+      }, 1000);
 
       return () => clearTimeout(timeout);
     }
   }, [qrUrl]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setProgress(99), 4000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (id) {
@@ -87,24 +80,7 @@ const RedirectForm = () => {
     }
   }, [loading, qrUrl, countdown]);
 
-  if (loading) {
-    return (
-      <div className="flex mr-9 ml-9 flex-col items-center justify-center min-h-screen">
-        <h1>Redirecting in {countdown} seconds...</h1>
-        <Progress className="text-center" value={progress} />
-      </div>
-    );
-  }
 
-  if (!qrUrl) {
-    return (
-      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
-        <CardHeader>Error: URL not found</CardHeader>
-      </div>
-    );
-  }
-
-  return null;
 };
 
 export default RedirectForm;

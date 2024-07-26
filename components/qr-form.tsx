@@ -57,7 +57,7 @@ export const QrForm = () => {
               description: `${new Date().toLocaleDateString()}`,
             });
 
-            router.replace(`/dashboard`);
+            window.location.reload()
           } else {
             toast({
               variant: "destructive",
@@ -166,34 +166,25 @@ export const QrForm = () => {
     }
   };
 
-  const handleBack = () => {
-    router.push("/dashboard");
-  };
+
 
   return (
     <div className="flex w-full flex-col">
-      <Button
-            onClick={() => handleBack()}
-            className="flex mb-4 font-light text-4xl justify-start items-start"
-            variant={"link"}
-          >
-            {"<-"}
-          </Button>
-      <Card>
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+
+        <div className="flex flex-col sm:gap-4 sm:py-4 ">
           <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
               <BreadcrumbItem>{/* <Pages /> */}</BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           <CardHeader>
-            <CardTitle className="">URL</CardTitle>
+            <CardTitle className="text-6xl">URL</CardTitle>
             <CardDescription>Create your Qr here</CardDescription>
           </CardHeader>
           <div className="flex flex-col md:flex-row w-full">
             <form
               onSubmit={validation.handleSubmit}
-              className="w-full md:w-1/2 space-y-4"
+              className="w-full  space-y-4"
             >
               <div>
                 <Label htmlFor="url">URL</Label>
@@ -208,7 +199,7 @@ export const QrForm = () => {
                   className="w-full"
                 />
                 {validation.touched.url && validation.errors.url && (
-                  <div className="text-red-500">{validation.errors.url}</div>
+                  <div className="text-sm text-red-500">{validation.errors.url}</div>
                 )}
               </div>
               <div>
@@ -249,14 +240,14 @@ export const QrForm = () => {
                 Save
               </Button>
             </form>
-            <div
+            {/* <div
               ref={qrRef}
               className="flex flex-col items-center justify-center md:w-1/2 md:ml-8 md:mr-8 mt-6"
             >
               <QRCode
                 value={validation.values.url}
-                size={window.innerWidth > 768 ? 500 : 300}
-                    // includeMargin={true}
+                size={window.innerWidth > 300 ? 500 : 300}
+                    includeMargin={true}
                 renderAs="canvas"
                 imageSettings={{
                   src: logo ? logo.toString() : "",
@@ -271,14 +262,14 @@ export const QrForm = () => {
                 <Button onClick={() => downloadQRCode("png")} className="">
                   Download PNG
                 </Button>
-                {/* <Button onClick={() => downloadQRCode("svg")} className="">
+                <Button onClick={() => downloadQRCode("svg")} className="">
                   Download SVG
-                </Button> */}
+                </Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
-      </Card>
+  
     </div>
   );
 };

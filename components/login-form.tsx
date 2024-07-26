@@ -31,7 +31,7 @@ export function LoginForm() {
   
   useEffect(() => {
     if(session){
-      const redirectUrl = sessionStorage.getItem('redirectUrl') || '/';
+      const redirectUrl = sessionStorage.getItem('redirectUrl') || '/all';
       router.replace(redirectUrl);
       sessionStorage.removeItem('redirectUrl');
     }
@@ -84,22 +84,6 @@ export function LoginForm() {
       }
     }
   };
-  
-  if (sessionStatus === "loading") {
-    return (
-      <div
-        className="mr-9 ml-9"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <Progress className="text-center" value={33} />
-      </div>
-    );
-  }
   
   return (
     <div className="flex justify-center items-center mt-52">
