@@ -129,8 +129,8 @@ export const QrSingelComponent = ({ user }: Props) => {
 
   const copyUrlToClipboard = () => {
     //@ts-ignore
-    const url = `https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}`;
-    // const url = `localhost:3000/redirect?id=${qrcodeData?.id}`;
+    // const url = `https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}`;
+    const url = `localhost:3000/redirect?id=${qrcodeData?.id}&type=qr`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -178,7 +178,7 @@ export const QrSingelComponent = ({ user }: Props) => {
                   className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
                 >
                   <QRCode
-                    value={`https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}`}
+                    value={`https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}&type=qr`}
                     size={window.innerWidth > 768 ? 500 : 300}
                     renderAs="canvas"
                     imageSettings={{

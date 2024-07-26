@@ -58,21 +58,18 @@ model Qr {
   customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
   logoType   String?   @db.NVarChar(MAX)
   customerId String
-  scans      Scan[]
 }
 
 model Scan {
-  id         String   @id @default(cuid())
-  qr         Qr?      @relation(fields: [qrId], references: [id], onDelete: Cascade)
-  qrId       String
-  ipAddress  String
-  latitude   Float
-  longitude  Float
-  scannedAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  profileId String?
+  type      Int      @default(0)
+  count     Int   @default(1)
+  scannedAt DateTime @default(now())
 }
 
 model Role {
-  id    String      @id @default(cuid())
-  name  String      @unique
+  id        String     @id @default(cuid())
+  name      String     @unique
   customers Customer[]
 }
