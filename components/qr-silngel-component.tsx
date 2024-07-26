@@ -149,16 +149,8 @@ export const QrSingelComponent = ({ user }: Props) => {
   };
 
   const handleBack = () => {
-    router.push("/dashboard");
+    router.push("/all");
   };
-
-  if (!qrcodeData) {
-    return (
-      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
-        <Progress className="text-center" value={33} />
-      </div>
-    );
-  }
 
   if (!id) {
     router.replace("/");
@@ -175,7 +167,7 @@ export const QrSingelComponent = ({ user }: Props) => {
           >
             {"<-"}
           </Button>
-          {user?.id === qrcodeData.customerId && (
+          {user?.id === qrcodeData?.customerId && (
             <Card className="flex flex-col items-center">
               <CardHeader>
                 <CardTitle>QR Code</CardTitle>

@@ -8,6 +8,7 @@ export const publicRoute = [
   "/qr/details",
   "/vcard/details",
   "/redirect",
+  "/profile",
 ];
 
 /**
@@ -15,7 +16,6 @@ export const publicRoute = [
  * @type {string[]}
 */
 export const privateRoute: string[] = [
-  "/profile",
   "/vcard",
   "/dashboard",
   "/coDashboard/dashboardStamp",

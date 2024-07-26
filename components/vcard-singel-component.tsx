@@ -177,7 +177,7 @@ END:VCARD
       if (format === "png") {
         canvas.toBlob((blob) => {
           if (blob) {
-            saveAs(blob, `qrcode.${format}`);
+            saveAs(blob, `${validation.values.tag}.${format}`);
           }
         }, "image/png");
       } else if (format === "svg") {
@@ -187,7 +187,7 @@ END:VCARD
           const blob = new Blob([svgData], {
             type: "image/svg+xml;charset=utf-8",
           });
-          saveAs(blob, `qrcode.${format}`);
+          saveAs(blob, `${validation.values.tag}.${format}`);
         }
       }
     }
@@ -214,30 +214,15 @@ END:VCARD
   };
 
   const handleBack = () => {
-    router.push("/dashboardVcard");
+    router.push("/all");
   };
 
-  if (status === "loading") {
-    return (
-      <div className="flex mr-9 ml-9 justify-center items-center h-screen">
-        <Progress className="text-center" value={77} />
-      </div>
-    );
-  }
   
   if (!id) {
-    router.replace("/dashboardVcard");
+    router.replace("/");
     return null;
   }
   
-  if (!vcardData) {
-    return(
-      <div className="flex flex-col mr-9 ml-9 justify-center items-center h-screen">
-        <Progress className="text-center" value={77} />
-      </div>
-    )
-    
-  }
   return (
     <div>
       { session ? (
@@ -400,12 +385,15 @@ END:VCARD
               </div>
             </CardContent>
           </Card>
-          {user?.id === vcardData.customerId && (
+          {user?.id === vcardData?.customerId && (
             <div className="flex flex-row mt-2">
+              {
+                //@ts-ignore
               <EditButton vcardData={vcardData} />
+              }
             </div>
           )}
-          {user?.id === vcardData.customerId && (
+          {user?.id === vcardData?.customerId && (
             <Card className="flex flex-col items-center mt-6">
               <CardHeader>
                 <CardTitle>QR Code</CardTitle>
@@ -451,10 +439,10 @@ END:VCARD
               </CardHeader>
               <label htmlFor="imageInput" className="cursor-pointer">
                 <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
-                  <AvatarImage src={vcardData.logoType || ""} alt="User Image" />
+                  <AvatarImage src={vcardData?.logoType || ""} alt="User Image" />
                   <AvatarFallback>
-                    {vcardData.firstName ? vcardData.firstName[0] : ""}
-                    {vcardData.lastName ? vcardData.lastName[0] : ""}
+                    {vcardData?.firstName ? vcardData.firstName[0] : ""}
+                    {vcardData?.lastName ? vcardData.lastName[0] : ""}
                   </AvatarFallback>
                 </Avatar>
                 <input

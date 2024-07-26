@@ -97,10 +97,10 @@ export const Vcard = () => {
     },
   });
 
-
-
   const generateVCardString = (values: any) => {
-    const photo = values.logoType ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}` : '';
+    const photo = values.logoType
+      ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}`
+      : "";
     return `
 BEGIN:VCARD
 VERSION:3.0
@@ -202,264 +202,251 @@ END:VCARD
 
   return (
     <div className="flex w-full flex-col">
-      <Button
-            onClick={() => handleBack()}
-            className="flex mb-4 font-light text-4xl justify-start items-start"
-            variant={"link"}
-          >
-            {"<-"}
-          </Button>
-      <Card>
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-          <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                {/* <Pages /> */}
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <CardHeader>
-            <CardTitle>VCard</CardTitle>
-            <CardDescription>Create your VCard here</CardDescription>
-          </CardHeader>
-          <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
-            <div className="flex flex-col justify-center items-center">
-              <Avatar className="w-32 h-32">
-                <AvatarImage
-                  id="qr-code-svg"
-                  src={logo ? logo.toString() : ''}
-                  alt="User Image"
-                  style={{ objectFit: 'contain' }}
+      <div className="flex flex-col sm:gap-4 sm:py-4">
+        <Breadcrumb className="hidden md:flex">
+          <BreadcrumbList>
+            <BreadcrumbItem>{/* <Pages /> */}</BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <CardHeader>
+          <CardTitle>VCard</CardTitle>
+          <CardDescription>Create your VCard here</CardDescription>
+        </CardHeader>
+        <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
+          <div className="flex flex-col justify-center items-center">
+            <Avatar className="w-32 h-32">
+              <AvatarImage
+                id="qr-code-svg"
+                src={logo ? logo.toString() : ""}
+                alt="User Image"
+                style={{ objectFit: "contain" }}
+              />
+              <AvatarFallback className="text-[3rem]">
+                {validation.values.firstName[0]}
+                {validation.values.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex items-center space-x-4">
+              <label
+                htmlFor="logoType"
+                className="text-[15px] px-5 mt-4 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
+              >
+                Browse
+              </label>
+              <input
+                type="file"
+                id="logoType"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleLogoUpload}
+              />
+              {logo && (
+                <Button onClick={handleRemoveLogo} className="bg-red-500">
+                  Remove Logo
+                </Button>
+              )}
+            </div>
+          </div>
+        </label>
+        <CardContent>
+          <form onSubmit={validation.handleSubmit} className="space-y-5 mt-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="firstName">
+                  First name <span className="text-xs text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  name="firstName"
+                  placeholder="First name"
+                  value={validation.values.firstName}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
                 />
-                <AvatarFallback className="text-[3rem]">
-                  {validation.values.firstName[0]}
-                  {validation.values.lastName[0]}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex items-center space-x-4">
-                <label
-                  htmlFor="logoType"
-                  className="text-[15px] px-5 mt-4 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
-                >
-                  Browse
-                </label>
-                <input
-                  type="file"
-                  id="logoType"
-                  accept="image/*"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleLogoUpload}
+                {validation.touched.firstName && validation.errors.firstName ? (
+                  <p className="text-xs text-red-500">
+                    {validation.errors.firstName}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="lastName">
+                  Last name <span className="text-xs text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  name="lastName"
+                  placeholder="Last name"
+                  value={validation.values.lastName}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
                 />
-                {logo && (
-                  <Button onClick={handleRemoveLogo} className="bg-red-500">
-                    Remove Logo
-                  </Button>
-                )}
+                {validation.touched.lastName && validation.errors.lastName ? (
+                  <p className="text-xs text-red-500">
+                    {validation.errors.lastName}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="tag">
+                  Tag <span className="text-xs text-red-500">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  name="tag"
+                  placeholder="Tag"
+                  value={validation.values.tag}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+                {validation.touched.tag && validation.errors.tag ? (
+                  <p className="text-xs text-red-500">
+                    {validation.errors.tag}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  value={validation.values.title}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="customerEmail">
+                  Email address <span className="text-xs text-red-500">*</span>
+                </Label>
+                <Input
+                  type="email"
+                  name="customerEmail"
+                  placeholder="Email address"
+                  value={validation.values.customerEmail}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+                {validation.touched.customerEmail &&
+                validation.errors.customerEmail ? (
+                  <p className="text-xs text-red-500">
+                    {validation.errors.customerEmail}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="phone">Phone number</Label>
+                <Input
+                  type="tel"
+                  name="phone"
+                  placeholder="Phone number"
+                  value={validation.values.phone}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="company">Company</Label>
+                <Input
+                  type="text"
+                  name="company"
+                  placeholder="Company"
+                  value={validation.values.company}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="url">URL</Label>
+                <Input
+                  type="url"
+                  name="url"
+                  placeholder="https://example.com"
+                  value={validation.values.url}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="linkedIn">LinkedIn</Label>
+                <Input
+                  type="text"
+                  name="linkedIn"
+                  placeholder="LinkedIn"
+                  value={validation.values.linkedIn}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="x">Twitter</Label>
+                <Input
+                  type="text"
+                  name="x"
+                  placeholder="Twitter"
+                  value={validation.values.x}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="facebook">Facebook</Label>
+                <Input
+                  type="text"
+                  name="facebook"
+                  placeholder="Facebook"
+                  value={validation.values.facebook}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="instagram">Instagram</Label>
+                <Input
+                  type="text"
+                  name="instagram"
+                  placeholder="Instagram"
+                  value={validation.values.instagram}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="snapchat">Snapchat</Label>
+                <Input
+                  type="text"
+                  name="snapchat"
+                  placeholder="Snapchat"
+                  value={validation.values.snapchat}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="tiktok">TikTok</Label>
+                <Input
+                  type="text"
+                  name="tiktok"
+                  placeholder="TikTok"
+                  value={validation.values.tiktok}
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
               </div>
             </div>
-          </label>
-          <CardContent>
-            <form onSubmit={validation.handleSubmit} className="space-y-5 mt-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="firstName">
-                    First name <span className="text-xs text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    name="firstName"
-                    placeholder="First name"
-                    value={validation.values.firstName}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.firstName &&
-                  validation.errors.firstName ? (
-                    <p className="text-xs text-red-500">
-                      {validation.errors.firstName}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="lastName">
-                    Last name <span className="text-xs text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last name"
-                    value={validation.values.lastName}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.lastName && validation.errors.lastName ? (
-                    <p className="text-xs text-red-500">
-                      {validation.errors.lastName}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tag">
-                    Tag <span className="text-xs text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    name="tag"
-                    placeholder="Tag"
-                    value={validation.values.tag}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.tag && validation.errors.tag ? (
-                    <p className="text-xs text-red-500">
-                      {validation.errors.tag}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    type="text"
-                    name="title"
-                    placeholder="Title"
-                    value={validation.values.title}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="customerEmail">
-                    Email address{" "}
-                    <span className="text-xs text-red-500">*</span>
-                  </Label>
-                  <Input
-                    type="email"
-                    name="customerEmail"
-                    placeholder="Email address"
-                    value={validation.values.customerEmail}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                  {validation.touched.customerEmail &&
-                  validation.errors.customerEmail ? (
-                    <p className="text-xs text-red-500">
-                      {validation.errors.customerEmail}
-                    </p>
-                  ) : null}
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="phone">Phone number</Label>
-                  <Input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone number"
-                    value={validation.values.phone}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="company">Company</Label>
-                  <Input
-                    type="text"
-                    name="company"
-                    placeholder="Company"
-                    value={validation.values.company}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="url">URL</Label>
-                  <Input
-                    type="url"
-                    name="url"
-                    placeholder="https://example.com"
-                    value={validation.values.url}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="linkedIn">LinkedIn</Label>
-                  <Input
-                    type="text"
-                    name="linkedIn"
-                    placeholder="LinkedIn"
-                    value={validation.values.linkedIn}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="x">Twitter</Label>
-                  <Input
-                    type="text"
-                    name="x"
-                    placeholder="Twitter"
-                    value={validation.values.x}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="facebook">Facebook</Label>
-                  <Input
-                    type="text"
-                    name="facebook"
-                    placeholder="Facebook"
-                    value={validation.values.facebook}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="instagram">Instagram</Label>
-                  <Input
-                    type="text"
-                    name="instagram"
-                    placeholder="Instagram"
-                    value={validation.values.instagram}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="snapchat">Snapchat</Label>
-                  <Input
-                    type="text"
-                    name="snapchat"
-                    placeholder="Snapchat"
-                    value={validation.values.snapchat}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="tiktok">TikTok</Label>
-                  <Input
-                    type="text"
-                    name="tiktok"
-                    placeholder="TikTok"
-                    value={validation.values.tiktok}
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                  />
-                </div>
-              </div>
-              <Button type="submit" className="bg-primary mt-4">
-                Save
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-end">
-            <Button onClick={handleDownloadVcard} className="bg-primary">
-              Download vCard
+            <Button type="submit" className="bg-primary mt-4">
+              Save
             </Button>
-          </CardFooter>
-        </div>
-      </Card>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleDownloadVcard} className="bg-primary">
+            Download vCard
+          </Button>
+        </CardFooter>
+      </div>
     </div>
   );
 };

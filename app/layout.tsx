@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: Props) {
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
+          >
           <SessionProvider session={session}>
             <div className="mx-auto max-w-7xl text-2xl gap-2 mb-10">
               <Toaster />
@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: Props) {
                   href="https://clearq.se"
                   target="_blank"
                   rel="noopener noreferrer"
-                >
+                  >
                   ClearQ
                 </a>
               </span>

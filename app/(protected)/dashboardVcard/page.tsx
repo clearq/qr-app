@@ -4,14 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { IQR, IVCARD } from "@/typings";
 
 export default function Dashboard() {
-  const [qrData, setQrData] = useState<IQR[]>([]);
   const [vData, setVCardData] = useState<IVCARD[]>([]);
  
   const fetchData = useCallback(async() => {
     try {
-      const qrResponse = await fetch("/api/qr");
-      const qrJson = await qrResponse.json();
-      setQrData(qrJson);
 
       const vCardResponse = await fetch("/api/saveVcard");
       const vCardJson = await vCardResponse.json();

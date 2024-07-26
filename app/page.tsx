@@ -47,7 +47,7 @@ export default function Home() {
           <div className="text-left">
             <h1 className="mt-16 mb-16 text-start text-5xl font-bold">QrGen</h1>
 
-            <div className="mb-16 md:text-2xl text-lg text-gray-600 ml- mr-9">
+            <div className="mb-16 md:text-2xl text-lg text-gray-400 ml- mr-9">
               <p>
                 Welcome to our QrGen! We offer a powerful tool for creating QR
                 codes that can be used for various purposes. Whether you need to

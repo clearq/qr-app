@@ -37,6 +37,7 @@ import { toast } from "@/components/ui/use-toast";
 import EditButton from "@/components/EditButtonVcard";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
+import { Vcard } from "@/components/Vcard";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -109,9 +110,14 @@ export const DataTable = ({
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
             <TableHead className="flex flex-row space-x-7 justify-end items-end">
-              <Button variant="outline" className="" onClick={handleVcard}>
-                Add VCard
-              </Button>
+            <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Add VCard</Button>
+                </DialogTrigger>
+                <DialogContent className="">
+                  <Vcard />
+                </DialogContent>
+              </Dialog>
             </TableHead>
           </TableRow>
         </TableHeader>

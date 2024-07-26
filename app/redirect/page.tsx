@@ -4,7 +4,10 @@ import React from "react";
 export default function RedirectPage() {
   return (
     <>
+    {
+      //@ts-ignore
       <RedirectForm />
+    }
     </>
   );
 }
