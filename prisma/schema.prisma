@@ -61,11 +61,12 @@ model Qr {
 }
 
 model Scan {
-  id        String   @id @default(cuid())
-  profileId String?
-  type      Int      @default(0)
-  count     Int   @default(1)
-  scannedAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  profileId  String?
+  customerId String?
+  type       Int      @default(0)
+  count      Int      @default(1)
+  scannedAt  DateTime @default(now())
 }
 
 model Role {
