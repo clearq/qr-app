@@ -32,6 +32,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   const router = useRouter();
 
   const id = params.get("id");
+  const type = params.get("type")
   const [vcardData, setVcardData] = useState<IVCARD | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: session, status } = useSession(); // Check session status
@@ -130,6 +131,18 @@ export const VcardSingelComponent = ({ user }: Props) => {
   }, [id]);
 
   useEffect(() => {
+    if (id && type === "vcard") {
+      fetch(`/api/scans`, {
+        method: "POST",
+        body: JSON.stringify({
+          type : 1,
+          id
+        })
+      })
+    }
+  }, []);
+
+  useEffect(() => {
     fetchData();
   }, [fetchData]);
 
@@ -195,7 +208,8 @@ END:VCARD
 
   const copyUrlToClipboard = () => {
     //@ts-ignore
-    const url = `https://qrgen.clearq.se/vcard/details?id=${vcardData.id}`;
+    const url = `https://qrgen.clearq.se/vcard/details?id=${vcardData.id}&type=vcard`;
+    // const url = `localhost:3000/vcard/details?id=${vcardData.id}&type=vcard`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -404,7 +418,7 @@ END:VCARD
                   className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
                 >
                   <QRCode
-                    value={`https://qrgen.clearq.se/vcard/details?id=${vcardData?.id}`}
+                    value={`https://qrgen.clearq.se/vcard/details?id=${vcardData?.id}&type=vcard`}
                     size={window.innerWidth > 768 ? 500 : 300}
                     renderAs="canvas"
                     // includeMargin={true}

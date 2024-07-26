@@ -16,6 +16,8 @@ const RedirectForm = () => {
   const params = useSearchParams();
   const router = useRouter();
   const id = params.get("id");
+  const type = params.get("type");
+  
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(5);
@@ -38,10 +40,15 @@ const RedirectForm = () => {
     }
   }, [qrUrl]);
 
-
   useEffect(() => {
-    if (id) {
-      fetch(`/api/qr/${id}`)
+    if (id && type === "qr") {
+      fetch(`/api/scans`, {
+        method: "POST",
+        body: JSON.stringify({
+          type : 0,
+          id
+        })
+      })
         .then((res) => {
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
@@ -51,7 +58,7 @@ const RedirectForm = () => {
         .then((data) => {
           if (data.url) {
             toast({
-              title: `Your being redirected to:`,
+              title: `You're being redirected to:`,
               description: `${data.url}`,
             });
             setUrl(data.url);
@@ -68,7 +75,7 @@ const RedirectForm = () => {
       console.error("No id found in search params.");
       setLoading(false);
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     if (!loading && qrUrl) {
@@ -79,8 +86,6 @@ const RedirectForm = () => {
       return () => clearTimeout(timeout);
     }
   }, [loading, qrUrl, countdown]);
-
-
-};
+}
 
 export default RedirectForm;
