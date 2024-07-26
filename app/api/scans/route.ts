@@ -14,6 +14,9 @@ export async function POST(req: Request) {
       const findQr = await prisma.qr.findUnique({
         where: {
           id
+        },
+        include:{
+          customer: true
         }
       });
 
@@ -24,7 +27,8 @@ export async function POST(req: Request) {
       const createdAnalys = await prisma.scan.create({
         data : {
           profileId: findQr.id,
-          type : 0
+          type : 0,
+          customerId: findQr.customer?.id
         }
       });
 
@@ -38,6 +42,9 @@ export async function POST(req: Request) {
       const findVcard = await prisma.vCard.findUnique({
         where: {
           id
+        },
+        include:{
+          customer: true
         }
       });
 
@@ -48,7 +55,8 @@ export async function POST(req: Request) {
       const createdAnalys = await prisma.scan.create({
         data : {
           profileId: findVcard.id,
-          type : 1
+          type : 1,
+          customerId: findVcard.customer?.id
         }
       });
 
