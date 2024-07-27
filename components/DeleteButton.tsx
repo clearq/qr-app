@@ -9,8 +9,8 @@ interface DeleteButtonProps {
 export const DeleteButton: React.FC<DeleteButtonProps> = ({ id, onDelete }) => {
   return (
     <Button
-      className="hover:bg-red-500"
-      variant="outline"
+      className="hover:bg-red-500 w-full"
+      variant="ghost"
       onClick={() => onDelete(id)}
     >
       🗑️

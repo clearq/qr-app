@@ -35,12 +35,12 @@ export default function VcardChart() {
   return (
     <>
       <Card
-        className="w-full h-[600px]"
+        className="w-full"
         x-chunk="dashboard-05-chunk-3"
       >
         <Carousel>
           <CarouselContent>
-            <CarouselItem className="pl-14 px-14 py-5">
+            <CarouselItem className="p-4 sm:px-14 sm:py-5">
             <DataTable vcardData={vData} refetchDataTable={refetchDataTable} />
             </CarouselItem>
           </CarouselContent>

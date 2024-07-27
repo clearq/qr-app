@@ -24,6 +24,14 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@radix-ui/react-dialog";
 import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { QrForm } from "@/components/qr-form";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -85,19 +93,19 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   return (
     <div>
-      <Table className="mb-10">
+      <Table className="">
         <TableHeader className="h-12">
           <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
+            <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="flex flex-row space-x-20 relative justify-end items-end">
+            <TableHead className="">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Add Url</Button>
+                  <Button variant="outline">Add</Button>
                 </DialogTrigger>
-                <DialogContent className="">
+                <DialogContent>
                   <QrForm />
                 </DialogContent>
               </Dialog>
@@ -107,49 +115,61 @@ export const DataTable: React.FC<DataTableProps> = ({
         <TableBody>
           {currentData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4}>No data available</TableCell>
+              <TableCell colSpan={5}>No data available</TableCell>
             </TableRow>
           ) : (
-            <>
-              {currentData.map((qr, index: number) => (
-                <TableRow key={qr.id}>
-                  <TableCell>
-                    {index + 1 + (currentPage - 1) * itemsPerPage}
-                  </TableCell>
-                  <TableCell>{qr.tag}</TableCell>
-                  <TableCell>URL</TableCell>
-                  <TableCell>
-                    <QRCode
-                      value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
-                      size={70}
-                      renderAs="canvas"
-                      // includeMargin={true}
-                      imageSettings={{
-                        //@ts-ignore
-                        src: logo ? logo.toString() : qr.logoType,
-                        height: 20,
-                        width: 20,
-                        excavate: true,
-                      }}
-                      bgColor="rgba(0,0,0,0)"
-                      fgColor="#000000"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                      <Button
-                        onClick={() => router.replace(`qr/details?id=${qr.id}`)}
-                        variant="outline"
-                      >
-                        👁️‍🗨️
-                      </Button>
-                      <EditButton qrData={qr} />
-                      <DeleteButton id={qr.id} onDelete={handleDelete} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
+            currentData.map((qr, index: number) => (
+              <TableRow key={qr.id}>
+                <TableCell>
+                  {index + 1 + (currentPage - 1) * itemsPerPage}
+                </TableCell>
+                <TableCell>{qr.tag}</TableCell>
+                <TableCell>URL</TableCell>
+                <TableCell>
+                  <QRCode
+                    value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
+                    size={50}
+                    renderAs="canvas"
+                    imageSettings={{
+                      //@ts-ignore
+                      src: logo ? logo.toString() : qr.logoType,
+                      height: 20,
+                      width: 20,
+                      excavate: true,
+                    }}
+                    bgColor="rgba(0,0,0,0)"
+                    fgColor="#000000"
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="ml-3">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">≡</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="flex flex-col justify-center items-center">
+                        <DropdownMenuSeparator />
+                        <Button
+                        className="w-full"
+                          onClick={() =>
+                            router.replace(`qr/details?id=${qr.id}`)
+                          }
+                          variant="ghost"
+                        >
+                          👁️‍🗨️
+                        </Button>
+                        <DropdownMenuSeparator />
+
+                        <EditButton qrData={qr} />
+                        <DropdownMenuSeparator />
+
+                        <DeleteButton id={qr.id} onDelete={handleDelete} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>

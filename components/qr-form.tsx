@@ -171,12 +171,7 @@ export const QrForm = () => {
   return (
     <div className="flex w-full flex-col">
 
-        <div className="flex flex-col sm:gap-4 sm:py-4 ">
-          <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>{/* <Pages /> */}</BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+
           <CardHeader>
             <CardTitle className="text-6xl">URL</CardTitle>
             <CardDescription>Create your Qr here</CardDescription>
@@ -269,7 +264,6 @@ export const QrForm = () => {
             </div> */}
           </div>
         </div>
-  
-    </div>
+
   );
 };

@@ -23,7 +23,7 @@ interface EditButtonProps {
   qrData: Qr;
 }
 
-export const EditButton = ({ qrData: qr }: EditButtonProps) => {
+export const  EditButton = ({ qrData: qr }: EditButtonProps) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(qr.logoType || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter()
@@ -135,10 +135,10 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
   }
 
   return (
-    <div className="flex mr-9 ">
+    <>
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">✎</Button>
+      <DialogTrigger className="w-full">
+        <Button className="w-full" variant="ghost">✎</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
@@ -220,6 +220,6 @@ export const EditButton = ({ qrData: qr }: EditButtonProps) => {
             <Button variant={"destructive"} className="top-" onClick={handleCancel}>Cancel</Button>
       </DialogContent>
     </Dialog>
-    </div>
+    </>
   );
 };

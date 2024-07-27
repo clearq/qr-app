@@ -25,8 +25,8 @@ import { IQR } from "@/typings";
 
 export default function QrChart() {
   const [qrData, setQrData] = useState<IQR[]>([]);
- 
-  const fetchData = useCallback(async() => {
+
+  const fetchData = useCallback(async () => {
     try {
       const qrResponse = await fetch("/api/qr");
       const qrJson = await qrResponse.json();
@@ -34,30 +34,25 @@ export default function QrChart() {
     } catch (error) {
       console.error("Error fetching data", error);
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const refetchDataTable = () => {
     fetchData();
   };
 
   return (
-    <>
-      <Card
-        className="w-full h-[600px]"
-        x-chunk="dashboard-05-chunk-3"
-      >
-        <Carousel>
-          <CarouselContent>
-            <CarouselItem className="pl-14 px-14 py-5">
+    <Card className="w-full ">
+      <Carousel>
+        <CarouselContent>
+          <CarouselItem className="p-4 sm:px-14 sm:py-5">
             <DataTable qrData={qrData} refetchDataTable={refetchDataTable} />
-            </CarouselItem>
-          </CarouselContent>
-        </Carousel>
-      </Card>
-    </>
+          </CarouselItem>
+        </CarouselContent>
+      </Carousel>
+    </Card>
   );
 }
