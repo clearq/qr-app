@@ -40,62 +40,60 @@ export default function AllForm() {
     <div className="flex w-full flex-col bg-muted/40">
       <Card>
         <div className="flex flex-col sm:py-10 sm:pl-14 sm:pr-14">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background  sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <CardTitle className="text-5xl mb-5">Overview</CardTitle>
-          </header>
+            <CardTitle className="text-3xl sm:text-5xl ml-4 mt-5 sm:mt-0 mb-2 sm:mb-5">Overview</CardTitle>
           <main className="items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {userData ? (
                   <>
-                    <Card className="sm:col-span-2" x-chunk="dashboard-05-chunk-0">
+                    <Card className="sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-2" x-chunk="dashboard-05-chunk-0">
                       <CardHeader className="pb-3">
                         <CardTitle>
+                          {
+                          //@ts-ignore
+                          userData?.firstName
+                        }{" "}
                         {
-                        //@ts-ignore
-                        userData?.firstName
-                      }{" "}
-                      {
-                        //@ts-ignore
-                        userData?.lastName
-                      }
+                          //@ts-ignore
+                          userData?.lastName
+                        }
                         </CardTitle>
                         <CardDescription className="max-w-lg text-balance leading-relaxed">
+                          {
+                          //@ts-ignore
+                          userData?.email
+                        }
+                        <br />
                         {
-                        //@ts-ignore
-                        userData?.email
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.phone
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.address
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.city
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.zip
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.company
-                      }
-                      <br />
-                      {
-                        //@ts-ignore
-                        userData?.orgNumber
-                      }
-                      <br />
+                          //@ts-ignore
+                          userData?.phone
+                        }
+                        <br />
+                        {
+                          //@ts-ignore
+                          userData?.address
+                        }
+                        <br />
+                        {
+                          //@ts-ignore
+                          userData?.city
+                        }
+                        <br />
+                        {
+                          //@ts-ignore
+                          userData?.zip
+                        }
+                        <br />
+                        {
+                          //@ts-ignore
+                          userData?.company
+                        }
+                        <br />
+                        {
+                          //@ts-ignore
+                          userData?.orgNumber
+                        }
+                        <br />
                         </CardDescription>
                       </CardHeader>
                       <CardFooter>
@@ -136,7 +134,7 @@ export default function AllForm() {
                   <TabsList>
                     <TabsTrigger value="URL">URL</TabsTrigger>
                     <TabsTrigger value="VCard">VCard</TabsTrigger>
-                    {/* <TabsTrigger value="Analys">Analys</TabsTrigger> */}
+                    <TabsTrigger value="Analys">Analys</TabsTrigger>
                   </TabsList>
                 </div>
                 <TabsContent value="URL">

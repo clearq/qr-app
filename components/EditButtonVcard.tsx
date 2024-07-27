@@ -166,8 +166,8 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   return (
     <>
       <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
-        <DialogTrigger>
-          <Button variant="outline">✎</Button>
+        <DialogTrigger className="w-full">
+          <Button className="w-full" variant="ghost">✎</Button>
         </DialogTrigger>
         <DialogContent>
           <form onSubmit={validation.handleSubmit}>

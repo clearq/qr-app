@@ -38,6 +38,7 @@ import EditButton from "@/components/EditButtonVcard";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
 import { Vcard } from "@/components/Vcard";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/Dropdown";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -102,17 +103,17 @@ export const DataTable = ({
 
   return (
     <div>
-      <Table>
+      <Table className="">
         <TableHeader className="h-12">
           <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
+            <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="flex flex-row space-x-7 justify-end items-end">
+            <TableHead className="">
             <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Add VCard</Button>
+                  <Button variant="outline">Add</Button>
                 </DialogTrigger>
                 <DialogContent className="">
                   <Vcard />
@@ -138,7 +139,7 @@ export const DataTable = ({
                   <TableCell>
                     <QRCode
                       value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
-                      size={70}
+                      size={50}
                       renderAs="canvas"
                       // includeMargin={true}
                       imageSettings={{
@@ -153,18 +154,30 @@ export const DataTable = ({
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                      <Button
-                        onClick={() =>
-                          router.replace(`vcard/details?id=${vcard.id}`)
-                        }
-                        variant="outline"
-                      >
-                        👁️‍🗨️
-                      </Button>
-                      <EditButton vcardData={vcard} />
-                      <DeleteButton id={vcard.id} onDelete={handleDelete} />
-                    </div>
+                  <div className="ml-3">
+                  <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">≡</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="flex flex-col justify-center items-center">
+                        <DropdownMenuSeparator />
+                        <Button className="w-full"
+                          onClick={() =>
+                            router.replace(`vcard/details?id=${vcard.id}`)
+                          }
+                          variant="ghost"
+                        >
+                          👁️‍🗨️
+                        </Button>
+                        <DropdownMenuSeparator />
+
+                        <EditButton vcardData={vcard} />
+                        <DropdownMenuSeparator />
+
+                        <DeleteButton id={vcard.id} onDelete={handleDelete} />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                   </TableCell>
                 </TableRow>
               ))}
