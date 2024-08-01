@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { FaTrash } from "react-icons/fa";
 
 interface DeleteButtonProps {
   id: string;
@@ -13,7 +14,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ id, onDelete }) => {
       variant="ghost"
       onClick={() => onDelete(id)}
     >
-      🗑️
+      <FaTrash className="text-red hover:text-primary" size={20} />
     </Button>
   );
 };

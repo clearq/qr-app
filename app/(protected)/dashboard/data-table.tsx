@@ -32,6 +32,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { FaEye } from "react-icons/fa";
+import { MdAdd } from "react-icons/md";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -103,7 +105,8 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableHead className="">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Add</Button>
+                  <Button variant="outline">
+                  <MdAdd/>  Add</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <QrForm />
@@ -156,7 +159,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                           }
                           variant="ghost"
                         >
-                          👁️‍🗨️
+                          <FaEye size={20}/>
                         </Button>
                         <DropdownMenuSeparator />
 

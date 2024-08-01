@@ -18,6 +18,7 @@ import QRCode from "qrcode.react";
 import { toast } from "@/components/ui/use-toast";
 import { Qr } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { MdModeEdit } from "react-icons/md";
 
 interface EditButtonProps {
   qrData: Qr;
@@ -138,7 +139,9 @@ export const  EditButton = ({ qrData: qr }: EditButtonProps) => {
     <>
     <Dialog>
       <DialogTrigger className="w-full">
-        <Button className="w-full" variant="ghost">✎</Button>
+        <Button className="w-full" variant="ghost">
+        <MdModeEdit size={20} />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
