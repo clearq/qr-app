@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { MdModeEdit } from "react-icons/md"
 
 interface EditButtonProps {
   vcardData: VCard;
@@ -167,7 +168,9 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     <>
       <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
         <DialogTrigger className="w-full">
-          <Button className="w-full" variant="ghost">✎</Button>
+          <Button className="w-full" variant="ghost">
+          <MdModeEdit size={20} />
+          </Button>
         </DialogTrigger>
         <DialogContent>
           <form onSubmit={validation.handleSubmit}>

@@ -20,12 +20,12 @@ const RedirectForm = () => {
   
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(100);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCountdown((prevCountdown) => prevCountdown - 1);
-    }, 1000);
+      setCountdown((prevCountdown) => prevCountdown - 100);
+    }, 100);
 
     return () => clearInterval(interval);
   }, []);
@@ -33,9 +33,8 @@ const RedirectForm = () => {
   useEffect(() => {
     if (qrUrl) {
       const timeout = setTimeout(() => {
-        router.replace(qrUrl)
-      }, 1000);
-
+        router.replace(qrUrl);
+      }, 100); 
       return () => clearTimeout(timeout);
     }
   }, [qrUrl]);
@@ -45,9 +44,9 @@ const RedirectForm = () => {
       fetch(`/api/scans`, {
         method: "POST",
         body: JSON.stringify({
-          type : 0,
-          id
-        })
+          type: 0,
+          id,
+        }),
       })
         .then((res) => {
           if (!res.ok) {
@@ -80,12 +79,12 @@ const RedirectForm = () => {
   useEffect(() => {
     if (!loading && qrUrl) {
       const timeout = setTimeout(() => {
-        router.replace(qrUrl)
-      }, countdown * 1000);
+        router.replace(qrUrl);
+      }, countdown);
 
       return () => clearTimeout(timeout);
     }
   }, [loading, qrUrl, countdown]);
-}
+};
 
 export default RedirectForm;

@@ -38,7 +38,14 @@ import EditButton from "@/components/EditButtonVcard";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
 import { Vcard } from "@/components/Vcard";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/Dropdown";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/Dropdown";
+import { FaEye } from "react-icons/fa";
+import { MdAdd } from "react-icons/md";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -111,9 +118,10 @@ export const DataTable = ({
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
             <TableHead className="">
-            <Dialog>
+              <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">Add</Button>
+                  <Button variant="outline">
+                  <MdAdd/> Add</Button>
                 </DialogTrigger>
                 <DialogContent className="">
                   <Vcard />
@@ -154,30 +162,31 @@ export const DataTable = ({
                     />
                   </TableCell>
                   <TableCell>
-                  <div className="ml-3">
-                  <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline">≡</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="flex flex-col justify-center items-center">
-                        <DropdownMenuSeparator />
-                        <Button className="w-full"
-                          onClick={() =>
-                            router.replace(`vcard/details?id=${vcard.id}`)
-                          }
-                          variant="ghost"
-                        >
-                          👁️‍🗨️
-                        </Button>
-                        <DropdownMenuSeparator />
+                    <div className="ml-3">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">≡</Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="flex flex-col justify-center items-center">
+                          <DropdownMenuSeparator />
+                          <Button
+                            className="w-full"
+                            onClick={() =>
+                              router.replace(`vcard/details?id=${vcard.id}`)
+                            }
+                            variant="ghost"
+                          >
+                            <FaEye size={20} />
+                          </Button>
+                          <DropdownMenuSeparator />
 
-                        <EditButton vcardData={vcard} />
-                        <DropdownMenuSeparator />
+                          <EditButton vcardData={vcard} />
+                          <DropdownMenuSeparator />
 
-                        <DeleteButton id={vcard.id} onDelete={handleDelete} />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                          <DeleteButton id={vcard.id} onDelete={handleDelete} />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

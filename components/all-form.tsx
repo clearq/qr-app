@@ -134,7 +134,7 @@ export default function AllForm() {
                   <TabsList>
                     <TabsTrigger value="URL">URL</TabsTrigger>
                     <TabsTrigger value="VCard">VCard</TabsTrigger>
-                    <TabsTrigger value="Analys">Analys</TabsTrigger>
+                    {/* <TabsTrigger value="Analys">Analys</TabsTrigger> */}
                   </TabsList>
                 </div>
                 <TabsContent value="URL">
