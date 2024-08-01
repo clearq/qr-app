@@ -76,23 +76,16 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    // Fetch the query parameter to filter by specific customer, if needed
     const url = new URL(req.url);
-    const customerId = url.searchParams.get('customerId');
+    const customerId = url.searchParams.get("customerId");
 
-    // Query to aggregate scan counts
     const scanCounts = await prisma.scan.groupBy({
-      by: ['customerId'],
-      _sum: {
-        count: true
-      },
-      where: {
-        customerId: customerId ? customerId : undefined
-      }
+      by: ["customerId"],
+      _sum: { count: true },
+      where: { customerId: customerId ? customerId : undefined },
     });
 
     return NextResponse.json(scanCounts, { status: 200 });
-
   } catch (error) {
     console.error("Error retrieving scan counts:", error);
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });

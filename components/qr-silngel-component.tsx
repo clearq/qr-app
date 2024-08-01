@@ -130,7 +130,7 @@ export const QrSingelComponent = ({ user }: Props) => {
   const copyUrlToClipboard = () => {
     //@ts-ignore
     const url = `https://qrgen.clearq.se/redirect?id=${qrcodeData?.id}&type=qr`;
-    // const url = `localhost:3000/redirect?id=${qrcodeData?.id}&type=qr`;
+    // const url = `localhost:3001/redirect?id=${qrcodeData?.id}&type=qr`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
