@@ -110,20 +110,20 @@ export const DataTable = ({
 
   return (
     <div>
-      <Table className="">
-        <TableHeader className="h-12">
+      <Table className="m-5">
+        <TableHeader className="h-16">
           <TableRow>
             <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="">
+            <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline">
                   <MdAdd/> Add</Button>
                 </DialogTrigger>
-                <DialogContent className="">
+                <DialogContent>
                   <Vcard />
                 </DialogContent>
               </Dialog>
@@ -133,7 +133,7 @@ export const DataTable = ({
         <TableBody>
           {currentData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4}>No data available</TableCell>
+              <TableCell colSpan={5}>No data available</TableCell>
             </TableRow>
           ) : (
             <>

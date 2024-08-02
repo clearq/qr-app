@@ -37,16 +37,16 @@ export default function AllForm() {
   };
 
   return (
-    <div className="flex w-full flex-col bg-muted/40">
+    <div className="flex ml-2 w-[96%] sm:w-full flex-col bg-muted/40">
       <Card>
         <div className="flex flex-col sm:py-10 sm:pl-14 sm:pr-14">
             <CardTitle className="text-3xl sm:text-5xl ml-4 mt-5 sm:mt-0 mb-2 sm:mb-5">Overview</CardTitle>
-          <main className="items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+          <main className="items-start gap-1 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
             <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid gap-4 grid-cols-1 ml-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {userData ? (
                   <>
-                    <Card className="sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-2" x-chunk="dashboard-05-chunk-0">
+                    <Card className="w-[97%] sm:w-full sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-2" x-chunk="dashboard-05-chunk-0">
                       <CardHeader className="pb-3">
                         <CardTitle>
                           {
@@ -100,7 +100,9 @@ export default function AllForm() {
                         <Button onClick={handleProfile}>View Your Profile</Button>
                       </CardFooter>
                     </Card>
-                    <Card x-chunk="dashboard-05-chunk-1">
+                    <Card
+                    className="w-[97%] sm:w-full"
+                     x-chunk="dashboard-05-chunk-1">
                       <CardHeader className="pb-2">
                         <CardDescription className="text-2xl font-semibold">URL</CardDescription>
                         <CardTitle className="text-9xl flex justify-center items-center">
@@ -112,7 +114,9 @@ export default function AllForm() {
                       <CardContent></CardContent>
                       <CardFooter></CardFooter>
                     </Card>
-                    <Card x-chunk="dashboard-05-chunk-2">
+                    <Card
+                    className="w-[97%] sm:w-full"
+                     x-chunk="dashboard-05-chunk-2">
                       <CardHeader className="pb-2">
                         <CardDescription className="text-2xl font-semibold">VCard</CardDescription>
                         <CardTitle className="text-9xl flex justify-center items-center">
@@ -130,11 +134,11 @@ export default function AllForm() {
                 )}
               </div>
               <Tabs defaultValue="URL">
-                <div className="flex items-center">
+                <div className="ml-1 flex items-center">
                   <TabsList>
                     <TabsTrigger value="URL">URL</TabsTrigger>
                     <TabsTrigger value="VCard">VCard</TabsTrigger>
-                    {/* <TabsTrigger value="Analys">Analys</TabsTrigger> */}
+                    <TabsTrigger value="Analys">Analytics</TabsTrigger>
                   </TabsList>
                 </div>
                 <TabsContent value="URL">
@@ -144,7 +148,7 @@ export default function AllForm() {
                   <VcardChart />
                 </TabsContent>
                 <TabsContent value="Analys">
-                  <AllChart />
+                  <AllChart/>
                 </TabsContent>
               </Tabs>
             </div>
