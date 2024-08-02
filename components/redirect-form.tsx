@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ParsedUrlQuery } from "querystring";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./ui/use-toast";
+import { quantum, helix } from 'ldrs';
 
 interface RedirectProps {
   url: string;
@@ -20,12 +21,17 @@ const RedirectForm = () => {
   
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(100);
+  const [countdown, setCountdown] = useState(5); // countdown in milliseconds
+
+  useEffect(() => {
+    quantum.register();
+    helix.register();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCountdown((prevCountdown) => prevCountdown - 100);
-    }, 100);
+      setCountdown((prevCountdown) => prevCountdown - 1);
+    }, 1); // interval in milliseconds
 
     return () => clearInterval(interval);
   }, []);
@@ -34,7 +40,7 @@ const RedirectForm = () => {
     if (qrUrl) {
       const timeout = setTimeout(() => {
         router.replace(qrUrl);
-      }, 100); 
+      }, 5); // 5 milliseconds
       return () => clearTimeout(timeout);
     }
   }, [qrUrl]);
@@ -80,11 +86,26 @@ const RedirectForm = () => {
     if (!loading && qrUrl) {
       const timeout = setTimeout(() => {
         router.replace(qrUrl);
-      }, countdown);
+      }, countdown); // countdown in milliseconds
 
       return () => clearTimeout(timeout);
     }
   }, [loading, qrUrl, countdown]);
+
+  return(
+    <div className="flex flex-col relative mb-[20%] mt-[20%] left-[39%]">
+      {/* <l-quantum
+        size="300"
+        speed="1.75" 
+        color="black" 
+      ></l-quantum> */}
+      <l-helix
+        size="300"
+        speed="1.75" 
+        color="black" 
+      ></l-helix>
+    </div>
+  );
 };
 
 export default RedirectForm;

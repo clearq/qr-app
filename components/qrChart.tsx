@@ -45,7 +45,7 @@ export default function QrChart() {
   };
 
   return (
-    <Card className="w-full ">
+    <Card className="w-[97%] sm:w-full ">
       <Carousel>
         <CarouselContent>
           <CarouselItem className="p-4 sm:px-14 sm:py-5">

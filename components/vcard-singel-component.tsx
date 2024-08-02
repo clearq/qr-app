@@ -15,7 +15,6 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Progress } from "./ui/progress";
 import QRCode from "qrcode.react";
 import { useSession } from "next-auth/react";
 import { saveAs } from "file-saver";

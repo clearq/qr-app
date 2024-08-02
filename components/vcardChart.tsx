@@ -35,7 +35,7 @@ export default function VcardChart() {
   return (
     <>
       <Card
-        className="w-full"
+        className="w-[97%] sm:w-full "
         x-chunk="dashboard-05-chunk-3"
       >
         <Carousel>

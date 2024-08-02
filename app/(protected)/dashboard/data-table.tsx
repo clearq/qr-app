@@ -32,7 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaEye } from "react-icons/fa";
+import { FaChartLine, FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 
 interface DataTableProps {
@@ -93,20 +93,22 @@ export const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  
   return (
     <div>
-      <Table className="">
-        <TableHeader className="h-12">
+      <Table className="mb-5">
+        <TableHeader className="h-16">
           <TableRow>
             <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="">
+            {/* <TableHead>Statistics</TableHead> */}
+            <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline">
-                  <MdAdd/>  Add</Button>
+                  <MdAdd/>Add</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <QrForm />
@@ -144,6 +146,9 @@ export const DataTable: React.FC<DataTableProps> = ({
                     fgColor="#000000"
                   />
                 </TableCell>
+                {/* <TableCell className="cursor-pointer relative left-6">
+                  <FaChartLine />
+                </TableCell> */}
                 <TableCell>
                   <div className="ml-3">
                     <DropdownMenu>
