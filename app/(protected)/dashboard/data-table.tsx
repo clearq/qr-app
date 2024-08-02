@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaChartLine, FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
+import Link from "next/link";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -93,7 +94,6 @@ export const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
-  
   return (
     <div>
       <Table className="mb-5">
@@ -108,7 +108,9 @@ export const DataTable: React.FC<DataTableProps> = ({
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline">
-                  <MdAdd/>Add</Button>
+                    <MdAdd />
+                    Add
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <QrForm />
@@ -131,20 +133,23 @@ export const DataTable: React.FC<DataTableProps> = ({
                 <TableCell>{qr.tag}</TableCell>
                 <TableCell>URL</TableCell>
                 <TableCell>
-                  <QRCode
-                    value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
-                    size={50}
-                    renderAs="canvas"
-                    imageSettings={{
-                      //@ts-ignore
-                      src: logo ? logo.toString() : qr.logoType,
-                      height: 20,
-                      width: 20,
-                      excavate: true,
-                    }}
-                    bgColor="rgba(0,0,0,0)"
-                    fgColor="#000000"
-                  />
+                  <Link href={`vcard/details?id=${qr.id}`}>
+                    <QRCode
+                      className=" hover:border transition-colors"
+                      value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
+                      size={50}
+                      renderAs="canvas"
+                      imageSettings={{
+                        //@ts-ignore
+                        src: logo ? logo.toString() : qr.logoType,
+                        height: 20,
+                        width: 20,
+                        excavate: true,
+                      }}
+                      bgColor="rgba(0,0,0,0)"
+                      // fgColor="#000000"
+                    />
+                  </Link>
                 </TableCell>
                 {/* <TableCell className="cursor-pointer relative left-6">
                   <FaChartLine />
@@ -158,13 +163,13 @@ export const DataTable: React.FC<DataTableProps> = ({
                       <DropdownMenuContent className="flex flex-col justify-center items-center">
                         <DropdownMenuSeparator />
                         <Button
-                        className="w-full"
+                          className="w-full"
                           onClick={() =>
                             router.replace(`qr/details?id=${qr.id}`)
                           }
                           variant="ghost"
                         >
-                          <FaEye size={20}/>
+                          <FaEye size={20} />
                         </Button>
                         <DropdownMenuSeparator />
 

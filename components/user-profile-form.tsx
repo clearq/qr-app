@@ -180,19 +180,11 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           <CardTitle>Edit your Profile</CardTitle>
           <CardDescription>Update your profile here.</CardDescription>
         </CardHeader>
-        <label htmlFor="imageInput" style={{ cursor: "pointer" }}>
+        {/* <label htmlFor="imageInput" style={{ cursor: "pointer" }}> */}
           <Avatar
             ref={qrRef}
-            className="flex flex-col w-[100px] h-[100px] justify-center items-center relative"
+            className="flex flex-col w-[200px] h-[200px] justify-center items-center relative"
           >
-            {/* First image for storage */}
-            <AvatarImage
-              id="qr-code-svg"
-              //@ts-ignore
-              src={logo ? logo.toString() : userData.image}
-              alt="User Image"
-              className="absolute inset-0 opacity-0"
-            />
             {/* Second image for display */}
             <AvatarImage
               //@ts-ignore
@@ -206,16 +198,16 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               {userData.lastName[0]}
             </AvatarFallback>
           </Avatar>
-          <input
+          {/* <input
             id="imageInput"
             type="file"
             accept="image/*"
             style={{ display: "none" }}
             onChange={handleImageChange}
           />
-        </label>
+        </label> */}
         {/* <ImageUpload/> */}
-        <div className="flex items-center space-x-4 mt-4">
+        {/* <div className="flex items-center space-x-4 mt-4">
           <label
             htmlFor="logoType"
             className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
@@ -235,7 +227,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               Remove Logo
             </Button>
           )}
-        </div>
+        </div> */}
         <CardContent className="mt-10">
           <form
             onSubmit={(e) => {
