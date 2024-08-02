@@ -21,7 +21,7 @@ const RedirectForm = () => {
   
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [countdown, setCountdown] = useState(5); // countdown in milliseconds
+  const [countdown, setCountdown] = useState(2);
 
   useEffect(() => {
     quantum.register();
@@ -31,7 +31,7 @@ const RedirectForm = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCountdown((prevCountdown) => prevCountdown - 1);
-    }, 1); // interval in milliseconds
+    }, 1);
 
     return () => clearInterval(interval);
   }, []);
@@ -40,7 +40,7 @@ const RedirectForm = () => {
     if (qrUrl) {
       const timeout = setTimeout(() => {
         router.replace(qrUrl);
-      }, 5); // 5 milliseconds
+      }, 2); 
       return () => clearTimeout(timeout);
     }
   }, [qrUrl]);
@@ -86,14 +86,14 @@ const RedirectForm = () => {
     if (!loading && qrUrl) {
       const timeout = setTimeout(() => {
         router.replace(qrUrl);
-      }, countdown); // countdown in milliseconds
+      }, countdown);
 
       return () => clearTimeout(timeout);
     }
   }, [loading, qrUrl, countdown]);
 
   return(
-    <div className="flex flex-col relative mb-[20%] mt-[20%] left-[39%]">
+    <div className="flex flex-col relative mb-[20%] mt-[40%] left-[13%] sm:relative sm:mb-[20%] sm:mt-[20%] sm:left-[39%]">
       {/* <l-quantum
         size="300"
         speed="1.75" 

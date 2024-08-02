@@ -46,6 +46,7 @@ import {
 } from "@/components/Dropdown";
 import { FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
+import Link from "next/link";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -110,7 +111,7 @@ export const DataTable = ({
 
   return (
     <div>
-      <Table className="m-5">
+      <Table className="mb-5">
         <TableHeader className="h-16">
           <TableRow>
             <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
@@ -121,7 +122,8 @@ export const DataTable = ({
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="outline">
-                  <MdAdd/> Add</Button>
+                    <MdAdd /> Add
+                  </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <Vcard />
@@ -145,21 +147,24 @@ export const DataTable = ({
                   <TableCell>{vcard.tag}</TableCell>
                   <TableCell>VCARD</TableCell>
                   <TableCell>
-                    <QRCode
-                      value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
-                      size={50}
-                      renderAs="canvas"
-                      // includeMargin={true}
-                      imageSettings={{
-                        //@ts-ignore
-                        src: logo ? logo.toString() : vcard.logoType,
-                        height: 20,
-                        width: 20,
-                        excavate: true,
-                      }}
-                      bgColor="rgba(0,0,0,0)"
-                      fgColor="#000000"
-                    />
+                    <Link href={`vcard/details?id=${vcard.id}`}>
+                      <QRCode
+                        className=" hover:border transition-colors"
+                        value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
+                        size={50}
+                        renderAs="canvas"
+                        // includeMargin={true}
+                        imageSettings={{
+                          //@ts-ignore
+                          src: logo ? logo.toString() : vcard.logoType,
+                          height: 20,
+                          width: 20,
+                          excavate: true,
+                        }}
+                        bgColor="rgba(0,0,0,0)"
+                        fgColor="#000000"
+                      />
+                    </Link>
                   </TableCell>
                   <TableCell>
                     <div className="ml-3">
