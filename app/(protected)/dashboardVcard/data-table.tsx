@@ -29,11 +29,7 @@ import {
 } from "@/components/ui/pagination";
 import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { toast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
 import EditButton from "@/components/EditButtonVcard";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
@@ -44,7 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/Dropdown";
-import { FaEye } from "react-icons/fa";
+import { FaChartLine, FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 
@@ -75,6 +71,8 @@ export const DataTable = ({
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
+  const [selectedQr, setSelectedQr] = useState<IVCARD | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -89,6 +87,27 @@ export const DataTable = ({
         refetchDataTable();
       })
       .catch((err) => console.log(err));
+  };
+
+  const handleAnalyticsOpen = (vcard: IVCARD) => {
+    setSelectedQr(vcard);
+    fetchAnalyticsData(vcard.id);
+  };
+
+  const fetchAnalyticsData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/scans?id=${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Analytics Data:', data); // Debugging line
+        setAnalyticsData(data);
+      } else {
+        setAnalyticsData(null);
+      }
+    } catch (error) {
+      console.error("Error fetching analytics data:", error);
+      setAnalyticsData(null);
+    }
   };
 
   const router = useRouter();
@@ -121,8 +140,9 @@ export const DataTable = ({
             <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <MdAdd /> Add
+                <Button variant="outline" className="flex items-center space-x-2 ml-2">
+                    <MdAdd />
+                    <span className="hidden sm:inline">Add</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -149,7 +169,7 @@ export const DataTable = ({
                   <TableCell>
                     <Link href={`vcard/details?id=${vcard.id}`}>
                       <QRCode
-                        className=" hover:border transition-colors"
+                        className="hover:border hover:border-cyan-500 hover:border-opacity-10 transition-color"
                         value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
                         size={50}
                         renderAs="canvas"
@@ -161,8 +181,6 @@ export const DataTable = ({
                           width: 20,
                           excavate: true,
                         }}
-                        bgColor="rgba(0,0,0,0)"
-                        fgColor="#000000"
                       />
                     </Link>
                   </TableCell>
@@ -173,16 +191,14 @@ export const DataTable = ({
                           <Button variant="outline">≡</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="flex flex-col justify-center items-center">
-                          <DropdownMenuSeparator />
-                          <Button
-                            className="w-full"
-                            onClick={() =>
-                              router.replace(`vcard/details?id=${vcard.id}`)
-                            }
-                            variant="ghost"
-                          >
-                            <FaEye size={20} />
-                          </Button>
+                        <DropdownMenuSeparator />
+                        <Button
+                          className="w-full"
+                          onClick={() => handleAnalyticsOpen(vcard)}
+                          variant="ghost"
+                        >
+                          <FaChartLine size={20} />
+                        </Button>
                           <DropdownMenuSeparator />
 
                           <EditButton vcardData={vcard} />
@@ -234,6 +250,21 @@ export const DataTable = ({
           )}
         </PaginationContent>
       </Pagination>
+
+      {selectedQr && (
+      <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
+        <DialogContent>
+          <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
+          {analyticsData ? (
+            <div>
+              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> {/* Ensure default to '0' */}
+            </div>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </DialogContent>
+      </Dialog>
+    )}
     </div>
   );
 };

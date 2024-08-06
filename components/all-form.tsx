@@ -46,7 +46,7 @@ export default function AllForm() {
               <div className="grid gap-4 grid-cols-1 ml-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {userData ? (
                   <>
-                    <Card className="w-[97%] sm:w-full sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-2" x-chunk="dashboard-05-chunk-0">
+                    <Card className="w-[98%] sm:w-full sm:col-span-2 md:col-span-1 lg:col-span-1 xl:col-span-2" x-chunk="dashboard-05-chunk-0">
                       <CardHeader className="pb-3">
                         <CardTitle>
                           {

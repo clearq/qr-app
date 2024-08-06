@@ -188,8 +188,6 @@ export const QrSingelComponent = ({ user }: Props) => {
                       width: 55,
                       excavate: true,
                     }}
-                    bgColor="rgba(0,0,0,0)"
-                    fgColor="#000000"
                   />
                   <div className="flex flex-row space-x-4 justify-center items-center mt-4">
                     <Button onClick={() => downloadQRCode("png")} className="">
