@@ -428,8 +428,6 @@ END:VCARD
                       width: 75,
                       excavate: true,
                     }}
-                    bgColor="rgba(0,0,0,0)"
-                    fgColor="#000000"
                   />
                   <div className="flex flex-row space-x-4 justify-center items-center mt-6">
                     <Button onClick={() => downloadQRCode("png")} className="">

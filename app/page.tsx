@@ -47,33 +47,22 @@ export default function Home() {
           <div className="text-left">
             <h1 className="mt-16 mb-16 text-start text-5xl font-bold">QrGen</h1>
 
-            <div className="mb-16 md:text-2xl text-lg text-gray-400 ml- mr-9">
+            <div className="mb-16 md:text-2xl  text-lg w-[65%]  ml- mr-9">
               <p>
-                Welcome to our QrGen! We offer a powerful tool for creating QR
-                codes that can be used for various purposes. Whether you need to
-                create QR codes to share research articles, links to online
-                resources, or other types of information, our service is here to
-                help you.
+                <p>
+                  Welcome to QrGen! Our tool lets you create QR codes for
+                  sharing research articles, links, and more. We offer URL and
+                  VCard creation for all users. Companies can additionally
+                  access stamp cards and campaign cards.
+                </p>
+                <br />
+                <p>
+                  Enjoy free data analysis to see how your codes are used. Just
+                  register to create, save, and edit unlimited QR codes that
+                  last a lifetime. Start now to effectively share academic
+                  information and engage with your audience!
+                </p>
               </p>
-              <br />
-              <p>
-                We provide data analysis to help you understand how your QR
-                codes are being used and what type of interaction they generate.
-                Best of all, our service is completely FREE to use. All you need
-                to do is register for an account.
-              </p>
-              <br />
-              <p>
-                Once you have registered, you can create and save as many QR
-                codes as you want. Additionally, you can easily edit them as
-                needed to ensure they are up-to-date and relevant. And the best
-                part is that your QR codes have a lifetime, so you don’t have to
-                worry about them disappearing.
-              </p>
-              <br />
-              So start using our QR code generator today to effectively share
-              your academic information and maximize your interaction with your
-              target audience!
             </div>
             {!authenticated && (
               <Link href="/register">

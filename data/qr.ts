@@ -26,3 +26,20 @@ export const getAllQrData = async (id: string) => {
     return null
   }
 }
+
+export const getVisitorCount = async (profileId: string) => {
+  try {
+    const count = await prisma.scan.aggregate({
+      _sum: {
+        count: true,
+      },
+      where: {
+        profileId,
+      },
+    });
+    return count._sum.count || 0; // return 0 if no scans found
+  } catch (error) {
+    console.error("Error fetching visitor count:", error);
+    return 0; // return 0 in case of error
+  }
+};

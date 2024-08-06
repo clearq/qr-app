@@ -127,10 +127,10 @@ export const DeleteUser = ({ user: userData}: Props) => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
-            <DialogTitle>Do you want to delete Your account?</DialogTitle>
+            <DialogTitle>Do you want to delete your account?</DialogTitle>
             <DialogDescription>
               {
-                "If you delete your account you will lose all your data(Vcard, Qr etc.) and your analytics. Whenever you want to delete your account ENTER your EMAIL CORRECTLY and then click on delete.  "
+                "Upon account deletion, all associated data, including Vcards, QR codes, and analytics, will be permanently lost. If you wish to proceed with deleting your account, please ensure that you enter your email address accurately before clicking on the 'Delete' button."
               }
             </DialogDescription>
           </DialogHeader>

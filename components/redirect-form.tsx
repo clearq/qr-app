@@ -4,6 +4,7 @@ import { ParsedUrlQuery } from "querystring";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./ui/use-toast";
 import { quantum, helix } from 'ldrs';
+import { useTheme } from 'next-themes';
 
 interface RedirectProps {
   url: string;
@@ -19,6 +20,7 @@ const RedirectForm = () => {
   const id = params.get("id");
   const type = params.get("type");
   
+  const { theme } = useTheme(); 
   const [qrUrl, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(2);
@@ -99,10 +101,10 @@ const RedirectForm = () => {
         speed="1.75" 
         color="black" 
       ></l-quantum> */}
-      <l-helix
+       <l-helix
         size="300"
-        speed="1.75" 
-        color="black" 
+        speed="1.75"
+        color={theme === "light" ? "black" : "white"}
       ></l-helix>
     </div>
   );

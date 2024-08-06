@@ -21,20 +21,17 @@ import { EditButton } from "@/components/EditButton";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
 import { Button } from "@/components/ui/button";
-import { Dialog } from "@radix-ui/react-dialog";
-import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { QrForm } from "@/components/qr-form";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FaChartLine, FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
+import { QrForm } from "@/components/qr-form";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -63,6 +60,8 @@ export const DataTable: React.FC<DataTableProps> = ({
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5); // Items per page
+  const [selectedQr, setSelectedQr] = useState<IQR | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -77,6 +76,28 @@ export const DataTable: React.FC<DataTableProps> = ({
         refetchDataTable();
       })
       .catch((err) => console.log(err));
+  };
+
+
+  const handleAnalyticsOpen = (qr: IQR) => {
+    setSelectedQr(qr);
+    fetchAnalyticsData(qr.id);
+  };
+
+  const fetchAnalyticsData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/scans?id=${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Analytics Data:', data); // Debugging line
+        setAnalyticsData(data);
+      } else {
+        setAnalyticsData(null);
+      }
+    } catch (error) {
+      console.error("Error fetching analytics data:", error);
+      setAnalyticsData(null);
+    }
   };
 
   const router = useRouter();
@@ -103,17 +124,16 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            {/* <TableHead>Statistics</TableHead> */}
             <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                <Button variant="outline" className="flex items-center space-x-2">
                     <MdAdd />
-                    Add
+                    <span className="hidden sm:inline">Add</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <QrForm />
+                  <QrForm/>
                 </DialogContent>
               </Dialog>
             </TableHead>
@@ -133,9 +153,9 @@ export const DataTable: React.FC<DataTableProps> = ({
                 <TableCell>{qr.tag}</TableCell>
                 <TableCell>URL</TableCell>
                 <TableCell>
-                  <Link href={`vcard/details?id=${qr.id}`}>
+                  <Link href={`qr/details?id=${qr.id}`}>
                     <QRCode
-                      className=" hover:border transition-colors"
+                      className="hover:border hover:border-cyan-500 hover:border-opacity-10 transition-color"
                       value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
                       size={50}
                       renderAs="canvas"
@@ -146,16 +166,11 @@ export const DataTable: React.FC<DataTableProps> = ({
                         width: 20,
                         excavate: true,
                       }}
-                      bgColor="rgba(0,0,0,0)"
-                      // fgColor="#000000"
                     />
                   </Link>
                 </TableCell>
-                {/* <TableCell className="cursor-pointer relative left-6">
-                  <FaChartLine />
-                </TableCell> */}
                 <TableCell>
-                  <div className="ml-3">
+                  <div className="">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="outline">≡</Button>
@@ -164,18 +179,14 @@ export const DataTable: React.FC<DataTableProps> = ({
                         <DropdownMenuSeparator />
                         <Button
                           className="w-full"
-                          onClick={() =>
-                            router.replace(`qr/details?id=${qr.id}`)
-                          }
+                          onClick={() => handleAnalyticsOpen(qr)}
                           variant="ghost"
                         >
-                          <FaEye size={20} />
+                          <FaChartLine size={20} />
                         </Button>
                         <DropdownMenuSeparator />
-
                         <EditButton qrData={qr} />
                         <DropdownMenuSeparator />
-
                         <DeleteButton id={qr.id} onDelete={handleDelete} />
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -221,6 +232,22 @@ export const DataTable: React.FC<DataTableProps> = ({
           )}
         </PaginationContent>
       </Pagination>
+
+      {/* Dialog for displaying analytics */}
+      {selectedQr && (
+      <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
+        <DialogContent>
+          <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
+          {analyticsData ? (
+            <div>
+              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> {/* Ensure default to '0' */}
+            </div>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </DialogContent>
+      </Dialog>
+    )}
     </div>
   );
 };
