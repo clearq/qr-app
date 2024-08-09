@@ -43,6 +43,7 @@ import {
 import { FaChartLine, FaEye } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
+import { VcardAnalys } from "@/components/vcardAnalys";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -96,10 +97,10 @@ export const DataTable = ({
 
   const fetchAnalyticsData = async (id: string) => {
     try {
-      const response = await fetch(`/api/scans?id=${id}`);
+      const response = await fetch(`/api/scans/${id}/1`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Analytics Data:', data); // Debugging line
+        console.log('Analytics Data table janken:', data);
         setAnalyticsData(data);
       } else {
         setAnalyticsData(null);
@@ -121,6 +122,8 @@ export const DataTable = ({
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
+
+  console.log("current data",currentData)
 
   const totalPages = Math.ceil(vData.length / itemsPerPage);
 
@@ -254,14 +257,15 @@ export const DataTable = ({
       {selectedQr && (
       <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
         <DialogContent>
-          <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
+          {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
           {analyticsData ? (
             <div>
-              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> {/* Ensure default to '0' */}
+              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p>
             </div>
           ) : (
             <p>Loading...</p>
-          )}
+          )} */}
+          <VcardAnalys count={analyticsData} />
         </DialogContent>
       </Dialog>
     )}

@@ -181,16 +181,11 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </DialogDescription>
               <label
                 htmlFor="imageInput"
-                className="cursor-pointer flex justify-center items-center"
+                className="flex justify-center items-center"
               >
                 <div className="relative w-32 h-32">
                   <Avatar className="absolute inset-0 flex items-center justify-center w-full h-full">
-                    <AvatarImage
-                    //@ts-ignore
-                      src={logo ? logo.toString() : vData.logoType}
-                      alt="User Image"
-                    />
-                    <AvatarFallback>
+                    <AvatarFallback className="text-[20px]">
                       {validation.values.firstName
                         ? validation.values.firstName[0]
                         : ""}
@@ -199,32 +194,9 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                         : ""}
                     </AvatarFallback>
                   </Avatar>
-                  <input
-                    id="imageInput"
-                    type="file"
-                    accept="image/*"
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    onChange={handleImageChange}
-                  />
                 </div>
               </label>
               <div className="flex items-center space-x-4 mt-4">
-          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 justify-center items-center sm:ml-[40%] ml-[35%] mt-3 text-secondary cursor-pointer border rounded-[6px] bg-primary">
-            Browse
-          </label>
-          <input
-            type="file"
-            id="logoType"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-          />
-          {logo && (
-            <Button onClick={handleRemoveImage} className="bg-red-500">
-              Remove Logo
-            </Button>
-          )}
         </div>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">

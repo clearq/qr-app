@@ -28,10 +28,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaChartLine, FaEye } from "react-icons/fa";
+import { FaChartLine} from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { QrForm } from "@/components/qr-form";
+import { VcardAnalys } from "@/components/vcardAnalys";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -79,17 +80,16 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
 
 
-  const handleAnalyticsOpen = (qr: IQR) => {
-    setSelectedQr(qr);
-    fetchAnalyticsData(qr.id);
+  const handleAnalyticsOpen = (vcard: IQR) => {
+    setSelectedQr(vcard);
+    fetchAnalyticsData(vcard.id);
   };
 
   const fetchAnalyticsData = async (id: string) => {
     try {
-      const response = await fetch(`/api/scans?id=${id}`);
+      const response = await fetch(`/api/scans/${id}/0`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Analytics Data:', data); // Debugging line
         setAnalyticsData(data);
       } else {
         setAnalyticsData(null);
@@ -106,7 +106,7 @@ export const DataTable: React.FC<DataTableProps> = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = qrcodeData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = qrcodeData?.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(qrcodeData.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
@@ -237,14 +237,15 @@ export const DataTable: React.FC<DataTableProps> = ({
       {selectedQr && (
       <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
         <DialogContent>
-          <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
+          {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
           {analyticsData ? (
             <div>
-              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> {/* Ensure default to '0' */}
+              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> 
             </div>
           ) : (
             <p>Loading...</p>
-          )}
+          )} */}
+          <VcardAnalys count={analyticsData} />
         </DialogContent>
       </Dialog>
     )}
