@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import { ModeToggle } from "./ui/modeToggle";
 import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
@@ -15,6 +14,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import React from "react";
+import { logOut } from "@/actions/logOut";
 
 interface Props {
   user?: ExtendedUser;
@@ -26,7 +26,8 @@ export const Navbar = ({ user: userData }: Props) => {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    signOut();
+   await  logOut();
+    router.replace("/")
   };
 
   React.useEffect(() => {
@@ -43,11 +44,11 @@ export const Navbar = ({ user: userData }: Props) => {
     <div className="">
       <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
         <div className="mr-auto">
-          <Link href="/all">
+          <Link href="/">
             <Image
               alt="logo-image"
               src={logoImage}
-              className="w-24 h-auto sm:w-24"
+              className="w-[50px] h-auto sm:w-[50px]"
             />
           </Link>
         </div>

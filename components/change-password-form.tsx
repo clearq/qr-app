@@ -83,7 +83,7 @@ export const ChangePasswordForm = () => {
           value={validation.values.currentPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-5 cursor-pointer" onClick={() => toggleShowPassword("currentPassword")}>
+        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("currentPassword")}>
           {showPassword.currentPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>
@@ -96,7 +96,7 @@ export const ChangePasswordForm = () => {
           value={validation.values.newPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-5 cursor-pointer" onClick={() => toggleShowPassword("newPassword")}>
+        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("newPassword")}>
           {showPassword.newPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>
@@ -109,7 +109,7 @@ export const ChangePasswordForm = () => {
           value={validation.values.confirmPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-5 cursor-pointer" onClick={() => toggleShowPassword("confirmPassword")}>
+        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("confirmPassword")}>
           {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>

@@ -3,47 +3,47 @@ import React from 'react';
 
 export const Cookiespolicy = () => {
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Cookiespolicy</h1>
+    <div className=" mx-auto p-6">
+      <h1 className="text-5xl font-bold mb-10 text-center">Cookiespolicy</h1>
       <p className="mb-6">
-        På denna webbplats använder vi cookies. Detta cookie-uttalande beskriver användningen av cookies på{' '}
-        <a href="https://www.clearqr.se" className="text-blue-500 underline">
-          https://www.clearqr.se
+      On this website, we use cookies. This cookie statement describes the use of cookies on{' '}
+        <a href="hhttps://qrgen.clearq.se" className="hover:text-cyan-600 transition-colors underline">
+          https://qrgen.clearq.se
         </a>
-        , samt vilka syften vi använder cookies för.
+        , and the purposes for which we use cookies.
       </p>
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-2">Definitioner:</h2>
         <ul className="list-disc pl-6">
           <li>
-            <strong>Cookies:</strong> en teknologi som gör det möjligt att lagra och läsa information i din webbläsare och som kan användas för många olika ändamål.
+            <strong>Cookies:</strong> technology that allows storing and reading information in your browser and can be used for many different purposes.
           </li>
           <li>
-            <strong>Förstaparts-cookies:</strong> är cookies som sätts av och används av denna webbplats.
+            <strong>First-party cookies:</strong> are cookies that are set by and used by this website.
           </li>
           <li>
-            <strong>Tredjeparts-cookies:</strong> är cookies som sätts och används av tredje parter, det vill säga andra webbplatser/tjänster vi använder på denna webbplats. Alla tredjeparts-cookies på denna webbplats är dokumenterade efter namn.
+            <strong>Third-party cookies: </strong> are cookies set and used by third parties, that is, other websites/services we use on this website. All third-party cookies on this site are documented by name.
           </li>
         </ul>
       </div>
-      <p className="mb-6">Denna webbplats använder både förstaparts-cookies och tredjeparts-cookies.</p>
+      <p className="mb-6">This website uses both first-party cookies and third-party cookies.</p>
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-2">Vi använder cookies för följande ändamål:</h2>
+        <h2 className="text-xl font-bold mb-2">We use cookies for the following purposes:</h2>
         <ul className="list-disc pl-6">
           <li>
-            <strong>Funktionscookies:</strong> Dessa är nödvändiga cookies som ser till att denna webbplats fungerar som den ska.
+            <strong>Functional cookies:</strong> These are necessary cookies that ensure this website functions as it should.
           </li>
           <li>
-            <strong>Analys och statistik:</strong> Detta är cookies som används för trafikmätningar och analys av användningsmönster etc.
+            <strong>Analytics and statistics:</strong> These are cookies used for traffic measurement and analysis of usage patterns, etc.
           </li>
           <li>
-            <strong>Personifiering/anpassning:</strong> Cookies som används för att anpassa webbplatsen baserat på vad vi vet om dig. Det kan till exempel vara att vi visar information om produkter/tjänster som vi tror kan vara intressanta för dig eftersom du har visat intresse för produkten/tjänsten vid tidigare besök på webbplatsen.
+            <strong>Personalization/customization:</strong> Cookies used to tailor the website based on what we know about you. For example, this could involve displaying information about products/services that we believe may be of interest to you because you have shown interest in the product/service during previous visits to the website.
           </li>
           <li>
-            <strong>Marknadsföring:</strong> Detta är cookies som används för att styra vår marknadsföring, till exempel genom att visa annonser på andra webbplatser till dem som har besökt denna webbplats.
+            <strong>Marketing:</strong> These are cookies used to manage our marketing, such as displaying ads on other websites to those who have visited this site.
           </li>
           <li>
-            <strong>Annons:</strong> Detta är cookies som används för att visa annonser på denna webbplats.
+            <strong>Advertisement:</strong> These are cookies used to display ads on this website.
           </li>
         </ul>
       </div>
