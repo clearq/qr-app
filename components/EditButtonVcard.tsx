@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { MdModeEdit } from "react-icons/md"
+import { MdModeEdit } from "react-icons/md";
 
 interface EditButtonProps {
   vcardData: VCard;
@@ -27,7 +27,6 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
 
   const validation = useFormik({
     initialValues: {
@@ -158,21 +157,21 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
 
   const handleRemoveImage = () => {
     setLogo(null);
-    validation.setFieldValue('image', '');
+    validation.setFieldValue("image", "");
     if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   return (
     <>
       <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
-        <DialogTrigger className="w-full">
+        <DialogTrigger className="w-[full]">
           <Button className="w-full" variant="ghost">
-          <MdModeEdit size={20} />
+            <MdModeEdit size={20} />
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="overflow-y-auto h-[90%] w-[90%]">
           <form onSubmit={validation.handleSubmit}>
             <DialogHeader>
               <DialogTitle>Edit your vCard</DialogTitle>
@@ -196,8 +195,6 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   </Avatar>
                 </div>
               </label>
-              <div className="flex items-center space-x-4 mt-4">
-        </div>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
               <div className="flex flex-col space-y-1.5">

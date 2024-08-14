@@ -24,10 +24,11 @@ interface EditButtonProps {
 const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
-  const [highQualityLogo, setHighQualityLogo] = useState<string | ArrayBuffer | null>(vData?.image? vData.image : null);
+  const [highQualityLogo, setHighQualityLogo] = useState<
+    string | ArrayBuffer | null
+  >(vData?.image ? vData.image : null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
 
   const validation = useFormik({
     initialValues: {
@@ -174,7 +175,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
         <DialogTrigger>
           <Button variant="outline">Edit your vCard</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="overflow-y-auto h-[90%] w-[90%]">
           <form onSubmit={validation.handleSubmit}>
             <DialogHeader>
               <DialogTitle>Edit your vCard</DialogTitle>
@@ -183,66 +184,24 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </DialogDescription>
               <label
                 htmlFor="imageInput"
-                className="cursor-pointer flex justify-center items-center"
+                className="flex justify-center items-center"
               >
-                <div className="relative w-32 h-32">
+              <div className="relative w-32 h-32">
                 <Avatar
-            ref={qrRef}
-            className="flex flex-col w-[100px] h-[100px] justify-center items-center"
-          >
-
-            {/* First image for storage */}
-            <AvatarImage
-              id="qr-code-svg"
-              //@ts-ignore
-              src={logo ? logo.toString() : vData.image}
-              alt="User Image"
-              className="absolute inset-0 opacity-0"
-            />
-            {/* Second image for display */}
-            <AvatarImage
-              //@ts-ignore
-              src={
-                highQualityLogo ? highQualityLogo.toString() : vData?.image
-              }
-              alt="User Image"
-            />
-                    <AvatarFallback>
-                      {validation.values.firstName
-                        ? validation.values.firstName[0]
-                        : ""}
-                      {validation.values.lastName
-                        ? validation.values.lastName[0]
-                        : ""}
-                    </AvatarFallback>
-                  </Avatar>
-                  <input
-                    id="imageInput"
-                    type="file"
-                    accept="image/*"
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                    onChange={handleImageChange}
-                  />
-                </div>
+                  ref={qrRef}
+                  className="absolute inset-0 flex items-center justify-center w-full h-full"
+                >
+                  <AvatarFallback>
+                    {validation.values.firstName
+                      ? validation.values.firstName[0]
+                      : ""}
+                    {validation.values.lastName
+                      ? validation.values.lastName[0]
+                      : ""}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
               </label>
-              <div className="flex items-center space-x-4 mt-4">
-          <label htmlFor="logoType" className="text-[15px] px-5 py-0.5 justify-center items-center sm:ml-[40%] ml-[35%] mt-3 text-secondary cursor-pointer border rounded-[6px] bg-primary">
-            Browse
-          </label>
-          <input
-            type="file"
-            id="logoType"
-            accept="image/*"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-          />
-          {logo && (
-            <Button onClick={handleRemoveImage} className="bg-red-500">
-              Remove Logo
-            </Button>
-          )}
-        </div>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
               <div className="flex flex-col space-y-1.5">
