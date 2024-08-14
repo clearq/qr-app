@@ -21,6 +21,7 @@ import { saveAs } from "file-saver";
 import { ExtendedUser } from "@/next-auth";
 import { Separator } from "./ui/separator";
 import EditButton from "./EditButtonVcardSingle";
+import { MdDownload } from "react-icons/md";
 
 interface Props {
   user?: ExtendedUser;
@@ -259,6 +260,15 @@ END:VCARD
                 {vcardData?.lastName ? vcardData?.lastName[0] : ""}
               </AvatarFallback>
             </Avatar>
+
+            <div className="flex flex-row sm:flex-row items-center mt-4">
+                <Button
+                  onClick={handleDownloadVcard}
+                  className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
+                >
+                  <MdDownload/> {" "} Download vCard
+                </Button>
+              </div>
             <CardContent className="mt-10 w-full">
               <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {validation.values.firstName && (
@@ -388,14 +398,14 @@ END:VCARD
                   </div>
                 )}
               </form>
-              <div className="flex flex-row sm:flex-row items-center mt-4">
+              {/* <div className="flex flex-row sm:flex-row items-center mt-4">
                 <Button
                   onClick={handleDownloadVcard}
                   className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
                 >
                   Download vCard
                 </Button>
-              </div>
+              </div> */}
             </CardContent>
           </Card>
           {user?.id === vcardData?.customerId && (
