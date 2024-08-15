@@ -265,7 +265,7 @@ export const DataTable = ({
           ) : (
             <p>Loading...</p>
           )} */}
-          <VcardAnalys count={analyticsData} scannedAt={""} />
+          <VcardAnalys count={analyticsData} />
         </DialogContent>
       </Dialog>
     )}

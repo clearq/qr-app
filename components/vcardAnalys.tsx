@@ -3,13 +3,13 @@ import { Card } from './ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from './ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
-export const VcardAnalys = ({ count, scannedAt }: { count: string, scannedAt: string }) => { 
+export const VcardAnalys = ({ count}: { count: string }) => { 
 
   // Prepare the data for BarChart
 
   
   const chartsData = [
-    { name: 'Visitor', vcard: count, date: scannedAt }
+    { name: 'Visitor', vcard: count }
   ];
 
   const chartsConfig = {
