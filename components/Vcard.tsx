@@ -225,7 +225,7 @@ END:VCARD
           </Avatar>
         </div>
       </label>
-      <CardContent className="overflow-y-auto max-h-[500px]">
+      <CardContent>
         <form onSubmit={validation.handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col space-y-1.5">
