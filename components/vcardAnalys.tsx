@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Card } from './ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from './ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
-export const VcardAnalys = ({ count }: { count: string }) => { 
+export const VcardAnalys = ({ count, scannedAt }: { count: string, scannedAt: string }) => { 
 
   // Prepare the data for BarChart
+
+  
   const chartsData = [
-    { name: 'Visitors', vcard: count }
+    { name: 'Visitor', vcard: count, date: scannedAt }
   ];
 
   const chartsConfig = {

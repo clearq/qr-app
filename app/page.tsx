@@ -46,20 +46,20 @@ export default function Home() {
   if (!isMounted) return null
 
   return (
-    <>
+    <div className="">
       <DotPattern
         className={cn(
           "[mask-image:radial-gradient(2500px_circle_at_center,white,transparent)]"
         )}
       />
-      <div className="flex gap-10 items-center mt-56 bottom-56 justify-center">
+      <div className="flex gap-10 items-center mt-32 sm:mt-56 bottom-56 justify-center">
         <>
           {/* <Globe className="relative" /> */}
           <div>
           <LottieAnimation />
           </div>
           <div className="text-left">
-            <h1 className="mt-16 mb-16 text-start text-5xl font-bold">QrGen</h1>
+            <h1 className="mt-0 mb-5 sm:mt-16 sm:mb-16 text-start text-5xl font-bold">QrGen</h1>
 
             <div className="mb-16 md:text-2xl  text-lg w-[85%]  ml- mr-9">
               <div>
@@ -91,6 +91,6 @@ export default function Home() {
           </div>
         </>
       </div>
-    </>
+    </div>
   );
 }
