@@ -148,7 +148,7 @@ export const DataTable = ({
                     <span className="hidden sm:inline">Add</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-[90%] h-[90%]">
+                <DialogContent className="overflow-y-auto w-[90%] h-[90%]">
                   <Vcard />
                 </DialogContent>
               </Dialog>
