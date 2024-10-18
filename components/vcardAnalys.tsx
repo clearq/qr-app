@@ -9,6 +9,7 @@ interface VcardAnalysProps {
 
 export const VcardAnalys = ({ id}: VcardAnalysProps) => { 
   const [chartsData, setChartsData] = useState([]);
+  
 
   useEffect(() => {
     async function fetchData() {

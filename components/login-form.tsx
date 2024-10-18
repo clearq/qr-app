@@ -39,7 +39,7 @@ export function LoginForm() {
   
   const isValidEmail = (input: string) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    const orgNrRegex = /^\d{6}-\d{4}$/; // Example: 123456-7890
+    const orgNrRegex = /^\d{6}-\d{4}$/;
     return emailRegex.test(input) || orgNrRegex.test(input);
   };
   
