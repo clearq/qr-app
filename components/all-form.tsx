@@ -15,6 +15,8 @@ import QrChart from "./qrChart";
 import VcardChart from "./vcardChart";
 import AllChart from "./allChart";
 import { Progress } from "./ui/progress";
+import TicketChart from "./ticketChart";
+import EventsChart from "./eventsChart";
 
 export default function AllForm() {
   const params = useSearchParams();
@@ -22,6 +24,18 @@ export default function AllForm() {
   const [userData, setUserData] = React.useState(null);
   const router = useRouter();
 
+  
+  const [selectedTab, setSelectedTab] = React.useState<string>("URL");
+
+ 
+  React.useEffect(() => {
+    const savedTab = localStorage.getItem("selectedTab");
+    if (savedTab) {
+      setSelectedTab(savedTab); 
+    }
+  }, []);
+
+  // Fetch the user data
   React.useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("/api/profile");
@@ -32,10 +46,15 @@ export default function AllForm() {
     fetchData();
   }, []);
 
+  
+  const handleTabChange = (value: string) => {
+    setSelectedTab(value);
+    localStorage.setItem("selectedTab", value);
+  };
+
   const handleProfile = () => {
     router.push("/profile");
   };
-
   return (
     <div className="flex ml-2 w-[96%] sm:w-full flex-col bg-muted/40">
       <Card>
@@ -133,14 +152,17 @@ export default function AllForm() {
                   <Progress value={87}/>
                 )}
               </div>
-              <Tabs defaultValue="URL">
+              <Tabs value={selectedTab} onValueChange={handleTabChange}>
                 <div className="ml-1 flex items-center">
                   <TabsList>
                     <TabsTrigger value="URL">URL</TabsTrigger>
                     <TabsTrigger value="VCard">VCard</TabsTrigger>
+                    <TabsTrigger value="Events">Events</TabsTrigger>
                     <TabsTrigger value="Analys">Analytics</TabsTrigger>
                   </TabsList>
                 </div>
+
+                {/* Content for each tab */}
                 <TabsContent value="URL">
                   <QrChart />
                 </TabsContent>
@@ -148,7 +170,13 @@ export default function AllForm() {
                   <VcardChart />
                 </TabsContent>
                 <TabsContent value="Analys">
-                  <AllChart/>
+                  <AllChart />
+                </TabsContent>
+                <TabsContent value="Ticket">
+                  <TicketChart />
+                </TabsContent>
+                <TabsContent value="Events">
+                  <EventsChart />
                 </TabsContent>
               </Tabs>
             </div>

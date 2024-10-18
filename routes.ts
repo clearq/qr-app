@@ -17,6 +17,7 @@ export const publicRoute = [
 */
 export const privateRoute: string[] = [
   "/vcard",
+  "/ticket",
   "/dashboard",
   "/coDashboard/dashboardStamp",
   "/dashboardVcard",

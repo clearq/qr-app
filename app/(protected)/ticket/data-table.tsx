@@ -27,19 +27,23 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { toast } from "@/components/ui/use-toast";
-import EditButton from "@/components/EditButtonVcard";
+import { useEffect, useState } from "react";
 import { DeleteButton } from "@/components/DeleteButton";
 import QRCode from "qrcode.react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/Dropdown";
+import { MdAdd } from "react-icons/md";
+import Link from "next/link";
+import { TicketComponent } from "@/components/ticket";
+import { TICKET } from "@/typings";
 
 interface DataTableProps {
-  vcardData: IVCARD[];
+  ticketData: TICKET[];
   refetchDataTable: () => void;
 }
 
@@ -58,10 +62,9 @@ const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
 );
 
 export const DataTable = ({
-  vcardData: vData,
+  ticketData: tData = [],
   refetchDataTable,
 }: DataTableProps) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
@@ -71,7 +74,7 @@ export const DataTable = ({
   }, []);
 
   const handleDelete = async (id: string) => {
-    await fetch(`/api/saveVcard/${id}`, {
+    await fetch(`/api/ticketScan/${id}`, {
       method: "DELETE",
     })
       .then((data) => data.json())
@@ -81,19 +84,12 @@ export const DataTable = ({
       .catch((err) => console.log(err));
   };
 
-  const router = useRouter();
-
-  const handleVcard = () => {
-    router.push("/vcard");
-  };
-
   if (!isMounted) return null;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
-
-  const totalPages = Math.ceil(vData.length / itemsPerPage);
+  const currentData = tData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(tData.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -101,71 +97,78 @@ export const DataTable = ({
 
   return (
     <div>
-      <Table>
-        <TableHeader className="h-12">
+      <Table className="mb-5">
+        <TableHeader className="h-16">
           <TableRow>
-            <TableHead className="w-[100px]">ID</TableHead>
-            <TableHead>Label</TableHead>
+            <TableHead className="w-[60px] sm:w-[100px]">ID</TableHead>
+            <TableHead>Event</TableHead>
+            <TableHead>QrNumber</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead className="flex flex-row space-x-7 justify-end items-end">
-              <Button variant="outline" className="" onClick={handleVcard}>
-                Add VCard
-              </Button>
+            <TableHead>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2 ml-2"
+                  >
+                    <MdAdd />
+                    <span className="hidden sm:inline">Add</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="overflow-y-auto w-full md:w-[700px] max-h-[90vh] p-6">
+                  <TicketComponent selectedEvent={null} />
+                </DialogContent>
+              </Dialog>
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {currentData.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4}>No data available</TableCell>
+              <TableCell colSpan={5}>No data available</TableCell>
             </TableRow>
           ) : (
-            <>
-              {currentData.map((vcard, index: number) => (
-                <TableRow key={vcard.id}>
-                  <TableCell>
-                    {index + 1 + (currentPage - 1) * itemsPerPage}
-                  </TableCell>
-                  <TableCell>{vcard.tag}</TableCell>
-                  <TableCell>VCARD</TableCell>
-                  <TableCell>
+            currentData.map((ticket, index: number) => (
+              <TableRow key={ticket.id}>
+                <TableCell>
+                  {index + 1 + (currentPage - 1) * itemsPerPage}
+                </TableCell>
+                <TableCell>{ticket.eventsTitle}</TableCell>
+                <TableCell>{ticket.qrNumber}</TableCell>
+                <TableCell>TICKET</TableCell>
+                <TableCell>
+                  <Link href={`ticket/details?id=${ticket.id}`}>
                     <QRCode
-                      value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
-                      size={70}
+                      className="hover:border hover:border-cyan-500 hover:border-opacity-10 transition-color"
+                      value={`${process.env.NEXT_PUBLIC_APP_URL}/ticket/details?id=${ticket.id}`}
+                      size={50}
                       renderAs="canvas"
-                      // includeMargin={true}
-                      imageSettings={{
-                        //@ts-ignore
-                        src: logo ? logo.toString() : vcard.logoType,
-                        height: 20,
-                        width: 20,
-                        excavate: true,
-                      }}
-                      bgColor="rgba(0,0,0,0)"
-                      fgColor="#000000"
                     />
-                  </TableCell>
-                  <TableCell>
-                    <div className="m-3 flex flex-row space-x-7 justify-end items-end">
-                      <Button
-                        onClick={() =>
-                          router.replace(`vcard/details?id=${vcard.id}`)
-                        }
-                        variant="outline"
-                      >
-                        👁️‍🗨️
-                      </Button>
-                      <EditButton vcardData={vcard} />
-                      <DeleteButton id={vcard.id} onDelete={handleDelete} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </>
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <div className="ml-3">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline">≡</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="flex flex-col justify-center items-center">
+                        <DropdownMenuSeparator />
+                        <DeleteButton
+                          id={ticket.id}
+                          onDelete={handleDelete}
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>
+
       <Pagination>
         <PaginationContent>
           {currentPage === 1 ? (

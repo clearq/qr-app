@@ -51,7 +51,21 @@ export default async function RootLayout({ children }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   >
-                  ClearQ
+                  ClearQ 
+                </a>
+                {" "}
+              </span>
+              <span className="ml-1">
+
+              in cooperation with{" "}
+              </span>
+                <span className="ml-1 hover:text-cyan-600 cursor-pointer transition-colors duration-300 font-semibold">
+                <a
+                  href="https://timeer.se"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >
+                  Timeer{" "}
                 </a>
               </span>
             </CardFooter>

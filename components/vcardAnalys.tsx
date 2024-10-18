@@ -1,17 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from './ui/card';
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from './ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
-export const VcardAnalys = ({ count}: { count: string }) => { 
+interface VcardAnalysProps {
+  id: string;
+}
 
-  // Prepare the data for BarChart
+export const VcardAnalys = ({ id}: VcardAnalysProps) => { 
+  const [chartsData, setChartsData] = useState([]);
 
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(`/api/scans/${id}`);
+      const data = await response.json();
+      setChartsData(data.vCardmonthlyCounts);
+    }
+
+    fetchData();
+  }, [id]);
   
-  const chartsData = [
-    { name: 'Visitor', vcard: count }
-  ];
-
   const chartsConfig = {
     vcard: {
       label: "VCard",
@@ -23,17 +31,18 @@ export const VcardAnalys = ({ count}: { count: string }) => {
     <div className="w-[95%] sm:w-[52%]">
       <Card>
         <ChartContainer config={chartsConfig} className="h-[200px] sm:h-[500px] w-[100%]">
-          <BarChart  accessibilityLayer data={chartsData}>
+          <BarChart accessibilityLayer data={chartsData}>
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="name"
+              dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar className='' dataKey="vcard" fill="var(--color-vcard)" radius={4} />
+            <Bar dataKey="vcard" fill="var(--color-vcard)" radius={4} />
           </BarChart>
         </ChartContainer>
       </Card>
