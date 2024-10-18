@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import { prisma } from '@/lib/db'; // Assuming your Prisma instance is here
-import { getUserById } from '@/data/auth'; // Helper to get user by ID
+import { prisma } from '@/lib/db'; 
+import { getUserById } from '@/data/auth'; 
 
 // POST request handler for user login
 export const POST = async (req: NextRequest) => {
