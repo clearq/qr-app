@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface ICommon {
   linkUrl: string;
   linkText: string;
@@ -82,5 +84,28 @@ export interface IQR {
   url: string;
   tag: string;
   logoType: string | null;
+  customerId: string;
+}
+
+export interface TICKET {
+  id: string;
+  ticketsName: string;
+  eventsTitle: string;
+  fromDate: Date;
+  toDate: Date;
+  qrNumber: string;
+  description: string;
+  scanCount: string;
+  scans: string;
+  customerId: string;
+}
+export interface EVENTS {
+  ticketCount: ReactNode;
+  id: string;
+  eventsTitle: string;
+  fromDate: string;
+  toDate: string;
+  description: string;
+  customer: string;
   customerId: string;
 }

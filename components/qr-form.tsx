@@ -37,7 +37,7 @@ export const QrForm = () => {
       logoType: qrcodeData?.logoType || "",
     },
     validationSchema: yup.object({
-      url: yup.string().url("Invalid URL").required("URL is required"),
+      url: yup.string().nullable(),
       tag: yup.string().nullable(),
       logoType: yup.string().nullable(),
     }),
@@ -150,7 +150,7 @@ export const QrForm = () => {
       if (format === "png") {
         canvas.toBlob((blob) => {
           if (blob) {
-            saveAs(blob, `qrcode.${format}`);
+            saveAs(blob, `${validation.values.tag}.${format}`);
           }
         }, "image/png");
       } else if (format === "svg") {
@@ -160,7 +160,7 @@ export const QrForm = () => {
           const blob = new Blob([svgData], {
             type: "image/svg+xml;charset=utf-8",
           });
-          saveAs(blob, `qrcode.${format}`);
+          saveAs(blob, `${validation.values.tag}.${format}`);
         }
       }
     }

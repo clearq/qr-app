@@ -3,30 +3,10 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -40,7 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/Dropdown";
-import { FaChartLine, FaEye } from "react-icons/fa";
+import { FaChartLine } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { VcardAnalys } from "@/components/vcardAnalys";
@@ -50,25 +30,15 @@ interface DataTableProps {
   refetchDataTable: () => void;
 }
 
-const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
+const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <PaginationItem>
-    <PaginationLink
-      href="#"
-      onClick={(e) => e.preventDefault()}
-      style={{ pointerEvents: "none", color: "#ccc" }}
-    >
+    <PaginationLink href="#" onClick={(e) => e.preventDefault()} style={{ pointerEvents: "none", color: "#ccc" }}>
       {children}
     </PaginationLink>
   </PaginationItem>
 );
 
-export const DataTable = ({
-  vcardData: vData,
-  refetchDataTable,
-}: DataTableProps) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
+export const DataTable = ({ vcardData: vData, refetchDataTable }: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
@@ -100,7 +70,6 @@ export const DataTable = ({
       const response = await fetch(`/api/scans/${id}/1`);
       if (response.ok) {
         const data = await response.json();
-        console.log('Analytics Data table janken:', data);
         setAnalyticsData(data);
       } else {
         setAnalyticsData(null);
@@ -113,17 +82,11 @@ export const DataTable = ({
 
   const router = useRouter();
 
-  const handleVcard = () => {
-    router.push("/vcard");
-  };
-
   if (!isMounted) return null;
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = vData.slice(indexOfFirstItem, indexOfLastItem);
-
-  console.log("current data",currentData)
 
   const totalPages = Math.ceil(vData.length / itemsPerPage);
 
@@ -143,7 +106,7 @@ export const DataTable = ({
             <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center space-x-2 ml-2">
+                  <Button variant="outline" className="flex items-center space-x-2 ml-2">
                     <MdAdd />
                     <span className="hidden sm:inline">Add</span>
                   </Button>
@@ -176,14 +139,6 @@ export const DataTable = ({
                         value={`${process.env.NEXT_PUBLIC_APP_URL}/vcard/details?id=${vcard.id}`}
                         size={50}
                         renderAs="canvas"
-                        // includeMargin={true}
-                        imageSettings={{
-                          //@ts-ignore
-                          src: logo ? logo.toString() : vcard.logoType,
-                          height: 20,
-                          width: 20,
-                          excavate: true,
-                        }}
                       />
                     </Link>
                   </TableCell>
@@ -194,14 +149,14 @@ export const DataTable = ({
                           <Button variant="outline">≡</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="flex flex-col justify-center items-center">
-                        <DropdownMenuSeparator />
-                        <Button
-                          className="w-full"
-                          onClick={() => handleAnalyticsOpen(vcard)}
-                          variant="ghost"
-                        >
-                          <FaChartLine size={20} />
-                        </Button>
+                          <DropdownMenuSeparator />
+                          <Button
+                            className="w-full"
+                            onClick={() => handleAnalyticsOpen(vcard)}
+                            variant="ghost"
+                          >
+                            <FaChartLine size={20} />
+                          </Button>
                           <DropdownMenuSeparator />
 
                           <EditButton vcardData={vcard} />
@@ -255,20 +210,12 @@ export const DataTable = ({
       </Pagination>
 
       {selectedQr && (
-      <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
-        <DialogContent>
-          {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
-          {analyticsData ? (
-            <div>
-              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p>
-            </div>
-          ) : (
-            <p>Loading...</p>
-          )} */}
-          <VcardAnalys count={analyticsData} />
-        </DialogContent>
-      </Dialog>
-    )}
+        <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
+          <DialogContent>
+            <VcardAnalys id={selectedQr.id} />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

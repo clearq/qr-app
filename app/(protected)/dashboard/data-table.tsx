@@ -245,7 +245,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           ) : (
             <p>Loading...</p>
           )} */}
-          <VcardAnalys count={analyticsData} />
+          <VcardAnalys id={""}  />
         </DialogContent>
       </Dialog>
     )}

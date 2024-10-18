@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getMonthlyCounts } from "@/actions/scans";
+import { getMonthlyCounts, getVcardMonthlyCounts } from "@/actions/scans";
 import { getVisitorCount } from "@/data/qr";
 
 export async function POST(req: Request) {
@@ -31,7 +31,9 @@ export async function POST(req: Request) {
       });
 
       return NextResponse.json(findQr, { status: 201 });
-    } else {
+    } 
+
+    if(type === 1) {
       // VCard
       const findVcard = await prisma.vCard.findUnique({
         where: { id },
@@ -62,10 +64,12 @@ export async function GET(req: Request) {
   try {
     // Fetch monthly counts along with detailed data for analytics
     const monthlyCounts = await getMonthlyCounts();
+    const vCardmonthlyCounts = await getVcardMonthlyCounts();
     const qrData = await prisma.qr.findMany({ include: { customer: true } });
     const vCardData = await prisma.vCard.findMany({ include: { customer: true } });
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
+    
     if (id) {
       const qrData = await prisma.qr.findUnique({
         where: { id },
@@ -92,6 +96,7 @@ export async function GET(req: Request) {
 
     const data = {
       monthlyCounts,
+      vCardmonthlyCounts,
       qrData,
       vCardData,
     };
@@ -102,3 +107,4 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
   }
 }
+

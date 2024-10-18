@@ -27,6 +27,7 @@ model Customer {
   role      Role     @relation(fields: [roleId], references: [id])
   vcard     VCard[]
   qr        Qr[]
+  events    Events[]
 }
 
 model VCard {
@@ -73,4 +74,35 @@ model Role {
   id        String     @id @default(cuid())
   name      String     @unique
   customers Customer[]
+}
+
+model Ticket {
+  id            String    @id @default(cuid())
+  fullName      String?
+  guestMail     String?
+  fromDate      String?
+  toDate        String?
+  ticketsName   String?
+  eventsTitle   Events?   @relation(fields: [eventsTitleId], references: [id])
+  eventsTitleId String?
+  qrNumber      String?
+  description   String?
+  scanCount     Int       @default(0)
+  scans         Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  customerId    String
+}
+
+model Events {
+  id          String    @id @default(cuid())
+  eventsTitle String?
+  fromDate    DateTime?
+  toDate      DateTime?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId  String
+  ticket      Ticket[]
 }
