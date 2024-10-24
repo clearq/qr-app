@@ -85,7 +85,7 @@ model Ticket {
   ticketsName   String?
   eventsTitle   Events?   @relation(fields: [eventsTitleId], references: [id])
   eventsTitleId String?
-  qrNumber      String?
+  qrNumber      String?   @unique
   description   String?
   scanCount     Int       @default(0)
   scans         Int       @default(1)

@@ -50,30 +50,53 @@ export async function POST(req: Request) {
 
 // Handle GET request (Fetch tickets)
 export async function GET(req: Request) {
-  // Extract the ticket ID from query parameters (if provided)
+  // Extract query parameters from URL
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
+  const qrNumber = url.searchParams.get("qrNumber"); // Extract qrNumber from query params
 
-  if (id) {
+  // If a qrNumber is provided, check the ticket based on that
+  if (qrNumber) {
     try {
-      // Find a specific ticket by ID
+      // Find a ticket by its qrNumber
       const ticket = await prisma.ticket.findUnique({
-        where: { id },
+        where: { qrNumber }, // Search by qrNumber instead of id
       });
 
-      // If ticket is not found, return 404
       if (!ticket) {
         return NextResponse.json(
-          { error: "Ticket data not found!" },
+          { error: "Ticket not found!" },
           { status: 404 }
         );
       }
 
-      // Return the found ticket
       return NextResponse.json(ticket, { status: 200 });
     } catch (error) {
-      // Handle errors during fetching specific ticket
-      console.error("Error fetching ticket:", error);
+      console.error("Error fetching ticket by QR code:", error);
+      return NextResponse.json(
+        { error: "Cannot fetch ticket by QR code" },
+        { status: 500 }
+      );
+    }
+  }
+
+  // If an id is provided, check the ticket by ID
+  if (id) {
+    try {
+      const ticket = await prisma.ticket.findUnique({
+        where: { id },
+      });
+
+      if (!ticket) {
+        return NextResponse.json(
+          { error: "Ticket not found!" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(ticket, { status: 200 });
+    } catch (error) {
+      console.error("Error fetching ticket by ID:", error);
       return NextResponse.json(
         { error: "Cannot fetch ticket" },
         { status: 500 }
@@ -81,41 +104,11 @@ export async function GET(req: Request) {
     }
   }
 
-  // Authenticate the user if no specific ticket ID is provided
-  const user = await auth();
-
-  // If the user is not authenticated, return an error
-  if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 400 }
-    );
-  }
-
-  const { id: userId } = user.user;
-
-  try {
-    // Fetch all tickets associated with the user
-    const tData = await getAlltData(userId);
-
-    // If no tickets are found, return 404
-    if (!tData) {
-      return NextResponse.json(
-        { error: "Ticket data not found!" },
-        { status: 400 }
-      );
-    }
-
-    // Return the fetched tickets
-    return NextResponse.json(tData, { status: 200 });
-  } catch (error) {
-    // Handle errors during fetching tickets
-    console.error("Error fetching tickets:", error);
-    return NextResponse.json(
-      { error: "Cannot fetch tickets" },
-      { status: 500 }
-    );
-  }
+  // If no id or qrNumber is provided, return an error
+  return NextResponse.json(
+    { error: "No ticket identifier provided" },
+    { status: 400 }
+  );
 }
 
 // Handle PUT request (Update a ticket)
