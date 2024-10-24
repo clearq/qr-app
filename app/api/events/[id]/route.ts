@@ -37,9 +37,7 @@ export async function GET(req: NextRequest, context: { params: Params }) {
   }
 
   try {
-    // Fetch all tickets related to the event
     const tickets = await getTicketsByEventId(id);
-
     if (!tickets) {
       return NextResponse.json({ message: "No tickets found for this event." }, { status: 404 });
     }

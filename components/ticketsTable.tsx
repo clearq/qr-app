@@ -77,13 +77,13 @@ export const columns: ColumnDef<Ticket>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "eventsTitle",
-    header: "Event Title",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("eventsTitle")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "eventsTitle",
+  //   header: "Event Title",
+  //   cell: ({ row }) => (
+  //     <div className="capitalize">{row.getValue("eventsTitle")}</div>
+  //   ),
+  // },
   {
     accessorKey: "ticketsName",
     header: "Ticket Name",
@@ -95,7 +95,7 @@ export const columns: ColumnDef<Ticket>[] = [
     cell: ({ row }) => {
       const ticket = row.original; // Get the entire ticket object for the row
       return (
-        <div className="relative right-7 capitalize">
+        <div className="relative right-11 capitalize">
 {
   //@ts-ignore
           <EditButton ticketData={ticket} /> 

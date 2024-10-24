@@ -75,7 +75,7 @@ export function RegisterForm() {
           description: "Registered successfully"
         });
         setError("");
-        router.replace("/login");
+        router.replace("/all");
       } else {
         setError(response?.message || "Something went wrong");
         toast({

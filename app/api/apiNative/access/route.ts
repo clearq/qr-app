@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import { prisma } from '@/lib/db'; // Assuming your Prisma instance is here
-import { getUserById } from '@/data/auth'; // Helper to get user by ID
+import { prisma } from '@/lib/db'; 
+import { getUserById } from '@/data/auth'; 
 
 // POST request handler for user login
 export const POST = async (req: NextRequest) => {
@@ -38,9 +38,14 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Login successful, return user details (excluding password)
+    // Login successful, return user details (including userId)
     const { password: userPassword, ...userWithoutPassword } = user;
-    return NextResponse.json(userWithoutPassword, { status: 200 });
+
+    // Include userId in the response
+    return NextResponse.json({
+      ...userWithoutPassword,
+      userId: user.id  // Return the user's ID
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Login error:', error);
@@ -50,7 +55,6 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
-
 // GET request handler to fetch user details by ID
 export const GET = async (req: NextRequest) => {
   const url = new URL(req.url);
