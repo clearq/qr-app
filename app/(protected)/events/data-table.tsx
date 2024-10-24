@@ -17,13 +17,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import EditButton from "@/components/EditButtonTicket";
 import { EVENTS } from "@/typings";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -38,9 +38,14 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Login successful, return user details (excluding password)
+    // Login successful, return user details (including userId)
     const { password: userPassword, ...userWithoutPassword } = user;
-    return NextResponse.json(userWithoutPassword, { status: 200 });
+
+    // Include userId in the response
+    return NextResponse.json({
+      ...userWithoutPassword,
+      userId: user.id  // Return the user's ID
+    }, { status: 200 });
 
   } catch (error) {
     console.error('Login error:', error);
@@ -50,7 +55,6 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
-
 // GET request handler to fetch user details by ID
 export const GET = async (req: NextRequest) => {
   const url = new URL(req.url);
