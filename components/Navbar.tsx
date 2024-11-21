@@ -26,8 +26,8 @@ export const Navbar = ({ user: userData }: Props) => {
   const router = useRouter();
 
   const handleSignOut = async () => {
-   await  logOut();
-    router.replace("/")
+    await logOut();
+    router.replace("/");
   };
 
   React.useEffect(() => {
@@ -108,7 +108,7 @@ export const Navbar = ({ user: userData }: Props) => {
               </Link>
             </>
           )}
-          <div>
+          <div className="z-50">
             <ModeToggle />
           </div>
         </div>

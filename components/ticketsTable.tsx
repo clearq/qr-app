@@ -1,31 +1,7 @@
 "use client";
 
-import * as React from "react";
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -34,328 +10,244 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Dialog } from "./ui/dialog";
 import EditButton from "./EditButtonTicket";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "./ui/use-toast";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
-
-interface Events {
-    id: string;
-    eventsTitle: string;
-  }
-
-export type Ticket = {
+interface Ticket {
   id: string;
-  eventsTitle: string
-  description: string | null;
   ticketsName: string;
-  fromDate: string;
-  toDate: string;
-  email: string;
-  status: "pending" | "processing" | "success" | "failed";
-};
+  eventsTitle: {
+    eventsTitle: string;
+  } | null;
+}
 
-export const columns: ColumnDef<Ticket>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  // {
-  //   accessorKey: "eventsTitle",
-  //   header: "Event Title",
-  //   cell: ({ row }) => (
-  //     <div className="capitalize">{row.getValue("eventsTitle")}</div>
-  //   ),
-  // },
-  {
-    accessorKey: "ticketsName",
-    header: "Ticket Name",
-    cell: ({ row }) => <div>{row.getValue("ticketsName")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: "Edit",
-    cell: ({ row }) => {
-      const ticket = row.original; // Get the entire ticket object for the row
-      return (
-        <div className="relative right-11 capitalize">
-{
-  //@ts-ignore
-          <EditButton ticketData={ticket} /> 
-        }
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const ticket = row.original;
+interface TicketsTableProps {
+  selectedEventId: string | null;
+}
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(ticket.id)}
-            >
-              Copy ticket ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+export function TicketsTable({ selectedEventId }: TicketsTableProps) {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState<string | null>(null);
+  const itemsPerPage = 5;
 
-export function TicketsTable() {
-  const [data, setData] = React.useState<Ticket[]>([]);
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<string | null>(null);
-const [events, setEvents] = React.useState<Events[]>([])
-const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null); 
-
-
-  React.useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("/api/events"); 
-        if (!response.ok) {
-          throw new Error("Failed to fetch events");
-        }
-        const fetchedEvents: Events[] = await response.json();
-        setEvents(fetchedEvents);
-        if(fetchedEvents){
-          setSelectedEventId(fetchedEvents[0].id)
-        }
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEvents();
-  }, []);
-
- 
-  React.useEffect(() => {
+  const fetchTickets = useCallback(async () => {
     if (!selectedEventId) return;
-
-    const fetchTickets = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/downloadTicket?eventId=${selectedEventId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch tickets");
-        }
-        const tickets: Ticket[] = await response.json();
-        setData(tickets);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTickets();
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/downloadTicket?eventId=${selectedEventId}`
+      );
+      const tickets: Ticket[] = await response.json();
+      console.log(tickets);
+      setTickets(tickets);
+    } catch (error) {
+      toast({
+        title: "Error fetching tickets",
+        variant: "destructive",
+        description: `${new Date().toLocaleDateString()}`,
+      });
+    } finally {
+      setLoading(false);
+    }
   }, [selectedEventId]);
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  useEffect(() => {
+    fetchTickets();
+  }, [fetchTickets]);
 
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
-  const selectedRows = table.getSelectedRowModel().rows;
-  const selectedRowIds = selectedRows.map((row) => row.original.id);
-
-  const handleDeleteSelected = async () => {
-    if (!selectedRowIds.length) return;
-
-    // Confirm deletion
-    const confirmed = window.confirm("Are you sure you want to delete the selected tickets?");
-    if (!confirmed) return;
-
+  const handleDelete = async () => {
+    if (!ticketToDelete) return;
     try {
-      await Promise.all(
-        selectedRowIds.map(async (id) => {
-          await fetch(`/api/ticketScan/${id}`, { method: "DELETE" });
-        })
+      const response = await fetch(`/api/ticketScan/${ticketToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete ticket");
+      }
+
+      setTickets((prev) =>
+        prev.filter((ticket) => ticket.id !== ticketToDelete)
       );
-      window.location.reload()
-      setData((prevData) => prevData.filter((ticket) => !selectedRowIds.includes(ticket.id)));
+      toast({
+        title: "Ticket Deleted",
+        description: "The ticket has been successfully deleted.",
+        variant: "default",
+      });
     } catch (error) {
-      console.error("Error deleting tickets:", error);
+      console.error("Error deleting ticket:", error);
+      toast({
+        title: "Error deleting ticket",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setShowDeleteDialog(false);
+      setTicketToDelete(null);
+    }
+  };
+
+  const confirmDelete = (id: string) => {
+    setTicketToDelete(id);
+    setShowDeleteDialog(true);
+  };
+
+  const toggleSelectTicket = (id: string) => {
+    setSelectedTickets((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((ticketId) => ticketId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedTickets.length === tickets.length) {
+      setSelectedTickets([]);
+    } else {
+      setSelectedTickets(tickets.map((ticket) => ticket.id));
+    }
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTickets = tickets.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(tickets.length / itemsPerPage);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; 
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <label htmlFor="event-select" className="block mb-2 text-sm font-medium text-gray-700">
-          Select Event:
-        </label>
-        <select
-          id="event-select"
-          className="p-2 border rounded-md"
-          value={selectedEventId || ""}
-          onChange={(e) => setSelectedEventId(e.target.value)}
-        >
-          {events.map((event) => (
-            <option key={event.id} value={event.id}>
-              {event.eventsTitle}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-          />
-      </div> */}
-          {selectedRows.length > 0 && (
-            <div className="mb-4 flex justify-start">
-              <Button
-                variant="destructive"
-                onClick={handleDeleteSelected}
-              >
-                Delete
-              </Button>
-            </div>
-          )}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>
+              <Checkbox
+                checked={selectedTickets.length === tickets.length}
+                onChange={handleSelectAll}
+              />
+            </TableHead>
+            <TableHead>Ticket Name</TableHead>
+            <TableHead>Event</TableHead>
+            <TableHead>Edit</TableHead>
+            <TableHead>Delete</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {currentTickets.length > 0 ? (
+            currentTickets.map((ticket) => (
+              <TableRow key={ticket.id}>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedTickets.includes(ticket.id)}
+                    onChange={() => toggleSelectTicket(ticket.id)}
+                  />
+                </TableCell>
+                <TableCell>{ticket.ticketsName}</TableCell>
+                <TableCell className="capitalize">
+                  {ticket.eventsTitle
+                    ? ticket.eventsTitle.eventsTitle
+                    : "No event title"}
+                </TableCell>
+                <TableCell>
+                  {
+                    //@ts-ignore
+                    <EditButton ticketData={ticket} />
+                  }
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="destructive"
+                    onClick={() => confirmDelete(ticket.id)}
+                  >
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-4">
+                No tickets available.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {selectedTickets.length} of {tickets.length} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
           >
             Next
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+          </DialogHeader>
+          <p>
+            Are you sure you want to delete this ticket? This action cannot be
+            undone.
+          </p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

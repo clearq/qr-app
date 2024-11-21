@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { format, addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 
-
 interface Event {
   id: string;
   eventsTitle: string;
@@ -23,6 +22,7 @@ export const TicketComponent = ({
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [events, setEvents] = useState<Event[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -113,20 +113,20 @@ export const TicketComponent = ({
     <div>
       <form onSubmit={validation.handleSubmit} className="w-full space-y-4">
         <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col space-y-1.5">
-        <Label htmlFor="eventTitle">Selected Event</Label>
-        <Input
-          id="eventTitle"
-          value={selectedEvent?.title || ""}
-          disabled
-          className="w-full"
-        />
-        {validation.errors.eventId && (
-          <div className="text-sm text-red-500">
-            {validation.errors.eventId}
+          <div className="flex flex-col space-y-1.5">
+            <Label htmlFor="eventTitle">Selected Event</Label>
+            <Input
+              id="eventTitle"
+              value={selectedEvent?.title || ""}
+              disabled
+              className="w-full"
+            />
+            {validation.errors.eventId && (
+              <div className="text-sm text-red-500">
+                {validation.errors.eventId}
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="ticketCount">Number of Tickets</Label>
@@ -139,9 +139,6 @@ export const TicketComponent = ({
               placeholder="Enter number of tickets"
               min={1}
               className="w-full"
-              onClick={(e: any) => {
-                e.stopPropagation();
-              }}
             />
             {validation.touched.ticketCount &&
               validation.errors.ticketCount && (
@@ -160,9 +157,6 @@ export const TicketComponent = ({
               value={validation.values.fromDate}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
-              onClick={(e: any) => {
-                e.stopPropagation();
-              }}
             />
           </div>
 
@@ -175,9 +169,6 @@ export const TicketComponent = ({
               value={validation.values.toDate}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
-              onClick={(e: any) => {
-                e.stopPropagation();
-              }}
             />
           </div>
         </div>
@@ -188,6 +179,14 @@ export const TicketComponent = ({
           </Button>
         </div>
       </form>
+
+      <Button
+        className="mt-5"
+        variant="outline"
+        onClick={() => setIsDialogOpen(false)}
+      >
+        Cancel
+      </Button>
     </div>
   );
 };

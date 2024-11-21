@@ -170,7 +170,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   };
 
   if (!userData) {
-    redirect('/')
+    redirect("/");
   }
 
   return (
@@ -181,24 +181,22 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           <CardDescription>Update your profile here.</CardDescription>
         </CardHeader>
         {/* <label htmlFor="imageInput" style={{ cursor: "pointer" }}> */}
-          <Avatar
-            ref={qrRef}
-            className="flex flex-col w-[200px] h-[200px] justify-center items-center relative"
-          >
-            {/* Second image for display */}
-            <AvatarImage
-              //@ts-ignore
-              src={
-                highQualityLogo ? highQualityLogo.toString() : userData.image
-              }
-              alt="User Image"
-            />
-            <AvatarFallback className="text-[2rem]">
-              {userData.firstName[0]}
-              {userData.lastName[0]}
-            </AvatarFallback>
-          </Avatar>
-          {/* <input
+        <Avatar
+          ref={qrRef}
+          className="flex disabled flex-col w-[200px] h-[200px] justify-center items-center relative"
+        >
+          {/* Second image for display */}
+          <AvatarImage
+            //@ts-ignore
+            src={highQualityLogo ? highQualityLogo.toString() : userData.image}
+            alt="User Image"
+          />
+          <AvatarFallback className="text-[2rem]">
+            {userData.firstName[0]}
+            {userData.lastName[0]}
+          </AvatarFallback>
+        </Avatar>
+        {/* <input
             id="imageInput"
             type="file"
             accept="image/*"
@@ -324,7 +322,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 value={validation.values.zip}
                 onChange={validation.handleChange}
               />
-            </div>   
+            </div>
             <Button type="submit" className="mt-[25px] mb-4 w-full">
               Save changes
             </Button>

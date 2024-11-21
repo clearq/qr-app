@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createTicket } from "@/actions/ticket";
 import { getAlltData } from "@/data/ticket";
@@ -11,15 +11,12 @@ export async function POST(req: Request) {
 
   // If the user is not authenticated, return an error
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "You need to log in" }, { status: 400 });
   }
 
   // Extract customer ID from authenticated user
   const { id: customerId } = user.user;
-  
+
   // Parse the request body
   const body = await req.json();
 
@@ -48,84 +45,63 @@ export async function POST(req: Request) {
   }
 }
 
-// Handle GET request (Fetch tickets)
-export async function GET(req: Request) {
-  // Extract query parameters from URL
-  const url = new URL(req.url);
-  const id = url.searchParams.get("id");
-  const qrNumber = url.searchParams.get("qrNumber"); // Extract qrNumber from query params
+// Modify the GET function to include multiple parameters for validation
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const qrNumber = searchParams.get("qrNumber");
+  const eventsTitleId = searchParams.get("eventsTitleId");
+  const customerId = searchParams.get("customerId");
 
-  // If a qrNumber is provided, check the ticket based on that
-  if (qrNumber) {
-    try {
-      // Find a ticket by its qrNumber
-      const ticket = await prisma.ticket.findUnique({
-        where: { qrNumber }, // Search by qrNumber instead of id
-      });
+  console.log("Incoming Request Params:", {
+    qrNumber,
+    eventsTitleId,
+    customerId,
+  });
 
-      if (!ticket) {
-        return NextResponse.json(
-          { error: "Ticket not found!" },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json(ticket, { status: 200 });
-    } catch (error) {
-      console.error("Error fetching ticket by QR code:", error);
-      return NextResponse.json(
-        { error: "Cannot fetch ticket by QR code" },
-        { status: 500 }
-      );
-    }
-  }
-
-  // If an id is provided, check the ticket by ID
-  if (id) {
-    try {
-      const ticket = await prisma.ticket.findUnique({
-        where: { id },
-      });
-
-      if (!ticket) {
-        return NextResponse.json(
-          { error: "Ticket not found!" },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json(ticket, { status: 200 });
-    } catch (error) {
-      console.error("Error fetching ticket by ID:", error);
-      return NextResponse.json(
-        { error: "Cannot fetch ticket" },
-        { status: 500 }
-      );
-    }
-  }
-
-  // If no id or qrNumber is provided, return an error
-  return NextResponse.json(
-    { error: "No ticket identifier provided" },
-    { status: 400 }
-  );
-}
-
-// Handle PUT request (Update a ticket)
-export async function PUT(req: Request) {
-  // Authenticate the user
-  const user = await auth();
-
-  // If the user is not authenticated, return an error
-  if (!user?.user) {
+  if (!qrNumber || !eventsTitleId || !customerId) {
     return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 401 }
+      { error: "qrNumber, eventsTitleId, and customerId are required" },
+      { status: 400 }
     );
   }
 
   try {
-    // Parse the request body
+    const ticket = await prisma.ticket.findFirst({
+      where: {
+        qrNumber,
+        eventsTitleId: eventsTitleId,
+        customerId,
+      },
+    });
+
+    if (!ticket) {
+      console.log("Ticket not found or validation failed.");
+      return NextResponse.json(
+        { error: "Ticket validation failed. Invalid or not found." },
+        { status: 404 }
+      );
+    }
+
+    console.log("Ticket validated successfully:", ticket);
+    return NextResponse.json({ success: "Ticket is valid" }, { status: 200 });
+  } catch (error) {
+    console.error("Error validating ticket:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+// Handle PUT request (Update a ticket)
+export async function PUT(req: Request) {
+  const user = await auth();
+
+  if (!user?.user) {
+    return NextResponse.json({ error: "You need to log in" }, { status: 401 });
+  }
+
+  try {
     const {
       id,
       description,
@@ -138,15 +114,21 @@ export async function PUT(req: Request) {
       scans,
     } = await req.json();
 
-    // Validate that required fields are provided
-    if (!id || !ticketsName) {
+    // Validate required fields
+    if (!id) {
       return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 403 }
+        { error: "Missing required field: id" },
+        { status: 400 }
       );
     }
 
-    // Update the ticket in the database
+    if (!ticketsName) {
+      return NextResponse.json(
+        { error: "Missing required field: ticketsName" },
+        { status: 400 }
+      );
+    }
+
     const updatedTicket = await prisma.ticket.update({
       where: { id },
       data: {
@@ -162,10 +144,8 @@ export async function PUT(req: Request) {
       },
     });
 
-    // Return the updated ticket
-    return NextResponse.json(updatedTicket, { status: 201 });
+    return NextResponse.json(updatedTicket, { status: 200 });
   } catch (error) {
-    // Handle errors during updating ticket
     console.error("Error updating ticket:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },

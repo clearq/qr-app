@@ -25,3 +25,17 @@ export const getAllVData = async (id: string) => {
     return null;
   }
 };
+
+export const getSingleVData = async (id: string) => {
+  try {
+    const vData = await prisma.vCard.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return vData;
+  } catch {
+    return null;
+  }
+};

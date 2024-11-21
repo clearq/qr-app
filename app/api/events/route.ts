@@ -11,7 +11,6 @@ type Params = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("Received body:", body);
 
     const { eventsTitle, description } = body;
 
@@ -53,16 +52,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET(req: Request) {
-  // Log the full request
-  console.log("GET request received:", req.url);
-  
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
-
-  // Log query parameters
-  console.log("Query parameters:", { id });
-
-  // If a specific event ID is provided, return that event
   if (id) {
     try {
       const event = await prisma.events.findUnique({
@@ -77,25 +68,28 @@ export async function GET(req: Request) {
       });
 
       if (!event) {
-        return NextResponse.json({ error: "Event not found!" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Event not found!" },
+          { status: 404 }
+        );
       }
 
       const eventWithTicketCount = {
         ...event,
         ticketCount: event.ticket.length,
       };
-
-      console.log("Event found:", eventWithTicketCount);
       return NextResponse.json(eventWithTicketCount, { status: 200 });
     } catch (error) {
       console.error("Error fetching event:", error);
-      return NextResponse.json({ error: "Cannot fetch event" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Cannot fetch event" },
+        { status: 500 }
+      );
     }
   }
 
   // Log authentication status
   const user = await auth();
-  console.log("Authenticated user:", user);
 
   if (!user?.user) {
     console.error("User not authenticated");
@@ -103,9 +97,6 @@ export async function GET(req: Request) {
   }
 
   const { id: userId } = user.user;
-
-  // Log user ID
-  console.log("Fetching events for user ID:", userId);
 
   try {
     const events = await prisma.events.findMany({
@@ -125,8 +116,6 @@ export async function GET(req: Request) {
       ...event,
       ticketCount: event.ticket.length,
     }));
-
-    console.log("Events found:", eventsWithTicketCount);
     return NextResponse.json(eventsWithTicketCount, { status: 200 });
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -145,12 +134,21 @@ export async function DELETE(req: NextRequest, context: { params: Params }) {
     const removedData = await removeEvents(id);
 
     if (!removedData) {
-      return NextResponse.json({ error: "Cannot remove the event!" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Cannot remove the event!" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ message: "Removed successfully!" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Removed successfully!" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error removing event data:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
