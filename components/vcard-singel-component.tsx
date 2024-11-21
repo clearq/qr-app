@@ -32,7 +32,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   const router = useRouter();
 
   const id = params.get("id");
-  const type = params.get("type")
+  const type = params.get("type");
   const [vcardData, setVcardData] = useState<IVCARD | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { data: session, status } = useSession(); // Check session status
@@ -135,10 +135,10 @@ export const VcardSingelComponent = ({ user }: Props) => {
       fetch(`/api/scans`, {
         method: "POST",
         body: JSON.stringify({
-          type : 1,
-          id
-        })
-      })
+          type: 1,
+          id,
+        }),
+      });
     }
   }, []);
 
@@ -231,15 +231,14 @@ END:VCARD
     router.push("/all");
   };
 
-  
   if (!id) {
     router.replace("/");
     return null;
   }
-  
+
   return (
     <div>
-      { session ? (
+      {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Button
             onClick={() => handleBack()}
@@ -262,13 +261,13 @@ END:VCARD
             </Avatar>
 
             <div className="flex flex-row sm:flex-row items-center mt-4">
-                <Button
-                  onClick={handleDownloadVcard}
-                  className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
-                >
-                  <MdDownload/> {" "} Download vCard
-                </Button>
-              </div>
+              <Button
+                onClick={handleDownloadVcard}
+                className="w-full sm:w-auto mb-2 sm:mb-0 sm:mr-2"
+              >
+                <MdDownload /> Download vCard
+              </Button>
+            </div>
             <CardContent className="mt-10 w-full">
               <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {validation.values.firstName && (
@@ -337,18 +336,28 @@ END:VCARD
                 {validation.values.url && (
                   <div className="flex flex-col space-y-1.5">
                     <Label htmlFor="url">URL</Label>
-                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    <a
+                      href={validation.values.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer ml-1 text-lg font-normal text-slate-500 underline break-all"
+                    >
                       {validation.values.url}
-                    </Label>
+                    </a>
                     <Separator />
                   </div>
                 )}
                 {validation.values.linkedIn && (
                   <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="linkedIn">LinkedIn</Label>
-                    <Label className="cursor-text ml-1 text-lg font-normal text-slate-500">
+                    <Label htmlFor="url">LinkedIn</Label>
+                    <a
+                      href={validation.values.linkedIn}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="cursor-pointer ml-1 text-lg font-normal text-slate-500 underline break-all"
+                    >
                       {validation.values.linkedIn}
-                    </Label>
+                    </a>
                     <Separator />
                   </div>
                 )}
@@ -412,7 +421,7 @@ END:VCARD
             <div className="flex flex-row mt-2">
               {
                 //@ts-ignore
-              <EditButton vcardData={vcardData} />
+                <EditButton vcardData={vcardData} />
               }
             </div>
           )}
@@ -460,7 +469,10 @@ END:VCARD
               </CardHeader>
               <label htmlFor="imageInput" className="cursor-pointer">
                 <Avatar className="flex flex-col w-[150px] h-[150px] justify-center items-center">
-                  <AvatarImage src={vcardData?.logoType || ""} alt="User Image" />
+                  <AvatarImage
+                    src={vcardData?.logoType || ""}
+                    alt="User Image"
+                  />
                   <AvatarFallback>
                     {vcardData?.firstName ? vcardData.firstName[0] : ""}
                     {vcardData?.lastName ? vcardData.lastName[0] : ""}

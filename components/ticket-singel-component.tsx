@@ -32,12 +32,12 @@ interface Events {
   eventsTitle: string;
 }
 
-export const QRCodePage = () => {
+export const TicketSingelComponent = () => {
   const { data: session } = useSession();
   const [events, setEvents] = useState<Events[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [ticketsData, setTicketsData] = useState<Ticket[]>([]);
-  const qrRefs = useRef<HTMLDivElement[]>([]); // For multiple QR code refs
+  const qrRefs = useRef<HTMLDivElement[]>([]);
 
   // Fetch Events
   const fetchEvents = useCallback(async () => {
@@ -45,8 +45,8 @@ export const QRCodePage = () => {
       const response = await fetch("/api/events");
       const fetchedEvents: Events[] = await response.json();
       setEvents(fetchedEvents);
-      if (fetchedEvents.length > 0) {
-        setSelectedEventId(fetchedEvents[0].id); // Auto-select first event
+      if (fetchedEvents.length >= 0) {
+        setSelectedEventId(fetchedEvents[0].id);
       }
     } catch (error) {
       toast({
@@ -64,6 +64,8 @@ export const QRCodePage = () => {
       const response = await fetch(
         `/api/downloadTicket?eventId=${selectedEventId}`
       );
+      if (!response.ok) throw new Error("Failed to fetch tickets");
+
       const tickets: Ticket[] = await response.json();
       setTicketsData(tickets);
     } catch (error) {
@@ -102,7 +104,7 @@ export const QRCodePage = () => {
       accessorKey: "ticketsName",
       header: "",
       cell: ({ row }) => (
-        <div className=" text-center font-bold mb-2">
+        <div className="text-center font-bold mb-2">
           {row.getValue("ticketsName")}
         </div>
       ),
@@ -113,7 +115,7 @@ export const QRCodePage = () => {
       cell: ({ row }) => (
         <div
           ref={(el) => {
-            if (el) qrRefs.current[row.index] = el; // Use row.index
+            if (el) qrRefs.current[row.index] = el;
           }}
           className="flex flex-col items-center justify-center"
         >
@@ -130,11 +132,6 @@ export const QRCodePage = () => {
         </div>
       ),
     },
-    // {
-    //   accessorKey: "description",
-    //   header: "",
-    //   cell: ({ row }) => <div>{row.getValue("description")}</div>,
-    // },
   ];
 
   const table = useReactTable({

@@ -17,21 +17,13 @@ export default function Home() {
     setIsMounted(true);
   }, []);
 
-
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch("/api/profile");
         if (response.ok) {
           const userData = await response.json();
-          if (userData.error) {
-            // User not authenticated
-            setAuthenticated(false);
-          } else {
-            // User authenticated
-            setAuthenticated(true);
-          }
+          setAuthenticated(!userData.error);
         } else {
           console.error("Failed to fetch user data:", response.statusText);
         }
@@ -43,54 +35,50 @@ export default function Home() {
     fetchUser();
   }, []);
 
-  if (!isMounted) return null
+  if (!isMounted) return null;
 
   return (
-    <div className="">
-      <DotPattern
-        className={cn(
-          "[mask-image:radial-gradient(2500px_circle_at_center,white,transparent)]"
-        )}
-      />
-      <div className="flex gap-10 items-center mt-32 sm:mt-56 bottom-56 justify-center">
-        <>
-          {/* <Globe className="relative" /> */}
-          <div>
-          <LottieAnimation />
-          </div>
-          <div className="text-left">
-            <h1 className="mt-0 mb-5 sm:mt-16 sm:mb-16 text-start text-5xl font-bold">QrGen</h1>
-
-            <div className="mb-16 md:text-2xl  text-lg w-[85%]  ml- mr-9">
-              <div>
-                <span>
+    <div className=" flex flex-col justify-between">
+      <main className="flex-grow">
+        <DotPattern
+          className={cn(
+            "fixed inset-0 -z-10 [mask-image:radial-gradient(3000px_circle_at_center,white,transparent)]"
+          )}
+        />
+        <div className="flex gap-10 items-center justify-center">
+          <>
+            <div>
+              <LottieAnimation />
+            </div>
+            <div className="text-left z-50">
+              <h1 className="mt-0 mb-5  text-start text-5xl font-bold">
+                QrGen
+              </h1>
+              <div className="mb-16 md:text-2xl text-lg w-[85%] ml- mr-9">
+                <p>
                   Welcome to QrGen! Our tool lets you create QR codes for
                   sharing research articles, links, and more. We offer URL and
                   VCard creation for all users. Companies can additionally
                   access stamp cards and campaign cards.
-                </span>
-                {" "}
-                <span>
+                </p>
+                <p>
                   Enjoy free data analysis to see how your codes are used. Just
                   register to create, save, and edit unlimited QR codes that
                   last a lifetime. Start now to effectively share academic
                   information and engage with your audience!
-                </span>
+                </p>
               </div>
+              {!authenticated && (
+                <Link href="/register">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                    Register
+                  </Button>
+                </Link>
+              )}
             </div>
-              <div>
-          {/* <PeopleAnimation /> */}
-          </div>
-            {!authenticated && (
-              <Link href="/register">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white ml-9 font-bold py-2 px-4 rounded mt-4">
-                  Register
-                </Button>
-              </Link>
-            )}
-          </div>
-        </>
-      </div>
+          </>
+        </div>
+      </main>
     </div>
   );
 }

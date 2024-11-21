@@ -65,7 +65,11 @@ export const DataTable = ({
   eventData: eData = [],
   refetchDataTable,
 }: DataTableProps) => {
-  const [selectedEvent, setSelectedEvent] = useState<{ id: string; title: string } | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -131,20 +135,20 @@ export const DataTable = ({
     try {
       const zip = new JSZip();
       const tickets = await fetchTicketsByEventId(eventId);
-  
+
       if (tickets.length === 0) {
         alert("No tickets found for this event.");
         return;
       }
-  
+
       for (const ticket of tickets) {
         const qrCodeDataUrl = await QRCode.toDataURL(ticket.id, { width: 300 });
-        const response = await fetch(qrCodeDataUrl); 
-        const imgBlob = await response.blob(); 
-  
+        const response = await fetch(qrCodeDataUrl);
+        const imgBlob = await response.blob();
+
         zip.file(`${ticket.ticketsName || ticket.id}.png`, imgBlob);
       }
-  
+
       const zipContent = await zip.generateAsync({ type: "blob" });
       saveAs(zipContent, `event-${eventId}-tickets.zip`);
     } catch (error) {
@@ -153,7 +157,6 @@ export const DataTable = ({
   };
 
   const handleRowClick = (event: EVENTS) => {
-    console.log("Event clicked:", event); 
     setSelectedEvent({ id: event.id, title: event.eventsTitle });
   };
 
@@ -202,19 +205,19 @@ export const DataTable = ({
               ) : (
                 currentData.map((event, index: number) => (
                   <TableRow
-                  onClick={() => handleRowClick(event)} key={event.id}>
+                    onClick={() => handleRowClick(event)}
+                    key={event.id}
+                  >
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{event.eventsTitle}</TableCell>
                     <TableCell>{event.description}</TableCell>
                     <TableCell>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant={"link"} className=" text-cyan-500">
-                            {event.ticketCount}
-                          </Button>
+                          <Button variant="link">{event.ticketCount}</Button>
                         </DialogTrigger>
-                        <DialogContent className="overflow-y-auto w-full md:w-[700px] max-h-[90vh] p-6">
-                          <TicketsTable />
+                        <DialogContent>
+                          <TicketsTable selectedEventId={event.id} />
                         </DialogContent>
                       </Dialog>
                     </TableCell>
@@ -222,56 +225,64 @@ export const DataTable = ({
                       <Button
                         className="relative right-2"
                         variant={"link"}
-                        onClick={() => router.push(`/events/[eventId]`)}
+                        onClick={() => {
+                          setSelectedEventId(event.id);
+                          router.push(`/events/${event.id}`);
+                        }}
                       >
                         <FaEye />
                       </Button>
                     </TableCell>
                     <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="">
-                        Open
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                                className="w-full"
-                                variant={"ghost"}
-                                onClick={(e: any) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <FaTicketAlt />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <TicketComponent selectedEvent={selectedEvent} />
-                            </DialogContent>
-                          </Dialog>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Button
-                            onClick={() => downloadQRCodeZip(event.id)}
-                            className="w-full"
-                            variant={"ghost"}
-                          >
-                            <MdDownload />
-                          </Button>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <DeleteButton
-                            id={event.id}
-                            onDelete={() => {
-                              deleteEvent(event.id);
-                            }}
-                          />
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="">
+                          Open
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  className="w-full"
+                                  variant={"ghost"}
+                                  onClick={(e: any) => {
+                                    e.stopPropagation();
+                                  }}
+                                >
+                                  <FaTicketAlt />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <TicketComponent
+                                  selectedEvent={{
+                                    id: event.id,
+                                    title: event.eventsTitle,
+                                  }}
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Button
+                              onClick={() => downloadQRCodeZip(event.id)}
+                              className="w-full"
+                              variant={"ghost"}
+                            >
+                              <MdDownload />
+                            </Button>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <DeleteButton
+                              id={event.id}
+                              onDelete={() => {
+                                deleteEvent(event.id);
+                              }}
+                            />
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))

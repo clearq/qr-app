@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     for (let i = 0; i < ticketCount; i++) {
       tickets.push({
         eventsTitleId: eventId,
-        customerId: user.user.id, // Associate the tickets with the logged-in customer
+        customerId: user.user.id,
         fromDate,
         toDate,
         qrNumber: Math.floor(100000000000 + Math.random() * 900000000000).toString(), // Generate a random QR number

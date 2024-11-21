@@ -31,16 +31,16 @@ export function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const firstName = formData.get('firstName') as string;
-    const lastName = formData.get('lastName') as string;
-    const company = formData.get('company') as string;
-    const orgNumber = formData.get('orgNumber') as string;
-    const address = formData.get('address') as string;
-    const city = formData.get('city') as string;
-    const phone = formData.get('phone') as string;
-    const zip = formData.get('zip') as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const company = formData.get("company") as string;
+    const orgNumber = formData.get("orgNumber") as string;
+    const address = formData.get("address") as string;
+    const city = formData.get("city") as string;
+    const phone = formData.get("phone") as string;
+    const zip = formData.get("zip") as string;
 
     if (!isValidEmail(email)) {
       setError("Invalid email");
@@ -52,7 +52,7 @@ export function RegisterForm() {
       return;
     }
 
-    const roleId = company && orgNumber ? '2' : '1';
+    const roleId = company && orgNumber ? "2" : "1";
 
     try {
       const response = await createCustomer({
@@ -66,28 +66,45 @@ export function RegisterForm() {
         city,
         phone,
         zip,
-        roleId
+        roleId,
       });
 
+      // Check the response for success or error
       if (response?.customer) {
         toast({
           title: "Success",
-          description: "Registered successfully"
+          description: response.message,
         });
         setError("");
-        router.replace("/all");
+
+        // Prepare email data
+        const emailData = { email, firstName, lastName };
+
+        // Call the API route to send the email
+        const emailResponse = await fetch("/api/sendEmail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(emailData),
+        });
+
+        if (!emailResponse.ok) {
+          throw new Error("Email not sent");
+        }
+
+        router.replace("/login");
       } else {
         setError(response?.message || "Something went wrong");
         toast({
           title: "Error",
-          description: response?.message || "Something went wrong"
+          description: response?.message || "Something went wrong",
         });
       }
     } catch (error) {
+      console.error("Error during registration:", error);
       setError("Something went wrong");
     }
   };
-  
+
   const validation = useFormik({
     initialValues: {
       email: "",
@@ -104,49 +121,49 @@ export function RegisterForm() {
       image: "",
       roleId: "",
     },
-  validationSchema: yup.object({
-    email: yup.string().email().required(),
-    password: yup
-      .string()
-      .required('Is required')
-      .matches(/(?=.*[0-9])/, "Must contain at least one number"),
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
-    company: yup.string(),
-    orgNumber: yup.string(),
-    address: yup.string(),
-    country: yup.string(),
-    city: yup.string(),
-    zip: yup.string(),
-    phone: yup.string(),
-    image: yup.string(),
-    roleId: yup.string().required(),
-  }), 
-  onSubmit: async (values) => {
-    // Determine roleId based on presence of company and orgNumber
-    const roleId = values.company && values.orgNumber ? '2' : '1';
+    validationSchema: yup.object({
+      email: yup.string().email().required(),
+      password: yup
+        .string()
+        .required("Is required")
+        .matches(/(?=.*[0-9])/, "Must contain at least one number"),
+      firstName: yup.string().required(),
+      lastName: yup.string().required(),
+      company: yup.string(),
+      orgNumber: yup.string(),
+      address: yup.string(),
+      country: yup.string(),
+      city: yup.string(),
+      zip: yup.string(),
+      phone: yup.string(),
+      image: yup.string(),
+      roleId: yup.string().required(),
+    }),
+    onSubmit: async (values) => {
+      // Determine roleId based on presence of company and orgNumber
+      const roleId = values.company && values.orgNumber ? "2" : "1";
 
-    // Create customer with the roleId
-    await createCustomer({ ...values, roleId }).then((response) => {
-      if (response?.customer) {
-        toast({
-          title: "Success",
-          description: "Registered successfully"
-        });
-        router.replace("/login");
-      } else {
-        toast({
-          title: "Error",
-          description: response?.message
-        });
-        setError(response?.message);
-      }
-    });
-  }
-});
+      // Create customer with the roleId
+      await createCustomer({ ...values, roleId }).then((response) => {
+        if (response?.customer) {
+          toast({
+            title: "Success",
+            description: "Registered successfully",
+          });
+          router.replace("/login");
+        } else {
+          toast({
+            title: "Error",
+            description: response?.message,
+          });
+          setError(response?.message);
+        }
+      });
+    },
+  });
 
   return (
-    <div className="flex justify-center items-center mt-52">
+    <div className="flex justify-center items-center">
       <Tabs
         defaultValue="account"
         className="w-[400px]"
@@ -161,10 +178,12 @@ export function RegisterForm() {
             <CardHeader>
               <CardTitle>User Register</CardTitle>
               <CardDescription>Sign up as user here.</CardDescription>
+              <CardDescription className="text-cyan-600">
+                Be ware to check your junkmail.
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit}
-              >
+              <form onSubmit={handleSubmit}>
                 <Label>First Name</Label>
                 <Input
                   type="text"

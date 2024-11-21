@@ -28,7 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaChartLine} from "react-icons/fa";
+import { FaChartLine } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { QrForm } from "@/components/qr-form";
@@ -79,7 +79,6 @@ export const DataTable: React.FC<DataTableProps> = ({
       .catch((err) => console.log(err));
   };
 
-
   const handleAnalyticsOpen = (vcard: IQR) => {
     setSelectedQr(vcard);
     fetchAnalyticsData(vcard.id);
@@ -127,13 +126,16 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2"
+                  >
                     <MdAdd />
                     <span className="hidden sm:inline">Add</span>
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <QrForm/>
+                  <QrForm />
                 </DialogContent>
               </Dialog>
             </TableHead>
@@ -235,9 +237,9 @@ export const DataTable: React.FC<DataTableProps> = ({
 
       {/* Dialog for displaying analytics */}
       {selectedQr && (
-      <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
-        <DialogContent>
-          {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
+        <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
+          <DialogContent>
+            {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
           {analyticsData ? (
             <div>
               <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> 
@@ -245,10 +247,10 @@ export const DataTable: React.FC<DataTableProps> = ({
           ) : (
             <p>Loading...</p>
           )} */}
-          <VcardAnalys id={""}  />
-        </DialogContent>
-      </Dialog>
-    )}
+            <VcardAnalys id={""} />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

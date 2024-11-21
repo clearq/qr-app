@@ -1,0 +1,31 @@
+import React from "react";
+
+const Footer: React.FC = () => {
+  return (
+    <footer className="text-center">
+      <div className="mb-4 gap-2 sm:gap-4 text-sm sm:text-base">
+        <span className="text-gray-600">Powered by</span>
+        <a
+          href="https://clearq.se"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-cyan-600 hover:text-cyan-700 ml-1 mr-1 font-semibold transition-colors duration-300"
+        >
+          ClearQ
+        </a>
+        <span className="hidden sm:inline-block text-gray-600">|</span>
+        <span className="text-gray-600">in cooperation with</span>
+        <a
+          href="https://timeer.se"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-cyan-600 mr-1 hover:text-cyan-700 font-semibold transition-colors duration-300"
+        >
+          Timeer
+        </a>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

@@ -1,12 +1,22 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { IVCARD } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -30,15 +40,24 @@ interface DataTableProps {
   refetchDataTable: () => void;
 }
 
-const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
   <PaginationItem>
-    <PaginationLink href="#" onClick={(e) => e.preventDefault()} style={{ pointerEvents: "none", color: "#ccc" }}>
+    <PaginationLink
+      href="#"
+      onClick={(e) => e.preventDefault()}
+      style={{ pointerEvents: "none", color: "#ccc" }}
+    >
       {children}
     </PaginationLink>
   </PaginationItem>
 );
 
-export const DataTable = ({ vcardData: vData, refetchDataTable }: DataTableProps) => {
+export const DataTable = ({
+  vcardData: vData,
+  refetchDataTable,
+}: DataTableProps) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5);
@@ -106,7 +125,10 @@ export const DataTable = ({ vcardData: vData, refetchDataTable }: DataTableProps
             <TableHead>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="flex items-center space-x-2 ml-2">
+                  <Button
+                    variant="outline"
+                    className="flex items-center space-x-2 ml-2"
+                  >
                     <MdAdd />
                     <span className="hidden sm:inline">Add</span>
                   </Button>

@@ -28,6 +28,7 @@ model Customer {
   vcard     VCard[]
   qr        Qr[]
   events    Events[]
+  tickets   Ticket[] // Add this relation to point to related Ticket records
 }
 
 model VCard {
@@ -91,7 +92,8 @@ model Ticket {
   scans         Int       @default(1)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  customerId    String
+  customerId    String?
+  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Prevent cascade
 }
 
 model Events {

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -14,13 +15,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MdModeEdit } from "react-icons/md";
+import { CopyIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 interface EditButtonProps {
-  ticketData: Ticket; 
+  ticketData: Ticket;
 }
 
 const EditButton = ({ ticketData: tData }: EditButtonProps) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [tooltipMessage, setTooltipMessage] = useState("Copy");
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -65,6 +75,20 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
         });
     },
   });
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(formik.values.qrNumber);
+    setTooltipMessage("Copied");
+
+    // Hide tooltip after clicking
+    setIsTooltipVisible(true);
+
+    // Reset the tooltip message back to "Copy" after a short delay
+    setTimeout(() => {
+      setTooltipMessage("Copy");
+      setIsTooltipVisible(false); // Hide tooltip after delay
+    }, 2000); // Change this delay as needed
+  };
 
   return (
     <>
@@ -144,7 +168,7 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="qrNumber">QR Generated ID</Label>
                 <Input
-                disabled
+                  disabled
                   id="qrNumber"
                   name="qrNumber"
                   placeholder="QR Code"
@@ -170,6 +194,21 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
               <Button type="submit">Save changes</Button>
             </DialogFooter>
           </form>
+          <TooltipProvider>
+            <Tooltip delayDuration={300} open={isTooltipVisible}>
+              <TooltipTrigger
+                className="absolute right-8 top-[247px]"
+                onClick={handleCopy}
+                onMouseEnter={() => setIsTooltipVisible(true)}
+                onMouseLeave={() => setIsTooltipVisible(false)}
+              >
+                <CopyIcon />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tooltipMessage}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </DialogContent>
       </Dialog>
     </>
