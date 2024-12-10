@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { Category, EventTable, Product, Shop } from "@prisma/client";
 
 export interface ICommon {
   linkUrl: string;
@@ -95,17 +95,50 @@ export interface TICKET {
   toDate: Date;
   qrNumber: string;
   description: string;
-  scanCount: string;
-  scans: string;
+  amountOfPeople: string;
   customerId: string;
+  scanCount: string;
+  fullName: string;
+  guestMail: string;
+  tableNumber: string;
+  walletObjectId: string;
 }
+
 export interface EVENTS {
-  ticketCount: ReactNode;
   id: string;
   eventsTitle: string;
   fromDate: string;
   toDate: string;
   description: string;
+  numberOfTables: number; // Must be a number
+  availabilityPerTable: number; // Must be a number
+  eventTables: EventTable[]; // Properly typed as an array of EventTable objects
   customer: string;
   customerId: string;
+  ticketCount: number; // Must also be a number
+}
+
+export interface SHOP {
+  id: string;
+  name: string;
+  address: string;
+  description: string;
+  categories: Category[];
+  products: Product[];
+}
+
+export interface CATEGORY {
+  id: string;
+  name: string;
+  shop: Shop;
+  shopId: String;
+  products: Product[];
+}
+
+export interface PRODUCT {
+  id: string;
+  title: string;
+  category: Category;
+  categoryId: string;
+  description: string;
 }

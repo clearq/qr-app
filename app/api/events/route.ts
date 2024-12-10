@@ -11,20 +11,25 @@ type Params = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const { eventsTitle, description, numberOfTables, availabilityPerTable } =
+      body;
 
-    const { eventsTitle, description } = body;
-
-    // Ensure required fields
-    if (!eventsTitle || !description) {
+    // Validate inputs
+    if (
+      !eventsTitle ||
+      !description ||
+      numberOfTables == null ||
+      availabilityPerTable == null
+    ) {
       return NextResponse.json(
         { message: "Missing required fields" },
         { status: 400 }
       );
     }
 
+    // Authenticate user
     const user = await auth();
-
-    if (!user || !user.user) {
+    if (!user?.user) {
       return NextResponse.json(
         { message: "Unauthorized, please log in." },
         { status: 401 }
@@ -33,12 +38,29 @@ export async function POST(req: Request) {
 
     const customerId = user.user.id;
 
-    const newEvent = await prisma.events.create({
-      data: {
-        eventsTitle,
-        description,
-        customerId,
-      },
+    // Create event and tables transactionally
+    const newEvent = await prisma.$transaction(async (prisma) => {
+      // Create event
+      const event = await prisma.events.create({
+        data: {
+          eventsTitle,
+          description,
+          numberOfTables,
+          availabilityPerTable,
+          customer: { connect: { id: customerId } },
+        },
+      });
+
+      // Create event tables
+      const eventTables = Array.from({ length: numberOfTables }, (_, i) => ({
+        tableNumber: i + 1,
+        availableSeats: availabilityPerTable,
+        eventId: event.id,
+      }));
+
+      await prisma.eventTable.createMany({ data: eventTables });
+
+      return event;
     });
 
     return NextResponse.json(newEvent, { status: 200 });
@@ -54,16 +76,15 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
+
+  // Fetch a single event by its ID
   if (id) {
     try {
       const event = await prisma.events.findUnique({
         where: { id },
         include: {
-          ticket: {
-            select: {
-              id: true,
-            },
-          },
+          customer: true,
+          eventTables: true, // Include event tables when fetching a single event
         },
       });
 
@@ -74,11 +95,13 @@ export async function GET(req: Request) {
         );
       }
 
-      const eventWithTicketCount = {
+      // Include the number of tables for the single event
+      const eventWithTableCount = {
         ...event,
-        ticketCount: event.ticket.length,
+        tableCount: event.eventTables.length,
       };
-      return NextResponse.json(eventWithTicketCount, { status: 200 });
+
+      return NextResponse.json(eventWithTableCount, { status: 200 });
     } catch (error) {
       console.error("Error fetching event:", error);
       return NextResponse.json(
@@ -99,24 +122,25 @@ export async function GET(req: Request) {
   const { id: userId } = user.user;
 
   try {
+    // Fetch all events for the authenticated user
     const events = await prisma.events.findMany({
-      where: {
-        customerId: userId,
-      },
+      where: { customerId: userId },
       include: {
+        eventTables: true, // Ensure eventTables are included
         ticket: {
-          select: {
-            id: true,
-          },
+          select: { id: true },
         },
       },
     });
 
-    const eventsWithTicketCount = events.map((event) => ({
+    // Map events to include ticket count and table count
+    const eventsWithCounts = events.map((event) => ({
       ...event,
       ticketCount: event.ticket.length,
+      tableCount: event.eventTables.length, // Add table count to the event
     }));
-    return NextResponse.json(eventsWithTicketCount, { status: 200 });
+
+    return NextResponse.json(eventsWithCounts, { status: 200 });
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ error: "Cannot fetch events" }, { status: 500 });

@@ -8,6 +8,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
 import { format, addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
+// import AddToGoogleWallet from "./addToGoogleWallet";
 
 interface Event {
   id: string;
@@ -20,7 +21,6 @@ export const TicketComponent = ({
   selectedEvent: { id: string; title: string } | null;
 }) => {
   const today = new Date();
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [events, setEvents] = useState<Event[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(true);
 
@@ -98,20 +98,13 @@ export const TicketComponent = ({
     },
   });
 
-  const handleDateChange = (range: DateRange | undefined) => {
-    if (range) {
-      const fromDate = range.from ? format(range.from, "yyyy-MM-dd") : "";
-      const toDate = range.to ? format(range.to, "yyyy-MM-dd") : "";
-
-      validation.setFieldValue("fromDate", fromDate);
-      validation.setFieldValue("toDate", toDate);
-      setDateRange(range);
-    }
-  };
-
   return (
     <div>
-      <form onSubmit={validation.handleSubmit} className="w-full space-y-4">
+      <form
+        onSubmit={validation.handleSubmit}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full space-y-4"
+      >
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="eventTitle">Selected Event</Label>
@@ -178,6 +171,9 @@ export const TicketComponent = ({
             Generate Tickets
           </Button>
         </div>
+        {/* <div>
+          <AddToGoogleWallet ticketId={""} />
+        </div> */}
       </form>
 
       <Button

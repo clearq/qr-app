@@ -22,6 +22,7 @@ import { ExtendedUser } from "@/next-auth";
 import { Separator } from "./ui/separator";
 import EditButton from "./EditButtonVcardSingle";
 import { MdDownload } from "react-icons/md";
+// import Image from "next/image";
 
 interface Props {
   user?: ExtendedUser;
@@ -35,7 +36,7 @@ export const VcardSingelComponent = ({ user }: Props) => {
   const type = params.get("type");
   const [vcardData, setVcardData] = useState<IVCARD | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { data: session, status } = useSession(); // Check session status
+  const { data: session, status } = useSession();
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
 
@@ -267,6 +268,13 @@ END:VCARD
               >
                 <MdDownload /> Download vCard
               </Button>
+              {/* <Image
+                className="w-[120px]"
+                src={"/image/appleWallet.svg"}
+                alt={"appleWallet"}
+                width={100}
+                height={100}
+              /> */}
             </div>
             <CardContent className="mt-10 w-full">
               <form className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -453,6 +461,14 @@ END:VCARD
                       Download PNG
                     </Button>
                     <Button onClick={copyUrlToClipboard}>Copy URL</Button>
+
+                    {/* <Image
+                      className="w-[120px]"
+                      src={"/image/appleWallet.svg"}
+                      alt={"appleWallet"}
+                      width={100}
+                      height={100}
+                    /> */}
                   </div>
                 </div>
               </CardContent>
