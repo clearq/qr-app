@@ -44,6 +44,9 @@ export async function PUT(req: NextRequest) {
   const { id } = user.user;
 
   try {
+    const requestBody = await req.json();
+    console.log("Request Body:", requestBody);
+
     const {
       email,
       firstName,
@@ -56,7 +59,7 @@ export async function PUT(req: NextRequest) {
       country,
       city,
       zip,
-    } = await req.json();
+    } = requestBody;
 
     if (!email || !firstName || !lastName) {
       return NextResponse.json(
@@ -64,6 +67,10 @@ export async function PUT(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+    const imageUrl = image;
 
     const updatedUser = await prisma.customer.update({
       where: { id },
@@ -73,7 +80,7 @@ export async function PUT(req: NextRequest) {
         lastName: lastName,
         phone: phone,
         company: company,
-        image: image,
+        image: imageUrl,
         orgNumber: orgNumber,
         address: address,
         country: country,

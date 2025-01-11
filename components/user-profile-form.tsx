@@ -18,6 +18,16 @@ import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
 import { ChangePasswordForm } from "./change-password-form";
 import { redirect } from "next/navigation";
+import {
+  uploadFile,
+  autoLoginToCDN,
+  getImageUrl,
+  getFile,
+} from "@/actions/api";
+import Image from "next/image";
+import { Icon } from "@iconify/react";
+import avatar0 from "@/public/image/dotted.png";
+import MediaPreview from '@/app/MediaPreview';
 
 interface Props {
   user: Customer;
@@ -25,11 +35,10 @@ interface Props {
 
 export const EditProfileForm = ({ user: userData }: Props) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
-  const [highQualityLogo, setHighQualityLogo] = useState<
-    string | ArrayBuffer | null
-  >(userData.image);
-  const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [retrievedFile, setRetrievedFile] = useState<string>("");
+  const [key, setKey] = useState('');
 
   const validation = useFormik({
     initialValues: {
@@ -63,13 +72,11 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...values, highQualityImage: highQualityLogo }),
+        body: JSON.stringify(values),
       })
         .then(async (response) => {
           if (response.status === 201) {
             const data = await response.json();
-            setLogo(data.image);
-            setHighQualityLogo(data.highQualityImage);
             toast({
               title: `Updated successfully!`,
               description: `${new Date().toLocaleDateString()}`,
@@ -94,79 +101,68 @@ export const EditProfileForm = ({ user: userData }: Props) => {
     },
   });
 
-  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxSize = 40;
-        let width = img.width;
-        let height = img.height;
+  const handleInputImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const userId = userData?.id || "default_user";
+      const contentFolder = "profile";
+      const key = `${userId}_${file.name}`;
 
-        if (width > height) {
-          if (width > maxSize) {
-            height *= maxSize / width;
-            width = maxSize;
-          }
-        } else {
-          if (height > maxSize) {
-            width *= maxSize / height;
-            height = maxSize;
-          }
-        }
+      try {
+        setUploading(true);
 
-        canvas.width = width;
-        canvas.height = height;
+        // Retrieve the token from sessionStorage instead of localStorage
+        const token =
+          localStorage.getItem("cdnToken") || (await autoLoginToCDN());
 
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const dataUrl = reader.result as string;
-                callback(dataUrl);
-              };
-              reader.readAsDataURL(blob);
-            }
-          }, "image/png");
-        }
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
+        await uploadFile(key, file, token, userId, contentFolder);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      // Read the high-quality image
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setHighQualityLogo(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+        // Generate full image URL
+        const imageUrl = getImageUrl(key, userId, contentFolder);
+        console.log(imageUrl);
+        const response = await getFile(key, token, userId, contentFolder);
+        const fileUrl = URL.createObjectURL(response.data);
+        setRetrievedFile(fileUrl);
 
-      // Resize the image for storage
-      resizeImage(file, (resizedDataUrl) => {
-        setLogo(resizedDataUrl);
-        validation.setFieldValue("image", resizedDataUrl);
-      });
+        // Update the user profile
+        await fetch("/api/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: key, // Pass the image key for URL generation in the backend
+            email: userData.email,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            phone: userData.phone,
+            company: userData.company,
+            orgNumber: userData.orgNumber,
+            address: userData.address,
+            country: userData.country,
+            city: userData.city,
+            zip: userData.zip,
+          }),
+        });
+
+        setLogo(imageUrl);
+        toast({
+          title: "Profile image updated!",
+          description: "Your profile image has been updated successfully.",
+        });
+      } catch (error) {
+        console.error("Error uploading profile image:", error);
+        toast({
+          variant: "destructive",
+          title: "Error uploading image",
+          description: "There was an error uploading your profile image.",
+        });
+      } finally {
+        setUploading(false);
+      }
     }
-  };
-
-  const handleRemoveImage = () => {
-    setLogo(null);
-    setHighQualityLogo(null);
-    validation.setFieldValue("image", "");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-
-    // Submit the form to update the server immediately after removing the image
-    validation.handleSubmit();
   };
 
   if (!userData) {
@@ -180,52 +176,60 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           <CardTitle>Edit your Profile</CardTitle>
           <CardDescription>Update your profile here.</CardDescription>
         </CardHeader>
-        {/* <label htmlFor="imageInput" style={{ cursor: "pointer" }}> */}
-        <Avatar
-          ref={qrRef}
-          className="flex disabled flex-col w-[200px] h-[200px] justify-center items-center relative"
-        >
-          {/* Second image for display */}
+        {/* <Avatar className="flex flex-col w-[200px] h-[200px] justify-center items-center relative">
           <AvatarImage
             //@ts-ignore
-            src={highQualityLogo ? highQualityLogo.toString() : userData.image}
+            src={logo ? logo.toString() : userData.image}
             alt="User Image"
           />
-          <AvatarFallback className="text-[2rem]">
+          <AvatarFallback>
             {userData.firstName[0]}
             {userData.lastName[0]}
           </AvatarFallback>
         </Avatar>
-        {/* <input
-            id="imageInput"
-            type="file"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={handleImageChange}
-          />
-        </label> */}
-        {/* <ImageUpload/> */}
-        {/* <div className="flex items-center space-x-4 mt-4">
-          <label
-            htmlFor="logoType"
-            className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
-          >
-            Browse
-          </label>
+        <div className="flex items-center space-x-4 mt-4">
           <input
             type="file"
-            id="logoType"
             accept="image/*"
-            className="hidden"
             ref={fileInputRef}
             onChange={handleImageChange}
           />
-          {logo && (
-            <Button onClick={handleRemoveImage} className="bg-red-500">
-              Remove Logo
-            </Button>
-          )}
         </div> */}
+        <div className="w-[124px] h-[124px] relative rounded-full">
+          {/* <Image
+            src={logo ? logo.toString() : userData.image || avatar0.src}
+            alt="Profile Image"
+            className="w-full h-full object-cover rounded-full"
+            width={300}
+            height={300}
+          /> */}
+          <MediaPreview retrievedFile={retrievedFile} fileKey={key}/>
+          <Button
+            asChild
+            size="icon"
+            className="h-8 w-8 rounded-full cursor-pointer absolute bottom-0 right-0"
+            disabled={uploading}
+          >
+            <Label htmlFor="image">
+              <Icon
+                className={`w-5 h-5 ${
+                  uploading ? "text-gray-400" : "text-primary-foreground"
+                }`}
+                icon={
+                  uploading ? "heroicons:refresh" : "heroicons:pencil-square"
+                }
+              />
+            </Label>
+          </Button>
+          <input
+            className="hidden"
+            type="file"
+            name="image"
+            accept="image/jpg, image/jpeg, image/png"
+            onChange={handleInputImageChange}
+            id="image"
+          />
+        </div>
         <CardContent className="mt-10">
           <form
             onSubmit={(e) => {
