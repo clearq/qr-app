@@ -28,7 +28,7 @@ model Customer {
   vcard     VCard[]
   qr        Qr[]
   events    Events[]
-  tickets   Ticket[] // Add this relation to point to related Ticket records
+  tickets   Ticket[]
 }
 
 model VCard {
@@ -77,34 +77,82 @@ model Role {
   customers Customer[]
 }
 
-model Ticket {
-  id            String    @id @default(cuid())
-  fullName      String?
-  guestMail     String?
-  fromDate      String?
-  toDate        String?
-  ticketsName   String?
-  eventsTitle   Events?   @relation(fields: [eventsTitleId], references: [id])
-  eventsTitleId String?
-  qrNumber      String?   @unique
-  description   String?
-  scanCount     Int       @default(0)
-  scans         Int       @default(1)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  customerId    String?
-  customer      Customer? @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Prevent cascade
+model Events {
+  id                   String       @id @default(cuid())
+  eventsTitle          String?
+  fromDate             DateTime?
+  toDate               DateTime?
+  description          String?
+  numberOfTables       Int?
+  availabilityPerTable Int?
+  createdAt            DateTime?    @default(now())
+  updatedAt            DateTime?    @updatedAt
+  customer             Customer?    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId           String?
+  ticket               Ticket[]
+  eventTables          EventTable[] // Relation to EventTable
 }
 
-model Events {
-  id          String    @id @default(cuid())
-  eventsTitle String?
-  fromDate    DateTime?
-  toDate      DateTime?
+model EventTable {
+  id             String    @id @default(cuid())
+  tableNumber    Int? // Table number
+  availableSeats Int? // Available seats for the table
+  event          Events    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String // Foreign key to Events model
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @updatedAt
+}
+
+model Ticket {
+  id             String    @id @default(cuid())
+  scanCount      String?
+  fullName       String?
+  guestMail      String?
+  fromDate       String?
+  toDate         String?
+  ticketsName    String?
+  eventsTitle    Events?   @relation(fields: [eventsTitleId], references: [id])
+  eventsTitleId  String? // Link ticket to an event
+  qrNumber       String?   @unique
+  description    String?
+  tableNumber    Int? // Assign ticket to a table
+  amountOfPeople Int? // Define the number of people on the table for this ticket
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @updatedAt
+  customerId     String?
+  customer       Customer? @relation(fields: [customerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  walletObjectId String?
+}
+
+model Shop {
+  id          String     @id @default(cuid())
+  name        String // Name of the shop
+  address     String? // Optional address of the shop
+  description String? // Optional description of the shop
+  categories  Category[] // Relation to categories
+  products    Product[] // Relation to products
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String // Name of the category
+  shop      Shop      @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Break cascading path
+  shopId    String // Foreign key to Shop model
+  products  Product[] // Relation to products
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String // Title of the product
+  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Break cascading path
+  shopId      String // Foreign key to Shop model
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Allow cascading here
+  categoryId  String // Foreign key to Category model
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  customerId  String
-  ticket      Ticket[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

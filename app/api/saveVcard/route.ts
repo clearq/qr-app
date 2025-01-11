@@ -25,10 +25,7 @@ export async function GET(req: Request) {
   const user = await auth();
 
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "You need to log in" }, { status: 400 });
   }
 
   const { id: userId } = user.user;
@@ -45,10 +42,7 @@ export async function POST(req: Request) {
   const user = await auth();
 
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "You need to log in" }, { status: 400 });
   }
 
   const { id } = user.user;
@@ -78,10 +72,7 @@ export async function PUT(req: Request) {
   const user = await auth();
 
   if (!user?.user) {
-    return NextResponse.json(
-      { error: "You need to log in" },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: "You need to log in" }, { status: 401 });
   }
 
   try {

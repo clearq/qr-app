@@ -6,8 +6,7 @@ export async function createTicket(data: {
   eventsTitle?: string;
   qrNumber: string;
   description?: string;
-  scanCount?: number;
-  scans?: number;
+  amountOfPeople?: number;
   fromDate?: string | null;
   toDate?: string | null;
   customerId: string;
@@ -18,11 +17,10 @@ export async function createTicket(data: {
       // eventsTitle: data.eventsTitle,
       qrNumber: data.qrNumber,
       description: data.description,
-      scanCount: data.scanCount,
-      scans: data.scans,
-      // fromDate: data.fromDate ? new Date(data.fromDate) : null, 
-      // toDate: data.toDate ? new Date(data.toDate) : null,
-      customerId: data.customerId, 
+      amountOfPeople: data.amountOfPeople,
+      fromDate: data.fromDate,
+      toDate: data.toDate,
+      customerId: data.customerId,
     },
   });
 }

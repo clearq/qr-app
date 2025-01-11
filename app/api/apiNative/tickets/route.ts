@@ -109,9 +109,8 @@ export async function PUT(req: Request) {
       fromDate,
       qrNumber,
       ticketsName,
-      scanCount,
+      amountOfPeople,
       toDate,
-      scans,
     } = await req.json();
 
     // Validate required fields
@@ -137,9 +136,8 @@ export async function PUT(req: Request) {
         fromDate,
         qrNumber,
         ticketsName,
-        scanCount,
+        amountOfPeople,
         toDate,
-        scans,
         customerId: user.user.id,
       },
     });
