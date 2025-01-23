@@ -34,6 +34,7 @@ import { FaChartLine } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { VcardAnalys } from "@/components/vcardAnalys";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -113,8 +114,22 @@ export const DataTable = ({
     setCurrentPage(page);
   };
 
+  if (!isMounted) {
+    return (
+      <div className="w-full mt-52 h-full p-4 sm:pl-[260px]">
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
+      <h1 className="text-3xl font-bold mb-6"></h1>
       <Table className="mb-5">
         <TableHeader className="h-16">
           <TableRow>
@@ -230,7 +245,6 @@ export const DataTable = ({
           )}
         </PaginationContent>
       </Pagination>
-
       {selectedQr && (
         <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
           <DialogContent>

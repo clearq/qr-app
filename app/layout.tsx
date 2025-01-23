@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Navbar";
 import SessionProvider from "@/utils/SessionProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/toaster";
 import CookieConsentBanner from "@/components/Cookies";
 import "@uploadthing/react/styles.css";
-import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/Footer";
-import MobileFooterNavbar from "@/components/MobileFooterNavbar";
+import Image from "next/image";
+import logoImage from "../public/image/qrLogo.png"; // Import the logo image
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Qr Generator App",
-  description: "Powerd by ClearQ",
+  description: "Powered by ClearQ",
   icons: [
     {
       rel: "icon",
@@ -38,7 +39,7 @@ export default async function RootLayout({ children }: Props) {
   const session = await auth();
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={cn(inter.className, "flex flex-col min-h-screen")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -46,18 +47,25 @@ export default async function RootLayout({ children }: Props) {
           disableTransitionOnChange
         >
           <SessionProvider session={session}>
-            <div className="mx-auto max-w-7xl text-2xl gap-2 mb-10">
-              <Navbar user={session?.user} />
+            {/* Header with Logo */}
+
+            {/* Main Content */}
+            <div className="flex-1">
+              <Link className="p-4 absolute" href="/">
+                <Image
+                  alt="logo"
+                  src={logoImage}
+                  className="w-[50px] h-auto"
+                  priority // Ensures the logo loads quickly
+                />
+              </Link>
+              <Sidebar user={session?.user} />
               <Toaster />
-              <DotPattern
-                className={cn(
-                  "fixed inset-0 -z-10 [mask-image:radial-gradient(3000px_circle_at_center,white,transparent)]"
-                )}
-              />
               {children}
             </div>
+
+            {/* Footer at the bottom of the page */}
             <Footer />
-            {/* <MobileFooterNavbar /> */}
           </SessionProvider>
         </ThemeProvider>
         <CookieConsentBanner />

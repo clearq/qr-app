@@ -163,7 +163,7 @@ export function RegisterForm() {
   });
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex mt-20 justify-center items-center">
       <Tabs
         defaultValue="account"
         className="w-[400px]"
@@ -178,9 +178,6 @@ export function RegisterForm() {
             <CardHeader>
               <CardTitle>User Register</CardTitle>
               <CardDescription>Sign up as user here.</CardDescription>
-              <CardDescription className="text-cyan-600">
-                Be ware to check your junkmail.
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit}>

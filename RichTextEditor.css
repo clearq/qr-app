@@ -1,0 +1,65 @@
+.rich-text-editor .ql-editor {
+  text-align: left; /* Default alignment for all content */
+}
+
+.rich-text-editor .ql-editor img {
+  display: block;
+  margin: 0 auto; /* Center images */
+  max-width: 100%; /* Ensure images are responsive */
+  cursor: grab; /* Indicate images can be manipulated */
+}
+
+/* Styles for the image resize container */
+.ql-image-resize {
+  position: relative; /* Position the container for handles */
+  display: inline-block;
+  border: 1px dashed #888; /* Visual indicator for resizing */
+  padding: 4px; /* Optional padding for better visibility */
+  background-color: rgba(255, 255, 255, 0.8); /* Subtle background */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Optional shadow for better focus */
+}
+
+/* Styles for image resize handles */
+.ql-image-resize-handle {
+  position: absolute;
+  width: 12px; /* Handle size */
+  height: 12px;
+  background: #000; /* Black handles */
+  border-radius: 50%; /* Rounded handles for better aesthetics */
+  cursor: nwse-resize; /* Default resize cursor */
+  z-index: 10;
+  transition: background-color 0.2s;
+}
+
+/* Handle hover effect */
+.ql-image-resize-handle:hover {
+  background-color: #555; /* Lighter on hover */
+}
+
+/* Top-left handle */
+.ql-image-resize-handle[data-position="top-left"] {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+
+/* Top-right handle */
+.ql-image-resize-handle[data-position="top-right"] {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+/* Bottom-left handle */
+.ql-image-resize-handle[data-position="bottom-left"] {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+/* Bottom-right handle */
+.ql-image-resize-handle[data-position="bottom-right"] {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}

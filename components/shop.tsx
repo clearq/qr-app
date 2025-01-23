@@ -6,10 +6,13 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { useSession } from "next-auth/react"; // Import useSession to get the authenticated user
 
 export const ShopComponent = ({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) => {
+  const { data: session } = useSession(); // Get the authenticated user's session
+
   const validation = useFormik({
     initialValues: {
       name: "",
@@ -22,12 +25,27 @@ export const ShopComponent = ({
       description: yup.string(),
     }),
     onSubmit: (values) => {
+      if (!session?.user?.id) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "You must be logged in to create a shop.",
+        });
+        return;
+      }
+
+      // Include the customerId from the session in the request body
+      const requestBody = {
+        ...values,
+        customerId: session.user.id, // Automatically add the customerId
+      };
+
       fetch("/api/shop", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(requestBody),
       })
         .then(async (response) => {
           const data = await response.json();
@@ -41,7 +59,7 @@ export const ShopComponent = ({
             toast({
               variant: "destructive",
               title: `Error creating Shop`,
-              description: `${new Date().toLocaleDateString()}`,
+              description: data.error || "Something went wrong.",
             });
           }
         })
@@ -59,13 +77,13 @@ export const ShopComponent = ({
   return (
     <div>
       <CardHeader>
-        <CardTitle className="text-6xl">New Shop</CardTitle>
-        <CardDescription>Add a new shop here</CardDescription>
+        <CardTitle className="text-6xl">New Unit</CardTitle>
+        <CardDescription>Add a new business unit here</CardDescription>
       </CardHeader>
       <form onSubmit={validation.handleSubmit} className="w-full space-y-4">
         <div>
           <label htmlFor="name" className="block">
-            Shop Name
+            Unit Name
             <span className="text-red-600">*</span>
           </label>
           <Input

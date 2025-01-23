@@ -11,47 +11,96 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RichTextEditor } from "./RichTextEditor"; // Import the RichTextEditor
 
 interface Category {
   id: string;
   name: string;
 }
 
-interface ProductProps extends React.HTMLAttributes<HTMLDivElement> {
-  shopId: string; // Pass shopId as a prop
+interface Shop {
+  id: string;
+  name: string;
 }
 
-export const Product = ({ className, shopId }: ProductProps) => {
+interface ProductProps extends React.HTMLAttributes<HTMLDivElement> {
+  shopId?: string; // Make shopId optional
+}
+
+const Product = ({ className, shopId: initialShopId }: ProductProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [shops, setShops] = useState<Shop[]>([]);
+  const [selectedShopId, setSelectedShopId] = useState<string | null>(
+    initialShopId || null
+  );
   const [products, setProducts] = useState([
-    { title: "", description: "", categoryId: "" },
+    { title: "", description: "", categoryId: "", itemId: "" }, // Add itemId
   ]); // Array for multiple products
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch categories on mount
+  // Fetch shops on mount
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchShops = async () => {
       try {
-        const response = await fetch(`/api/category?shopId=${shopId}`);
-        if (!response.ok) throw new Error("Failed to fetch categories");
+        const response = await fetch("/api/shop");
+        if (!response.ok) throw new Error("Failed to fetch shops");
         const data = await response.json();
-        setCategories(data);
+        console.log("API Response:", data); // Log the API response
+
+        if (!Array.isArray(data.data)) {
+          console.error("Expected an array but received:", data);
+          setShops([]); // Set to an empty array if the response is not an array
+          return;
+        }
+
+        setShops(data.data); // Use data.data to match the API response structure
+
+        // Pre-select the first shop if no initial shopId is provided
+        if (!initialShopId && data.data.length > 0) {
+          setSelectedShopId(data.data[0].id);
+        }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching shops:", error);
         toast({
           variant: "destructive",
-          title: `Error fetching categories`,
-          description: "Not able to find any categories",
+          title: "Error fetching shops",
+          description: "Failed to load shops. Please try again later.",
         });
       }
     };
 
-    fetchCategories();
-  }, [shopId]);
+    fetchShops();
+  }, [initialShopId]);
+
+  // Fetch categories when the selected shop changes
+  useEffect(() => {
+    if (selectedShopId) {
+      const fetchCategories = async () => {
+        try {
+          const response = await fetch(
+            `/api/category?shopId=${selectedShopId}`
+          );
+          if (!response.ok) throw new Error("Failed to fetch categories");
+          const data = await response.json();
+          console.log("Categories API Response:", data); // Log the API response
+          setCategories(data);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+          toast({
+            variant: "destructive",
+            title: "Error fetching categories",
+            description: "Not able to find any categories",
+          });
+        }
+      };
+
+      fetchCategories();
+    }
+  }, [selectedShopId]);
 
   const handleProductChange = (
     index: number,
-    field: "title" | "description" | "categoryId",
+    field: "title" | "description" | "categoryId" | "itemId", // Add itemId
     value: string
   ) => {
     const updatedProducts = [...products];
@@ -60,7 +109,10 @@ export const Product = ({ className, shopId }: ProductProps) => {
   };
 
   const addProductRow = () => {
-    setProducts([...products, { title: "", description: "", categoryId: "" }]);
+    setProducts([
+      ...products,
+      { title: "", description: "", categoryId: "", itemId: "" }, // Add itemId
+    ]);
   };
 
   const removeProductRow = (index: number) => {
@@ -69,6 +121,15 @@ export const Product = ({ className, shopId }: ProductProps) => {
   };
 
   const submitProducts = async () => {
+    if (!selectedShopId) {
+      toast({
+        variant: "destructive",
+        title: "No shop selected",
+        description: "Please select a shop before submitting products.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch(`/api/product`, {
@@ -76,22 +137,25 @@ export const Product = ({ className, shopId }: ProductProps) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ products, shopId }),
+        body: JSON.stringify({ products, shopId: selectedShopId }),
       });
 
       const data = await response.json();
+      console.log("Submission Response:", data); // Log the API response
 
       if (response.ok) {
         toast({
-          title: `Products created successfully!`,
+          title: "Products created successfully!",
           description: `${new Date().toLocaleDateString()}`,
         });
         window.location.reload();
-        setProducts([{ title: "", description: "", categoryId: "" }]); // Clear all inputs after success
+        setProducts([
+          { title: "", description: "", categoryId: "", itemId: "" },
+        ]);
       } else {
         toast({
           variant: "destructive",
-          title: `Error creating products`,
+          title: "Error creating products",
           description: data.error || "Something went wrong.",
         });
       }
@@ -99,7 +163,7 @@ export const Product = ({ className, shopId }: ProductProps) => {
       console.error("Error:", error);
       toast({
         variant: "destructive",
-        title: `Something went wrong`,
+        title: "Something went wrong",
         description: `${new Date().toLocaleDateString()}`,
       });
     } finally {
@@ -108,24 +172,42 @@ export const Product = ({ className, shopId }: ProductProps) => {
   };
 
   return (
-    <div
-      onClick={(e) => e.stopPropagation()} // Prevent dialog from closing
-      className={className}
-    >
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
       <CardHeader>
-        <CardTitle className="text-6xl">New Products</CardTitle>
-        <CardDescription>Add multiple products here</CardDescription>
+        <CardTitle className="text-4xl font-bold">New Item</CardTitle>
+        <CardDescription>Add a new items here</CardDescription>
       </CardHeader>
+      {/* Shop Selector Dropdown */}
+      <div className="mb-6">
+        <Select
+          value={selectedShopId || ""}
+          onValueChange={(value) => setSelectedShopId(value)}
+          disabled={isSubmitting}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Select a shop" />
+          </SelectTrigger>
+          <SelectContent>
+            {shops.map((shop) => (
+              <SelectItem key={shop.id} value={shop.id}>
+                {shop.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           submitProducts();
         }}
-        className="w-full space-y-4"
+        className="w-full space-y-6"
       >
         {products.map((product, index) => (
-          <div key={index} className="flex items-center space-x-4">
-            <div className="flex-1">
+          <div key={index} className="space-y-4">
+            {/* Title */}
+            <div>
               <Input
                 name={`product-title-${index}`}
                 value={product.title}
@@ -133,30 +215,47 @@ export const Product = ({ className, shopId }: ProductProps) => {
                   handleProductChange(index, "title", e.target.value)
                 }
                 placeholder="Enter title"
-                className=""
+                className="w-full"
                 disabled={isSubmitting}
               />
             </div>
-            <div className="flex-1">
-              <Input
-                name={`product-description-${index}`}
+
+            {/* Description (RichTextEditor) */}
+            <div>
+              <RichTextEditor
                 value={product.description}
-                onChange={(e) =>
-                  handleProductChange(index, "description", e.target.value)
+                onChange={(value) =>
+                  handleProductChange(index, "description", value)
                 }
                 placeholder="Enter product description"
-                className=""
+                disabled={isSubmitting}
+                className="min-h-[200px]" // Set a minimum height for the editor
+              />
+            </div>
+
+            {/* Business Unit ID (Optional) */}
+            <div>
+              <Input
+                name={`business-unit-id-${index}`}
+                value={product.itemId}
+                onChange={(e) =>
+                  handleProductChange(index, "itemId", e.target.value)
+                }
+                placeholder="Enter Article Number ID (optional)"
+                className="w-full"
                 disabled={isSubmitting}
               />
             </div>
-            <div className="flex-1">
+
+            {/* Category Selector and Remove Button */}
+            <div className="flex items-center gap-4">
               <Select
                 onValueChange={(value) =>
                   handleProductChange(index, "categoryId", value)
                 }
                 disabled={isSubmitting}
               >
-                <SelectTrigger>
+                <SelectTrigger className="flex-1">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -167,38 +266,35 @@ export const Product = ({ className, shopId }: ProductProps) => {
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => removeProductRow(index)}
+                disabled={isSubmitting || products.length === 1} // Prevent removing last field
+              >
+                Remove
+              </Button>
             </div>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => removeProductRow(index)}
-              disabled={isSubmitting || products.length === 1} // Prevent removing last field
-            >
-              Remove
-            </Button>
           </div>
         ))}
-        <div>
+
+        {/* Add Another Product and Save Buttons */}
+        <div className="flex justify-between">
           <Button
             type="button"
             variant="outline"
-            className="w-full md:w-auto"
             onClick={addProductRow}
             disabled={isSubmitting}
           >
             Add Another Product
           </Button>
-        </div>
-        <div>
-          <Button
-            type="submit"
-            className="w-full mt-3 md:w-auto"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Saving..." : "Save All"}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save"}
           </Button>
         </div>
       </form>
     </div>
   );
 };
+
+export default Product;

@@ -238,16 +238,9 @@ END:VCARD
   }
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
       {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Button
-            onClick={() => handleBack()}
-            className="flex mb-4 font-light text-4xl justify-start items-start"
-            variant={"link"}
-          >
-            {"<-"}
-          </Button>
           <Card className="flex flex-col justify-center items-center">
             <CardHeader>
               <CardTitle>VCard Details</CardTitle>

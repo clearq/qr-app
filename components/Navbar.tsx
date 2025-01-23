@@ -1,31 +1,40 @@
 "use client";
+
 import Link from "next/link";
 import { ModeToggle } from "./ui/modeToggle";
 import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
-import { useRouter } from "next/navigation";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import React from "react";
+import { useRouter, usePathname } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
 import { logOut } from "@/actions/logOut";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "./ui/accordion";
+import { PowerOff, Menu } from "lucide-react"; // Import Menu icon
+import { Button } from "./ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import { ICUSTOMER } from "@/typings";
 
 interface Props {
   user?: ExtendedUser;
 }
 
-export const Navbar = ({ user: userData }: Props) => {
-  const [user, setUser] = React.useState(null);
-  const [isVisible, setIsVisible] = React.useState(true); // Track navbar visibility
-  const [lastScrollY, setLastScrollY] = React.useState(0); // Track last scroll position
-  const [isAtTop, setIsAtTop] = React.useState(true);
+export const Sidebar = ({ user: userData }: Props) => {
+  const [user, setUser] = React.useState<ICUSTOMER | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     await logOut();
@@ -42,118 +51,316 @@ export const Navbar = ({ user: userData }: Props) => {
     fetchData();
   }, []);
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scrolling down and scrolled past 50px
-        setIsVisible(false);
-      } else {
-        // Scrolling up or at the top
-        setIsVisible(true);
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsMobileMenuOpen(false);
       }
-      setIsAtTop(currentScrollY === 0);
-      setLastScrollY(currentScrollY);
     };
 
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Hide burger menu and page title on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 50) {
+        setIsVisible(false); // Hide when scrolled down
+      } else {
+        setIsVisible(true); // Show when at the top
+      }
+    };
+
+    // Add scroll event listener
     window.addEventListener("scroll", handleScroll);
 
+    // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [lastScrollY]);
+  }, []);
+
+  // Map route to header title
+  const pageTitles: Record<string, string> = {
+    "/all": "Overview",
+    "/events": "Events",
+    "/ticket": "Tickets",
+    "/dashboard": "URL",
+    "/dashboardVcard": "Vcard",
+    "/shop": "Business Unit",
+    "/shop/products/datatable": "Items Table",
+    "/shop/products/details": "Items ",
+    "/profile": "Profile",
+    "/login": "Login",
+    "/register": "Register",
+    "/qr": "Create URL",
+  };
+  const pageTitle = pageTitles[pathname] || "";
+
+  if (
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/shop/products/details"
+  ) {
+    return (
+      <main className="flex-1 overflow-auto">
+        <div className="p-4">
+          <h1 className="ml-16 text-3xl font-bold">{pageTitle}</h1>
+        </div>
+        <section className="p-4">{/* Home Page Content */}</section>
+      </main>
+    );
+  }
 
   return (
-    <>
-      {/* Navbar */}
-      <div
-        className={`fixed sm:w-[60%] top-0 w-full z-50 transition-transform duration-300 ${
-          isVisible ? "translate-y-0" : "-translate-y-full"
-        } ${
-          isAtTop
-            ? "bg-transparent"
-            : "bg-white dark:bg-black sm:dark:bg-transparent sm:bg-transparent sm:shadow-none shadow-md"
-        }`}
+    <div className="flex h-screen z-50 fixed">
+      {/* Mobile Menu Button */}
+      <button
+        className={`fixed top-4 right-4 z-50 p-2 lg:hidden transition-opacity duration-300 ${
+          isMobileMenuOpen || !isVisible ? "opacity-0" : "opacity-100"
+        }`} // Hide button when sidebar is open or when scrolling down
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        <ul className="flex flex-wrap justify-end items-end m-4 sm:m-10">
-          <div className="mr-auto">
-            <Link href="/">
-              <Image
-                alt="logo-image"
-                src={logoImage}
-                className="w-[50px] h-auto sm:w-[50px]"
-              />
-            </Link>
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            {userData ? (
-              <NavigationMenu>
-                <NavigationMenuList>
-                  <NavigationMenuItem>
-                    <NavigationMenuContent></NavigationMenuContent>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link href="/all" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        Overview
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <Link href="/profile" legacyBehavior passHref>
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                      >
-                        {
-                          //@ts-ignore
-                          user?.firstName[0]
-                        }
-                        {""}
-                        {
-                          //@ts-ignore
-                          user?.lastName[0]
-                        }
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem>
-                    <span className="cursor-pointer">
-                      <NavigationMenuLink
-                        className={navigationMenuTriggerStyle()}
-                        onClick={handleSignOut}
-                      >
-                        Logout
-                      </NavigationMenuLink>
-                    </span>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            ) : (
-              <>
-                <Link href="/login">
-                  <li className="cursor-pointer text-sm sm:text-base">Login</li>
-                </Link>
-                <Link href="/register">
-                  <li className="cursor-pointer text-sm sm:text-base">
-                    Register
-                  </li>
-                </Link>
-              </>
-            )}
-            <div className="z-50">
-              <ModeToggle />
-            </div>
-          </div>
-        </ul>
-      </div>
+        <Menu className="w-6 h-6 sm:w-0 sm:h-0" /> {/* Hamburger icon */}
+      </button>
 
-      {/* Spacer to prevent overlapping */}
-      <div className="h-[80px] sm:h-[100px]"></div>
-    </>
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        ref={sidebarRef}
+        className={`w-48 shadow-md flex flex-col fixed lg:relative h-screen bg-white dark:bg-gray-800 transform transition-transform duration-300 ease-in-out z-50 ${
+          isMobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        }`} // Hide sidebar on mobile by default
+      >
+        <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
+          <Link href="/">
+            <Image alt="logo" src={logoImage} className="w-[50px] h-auto" />
+          </Link>
+          <ModeToggle />
+        </div>
+        <nav className="flex-1 flex flex-col p-4">
+          {userData ? (
+            <>
+              <Link
+                href="/all"
+                className={`py-2 flex-row rounded-lg hover:underline ${
+                  pathname === "/all"
+                }`}
+              >
+                Overview
+              </Link>
+              <Link
+                href="/profile"
+                className={`py-2 rounded-lg hover:underline ${
+                  pathname === "/profile"
+                }`}
+              >
+                Profile
+              </Link>
+              <Accordion className="ml-1" type="single" collapsible>
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>URL</AccordionTrigger>
+                  <AccordionContent>
+                    <Link
+                      href="/dashboard"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/dashboard"
+                      }`}
+                    >
+                      URL Table
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/qr"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/qr"
+                      }`}
+                    >
+                      Create URL
+                    </Link>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>VCard</AccordionTrigger>
+                  <AccordionContent>
+                    <Link
+                      href="/dashboardVcard"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/dashboard"
+                      }`}
+                    >
+                      VCard Table
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/vcard"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/qr"
+                      }`}
+                    >
+                      Create VCard
+                    </Link>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                  <AccordionTrigger>Event</AccordionTrigger>
+                  <AccordionContent>
+                    <Link
+                      href="/events"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/dashboard"
+                      }`}
+                    >
+                      Events Table
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/ticket"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/qr"
+                      }`}
+                    >
+                      Create Tickets
+                    </Link>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-4">
+                  <AccordionTrigger>Business Unit</AccordionTrigger>
+                  <AccordionContent>
+                    <Link
+                      href="/shop"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/dashboard"
+                      }`}
+                    >
+                      Business Unit Table
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/shop/products/datatable"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/shop/products/datatable"
+                      }`}
+                    >
+                      Items Table
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/shop/category"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/qr"
+                      }`}
+                    >
+                      Create Category
+                    </Link>
+                  </AccordionContent>
+                  <AccordionContent>
+                    <Link
+                      href="/shop/products"
+                      className={`py-2 px-3 rounded-lg hover:underline ${
+                        pathname === "/qr"
+                      }`}
+                    >
+                      Create Items
+                    </Link>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={`py-2 px-3 rounded-lg ${
+                  pathname === "/login"
+                    ? "bg-gray-200 dark:bg-gray-800"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-800"
+                }`}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className={`py-2 px-3 rounded-lg ${
+                  pathname === "/register"
+                    ? "bg-gray-200 dark:bg-gray-800"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-800"
+                }`}
+              >
+                Register
+              </Link>
+            </>
+          )}
+        </nav>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className="p-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
+                onClick={handleSignOut}
+              >
+                <PowerOff />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="flex justify-start items-start">Logout</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <div
+          className={`p-4 transition-opacity duration-300 ${
+            isVisible ? "opacity-100" : "opacity-0"
+          }`} // Hide page title when scrolling down
+        >
+          <h1 className="sm:ml-16 mt-16 sm:mt-16 text-3xl font-bold">
+            {pageTitle}
+          </h1>
+        </div>
+        <section className="p-4">
+          {pathname === "/all"}
+          {pathname === "/events"}
+          {pathname === "/dashboard"}
+          {pathname === "/ticket"}
+          {pathname === "/dashboardVcard"}
+          {pathname === "/profile"}
+          {pathname === "/login"}
+          {pathname === "/register"}
+          {pathname === "/"}
+        </section>
+      </main>
+    </div>
   );
 };
 
-export default Navbar;
+export default Sidebar;

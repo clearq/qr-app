@@ -38,8 +38,10 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { CategoryTable } from "@/components/categoryTable";
 import { ProductsTable } from "@/components/productsTable";
-import { Category } from "@/components/category";
-import { Product } from "@/components/product";
+import Category from "@/components/category";
+import Product from "@/components/product";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 interface DataTableProps {
   shopData: SHOP[];
@@ -60,8 +62,8 @@ const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
   </PaginationItem>
 );
 
-export const DataTable = ({
-  shopData: sData = [],
+const DataTable = ({
+  shopData: sData = [], // Default to an empty array if shopData is undefined
   refetchDataTable,
 }: DataTableProps) => {
   const [selectedShop, setSelectedShop] = useState<{
@@ -118,58 +120,41 @@ export const DataTable = ({
     }
   };
 
-  const fetchProductsByShopId = async (shopId: string) => {
-    try {
-      const response = await fetch(`/api/products?shopId=${shopId}`);
-      if (!response.ok) throw new Error("Failed to fetch products");
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      return [];
-    }
-  };
-
-  const downloadQRCodeZip = async (shopId: string) => {
-    try {
-      const zip = new JSZip();
-      const products = await fetchProductsByShopId(shopId);
-
-      if (products.length === 0) {
-        alert("No products found for this shop.");
-        return;
-      }
-
-      for (const product of products) {
-        const qrCodeDataUrl = await QRCode.toDataURL(product.id, {
-          width: 300,
-        });
-        const response = await fetch(qrCodeDataUrl);
-        const imgBlob = await response.blob();
-
-        zip.file(`${product.name || product.id}.png`, imgBlob);
-      }
-
-      const zipContent = await zip.generateAsync({ type: "blob" });
-      saveAs(zipContent, `shop-${shopId}-products.zip`);
-    } catch (error) {
-      console.error("Error during QR code generation or zip creation:", error);
-    }
-  };
-
   const handleRowClick = (shop: SHOP) => {
     setSelectedShop({ id: shop.id, title: shop.name });
   };
 
+  if (!isMounted) {
+    return (
+      <div className="w-full mt-52 h-full p-4 sm:pl-[260px]">
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
       {isMobile ? (
-        <div className="text-center text-sm py-4">
+        <div className="text-center mt-20 text-sm py-4">
           <p>This content is only visible on desktop or tablet.</p>
+          <p>You can still create items or categories.</p>
+          <div className="mt-4 space-x-2">
+            <Link href={"/shop/products"}>
+              <Button variant={"outline"}>Create Item</Button>
+            </Link>
+            <Link href={"/shop/category"}>
+              <Button>Create Category</Button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div>
-          <Table className="mb-5">
+          <Table className="mt-20">
             <TableHeader className="h-16">
               <TableRow>
                 <TableHead>ID</TableHead>
@@ -178,7 +163,7 @@ export const DataTable = ({
                 <TableHead>Categories</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>View</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Delete</TableHead>
                 <TableHead className="flex justify-end">
                   <Dialog>
                     <DialogTrigger asChild>
@@ -255,64 +240,10 @@ export const DataTable = ({
                       </Button>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  className="w-full"
-                                  variant={"ghost"}
-                                  onClick={(e: any) => {
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  <MdCategory />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <Category shopId={shop.id} />
-                              </DialogContent>
-                            </Dialog>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  className="w-full"
-                                  variant={"ghost"}
-                                  onClick={(e: any) => {
-                                    e.stopPropagation();
-                                  }}
-                                >
-                                  <FaProductHunt />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent>
-                                <Product shopId={shop.id} />
-                              </DialogContent>
-                            </Dialog>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Button
-                              onClick={() => downloadQRCodeZip(shop.id)}
-                              className="w-full"
-                              variant={"ghost"}
-                            >
-                              <MdDownload />
-                            </Button>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <DeleteButton
-                              id={shop.id}
-                              onDelete={() => deleteShop(shop.id)}
-                            />
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <DeleteButton
+                        id={shop.id}
+                        onDelete={() => deleteShop(shop.id)}
+                      />
                     </TableCell>
                   </TableRow>
                 ))
@@ -362,3 +293,5 @@ export const DataTable = ({
     </div>
   );
 };
+
+export default DataTable;

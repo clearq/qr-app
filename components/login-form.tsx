@@ -80,7 +80,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex mt-20 justify-center items-center">
       <Tabs defaultValue="account" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Account</TabsTrigger>

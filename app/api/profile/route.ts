@@ -1,3 +1,4 @@
+import { getImageUrl } from "@/actions/api";
 import { removeCustomer } from "@/actions/auth";
 import { auth } from "@/auth";
 import { userById } from "@/data/profile";
@@ -25,6 +26,12 @@ export async function GET() {
           vcard: true,
         },
       },
+      role: {
+        // Include the role relation
+        select: {
+          id: true, // Include roleId
+        },
+      },
     },
   });
 
@@ -32,7 +39,19 @@ export async function GET() {
     return NextResponse.json("User data not found!", { status: 404 });
   }
 
-  return NextResponse.json(userData, { status: 200 });
+  // Generate the full image URL if an image key exists
+  if (userData.image) {
+    const imageUrl = getImageUrl(userData.image, id, "profile");
+    userData.image = imageUrl;
+  }
+
+  // Add roleId to the response
+  const responseData = {
+    ...userData,
+    roleId: userData.role?.id, // Extract roleId from the role relation
+  };
+
+  return NextResponse.json(responseData, { status: 200 });
 }
 
 export async function PUT(req: NextRequest) {
@@ -45,7 +64,6 @@ export async function PUT(req: NextRequest) {
 
   try {
     const requestBody = await req.json();
-    console.log("Request Body:", requestBody);
 
     const {
       email,
@@ -59,6 +77,7 @@ export async function PUT(req: NextRequest) {
       country,
       city,
       zip,
+      roleId,
     } = requestBody;
 
     if (!email || !firstName || !lastName) {
@@ -68,10 +87,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-    const imageUrl = image;
-
+    // Update the user profile with the image key
     const updatedUser = await prisma.customer.update({
       where: { id },
       data: {
@@ -80,12 +96,13 @@ export async function PUT(req: NextRequest) {
         lastName: lastName,
         phone: phone,
         company: company,
-        image: imageUrl,
+        image: image, // Store the image key
         orgNumber: orgNumber,
         address: address,
         country: country,
         city: city,
         zip: zip,
+        roleId: roleId,
       },
     });
 

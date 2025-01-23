@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { products, shopId } = body;
 
+    // Validate required fields
     if (!shopId || !products || products.length === 0) {
       return NextResponse.json(
         { error: "Shop ID and products are required" },
@@ -14,13 +15,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // // Check for duplicates based on itemId
+    // const existingProducts = await prisma.product.findMany({
+    //   where: {
+    //     itemId: {
+    //       in: products.map((product: { itemId: any }) => product.itemId),
+    //     },
+    //   },
+    // });
+
+    // if (existingProducts.length > 0) {
+    //   return NextResponse.json(
+    //     { error: "One or more products already exist with the same itemId" },
+    //     { status: 400 }
+    //   );
+    // }
+
+    // Create multiple products
     const createdProducts = await prisma.product.createMany({
       data: products.map(
-        (product: { title: any; description: any; categoryId: any }) => ({
+        (product: {
+          title: any;
+          description: any;
+          categoryId: any;
+          itemId: any;
+        }) => ({
           title: product.title,
           description: product.description,
           categoryId: product.categoryId,
           shopId,
+          itemId: product.itemId, // Include itemId
         })
       ),
     });
@@ -35,19 +59,41 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET: Fetch all Products for a Category
+// GET: Fetch all Products for a Shop or Category
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const shopId = searchParams.get("shopId");
-
-  if (!shopId) {
-    return NextResponse.json({ error: "Shop ID is required" }, { status: 400 });
-  }
+  const categoryId = searchParams.get("categoryId");
 
   try {
-    const products = await prisma.product.findMany({
-      where: { shopId },
-    });
+    let products;
+    if (shopId) {
+      // Fetch products for a shop
+      products = await prisma.product.findMany({
+        where: { shopId },
+        include: {
+          category: true,
+          shop: true,
+        },
+      });
+    } else if (categoryId) {
+      // Fetch products for a category
+      products = await prisma.product.findMany({
+        where: { categoryId },
+        include: {
+          category: true,
+          shop: true,
+        },
+      });
+    } else {
+      // Fetch all products if no shopId or categoryId is provided
+      products = await prisma.product.findMany({
+        include: {
+          category: true,
+          shop: true,
+        },
+      });
+    }
 
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
@@ -64,6 +110,7 @@ export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const productId = searchParams.get("id");
 
+  // Validate product ID
   if (!productId) {
     return NextResponse.json(
       { error: "Product ID is required" },
@@ -72,6 +119,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
+    // Delete the product
     await prisma.product.delete({
       where: { id: productId },
     });
@@ -93,24 +141,40 @@ export async function DELETE(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, title, description } = body;
+    const { id, title, description, shopId, categoryId, itemId } = body;
 
-    if (!id || !title) {
+    // Validate required fields
+    if (!id || !title || !shopId || !categoryId) {
       return NextResponse.json(
-        { error: "Product ID and title are required" },
+        {
+          error: "Product ID, title, shop ID, and category ID are required",
+        },
         { status: 400 }
       );
     }
 
-    const product = await prisma.product.update({
+    // Check if the product exists
+    const existingProduct = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!existingProduct) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Update the product
+    const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
         title,
         description,
+        shopId,
+        categoryId,
+        itemId, // Include itemId
       },
     });
 
-    return NextResponse.json(product, { status: 200 });
+    return NextResponse.json(updatedProduct, { status: 200 });
   } catch (error) {
     console.error("Error updating product:", error);
     return NextResponse.json(

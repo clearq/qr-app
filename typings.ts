@@ -1,4 +1,4 @@
-import { Category, EventTable, Product, Shop } from "@prisma/client";
+import { Category, EventTable, Product, Role, Shop } from "@prisma/client";
 
 export interface ICommon {
   linkUrl: string;
@@ -56,6 +56,7 @@ export interface ICUSTOMER {
   password: string;
   company: string;
   image: string;
+  roleId: Role[];
 }
 
 export interface IVCARD {
@@ -131,14 +132,17 @@ export interface CATEGORY {
   id: string;
   name: string;
   shop: Shop;
-  shopId: String;
+  shopId: string;
   products: Product[];
 }
 
 export interface PRODUCT {
   id: string;
+  itemId: string; // Add this line for the itemId field
   title: string;
-  category: Category;
-  categoryId: string;
+  shop: Shop;
+  shopId: string;
   description: string;
+  category?: { name: string }; // Ensure category is included
+  categoryId: string;
 }
