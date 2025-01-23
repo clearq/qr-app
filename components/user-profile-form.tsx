@@ -18,27 +18,20 @@ import { Customer } from "@prisma/client";
 import { DeleteUser } from "./DeleteUser";
 import { ChangePasswordForm } from "./change-password-form";
 import { redirect } from "next/navigation";
-import {
-  uploadFile,
-  autoLoginToCDN,
-  getImageUrl,
-  getFile,
-} from "@/actions/api";
-import Image from "next/image";
+import { uploadFile, autoLoginToCDN, getImageUrl } from "@/actions/api";
 import { Icon } from "@iconify/react";
-import avatar0 from "@/public/image/dotted.png";
-import MediaPreview from '@/app/MediaPreview';
+import MediaPreview from "@/app/MediaPreview";
 
 interface Props {
   user: Customer;
 }
 
 export const EditProfileForm = ({ user: userData }: Props) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(userData.image);
+  const [logo, setLogo] = useState<string>(userData.image || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [retrievedFile, setRetrievedFile] = useState<string>("");
-  const [key, setKey] = useState('');
+  const [fileKey, setFileKey] = useState<string>("");
 
   const validation = useFormik({
     initialValues: {
@@ -113,45 +106,65 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       try {
         setUploading(true);
 
-        // Retrieve the token from sessionStorage instead of localStorage
+        // Retrieve the token from sessionStorage or auto-login to CDN
         const token =
           localStorage.getItem("cdnToken") || (await autoLoginToCDN());
 
+        // Upload the file to the CDN
         await uploadFile(key, file, token, userId, contentFolder);
 
-        // Generate full image URL
+        // Generate the full image URL
         const imageUrl = getImageUrl(key, userId, contentFolder);
-        console.log(imageUrl);
-        const response = await getFile(key, token, userId, contentFolder);
-        const fileUrl = URL.createObjectURL(response.data);
-        setRetrievedFile(fileUrl);
 
-        // Update the user profile
-        await fetch("/api/profile", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            image: key, // Pass the image key for URL generation in the backend
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            phone: userData.phone,
-            company: userData.company,
-            orgNumber: userData.orgNumber,
-            address: userData.address,
-            country: userData.country,
-            city: userData.city,
-            zip: userData.zip,
-          }),
-        });
+        if (imageUrl) {
+          // Set the retrieved file and key for preview
+          setRetrievedFile(imageUrl);
+          setFileKey(key);
 
-        setLogo(imageUrl);
-        toast({
-          title: "Profile image updated!",
-          description: "Your profile image has been updated successfully.",
-        });
+          // Update the user profile with the new image key
+          const response = await fetch("/api/profile", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              image: key, // Pass the image key for URL generation in the backend
+              email: userData.email,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              phone: userData.phone,
+              company: userData.company,
+              orgNumber: userData.orgNumber,
+              address: userData.address,
+              country: userData.country,
+              city: userData.city,
+              zip: userData.zip,
+            }),
+          });
+
+          if (response.ok) {
+            // Refresh the image URL after updating the profile
+            const updatedUser = await response.json();
+            const refreshedImageUrl = getImageUrl(
+              updatedUser.image,
+              userId,
+              contentFolder
+            );
+            if (refreshedImageUrl) {
+              setLogo(refreshedImageUrl);
+              setRetrievedFile(refreshedImageUrl);
+            }
+
+            toast({
+              title: "Profile image updated!",
+              description: "Your profile image has been updated successfully.",
+            });
+          } else {
+            throw new Error("Failed to update profile");
+          }
+        } else {
+          throw new Error("Failed to generate image URL.");
+        }
       } catch (error) {
         console.error("Error uploading profile image:", error);
         toast({
@@ -170,40 +183,24 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   }
 
   return (
-    <div className="container mx-auto">
-      <Card className="flex flex-col justify-center items-center">
-        <CardHeader>
-          <CardTitle>Edit your Profile</CardTitle>
-          <CardDescription>Update your profile here.</CardDescription>
-        </CardHeader>
-        {/* <Avatar className="flex flex-col w-[200px] h-[200px] justify-center items-center relative">
-          <AvatarImage
-            //@ts-ignore
-            src={logo ? logo.toString() : userData.image}
-            alt="User Image"
-          />
-          <AvatarFallback>
-            {userData.firstName[0]}
-            {userData.lastName[0]}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex items-center space-x-4 mt-4">
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-          />
-        </div> */}
+    <div className=" container">
+      <div className="mt-24 sm:ml-60 flex flex-col justify-center items-center">
+        <header>
+          <h1 className="mt-10 font-bold">Edit your Profile</h1>
+          <h2>Update your profile here.</h2>
+        </header>
         <div className="w-[124px] h-[124px] relative rounded-full">
-          {/* <Image
-            src={logo ? logo.toString() : userData.image || avatar0.src}
-            alt="Profile Image"
-            className="w-full h-full object-cover rounded-full"
-            width={300}
-            height={300}
-          /> */}
-          <MediaPreview retrievedFile={retrievedFile} fileKey={key}/>
+          {retrievedFile ? (
+            <MediaPreview retrievedFile={retrievedFile} fileKey={fileKey} />
+          ) : (
+            <Avatar className="w-[124px] h-[124px]">
+              <AvatarImage src={logo || undefined} alt="Profile Image" />
+              <AvatarFallback>
+                {userData.firstName[0]}
+                {userData.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+          )}
           <Button
             asChild
             size="icon"
@@ -330,7 +327,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             <Button type="submit" className="mt-[25px] mb-4 w-full">
               Save changes
             </Button>
-            <div className="mt-4 w-full"></div>
           </form>
           <CardTitle>Change password</CardTitle>
           <ChangePasswordForm
@@ -339,7 +335,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           />
           <DeleteUser user={userData} />
         </CardContent>
-      </Card>
+      </div>
     </div>
   );
 };

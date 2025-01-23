@@ -51,7 +51,7 @@ export default function Home() {
               <LottieAnimation />
             </div>
             <div className="text-left z-50">
-              <h1 className="mt-0 mb-5  text-start text-5xl font-bold">
+              <h1 className="mt-20 mb-5  text-start text-5xl font-bold">
                 QrGen
               </h1>
               <div className="mb-16 md:text-2xl text-lg w-[85%] ml- mr-9">
@@ -68,13 +68,31 @@ export default function Home() {
                   information and engage with your audience!
                 </p>
               </div>
-              {!authenticated && (
-                <Link href="/register">
-                  <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
-                    Register
-                  </Button>
-                </Link>
-              )}
+              <div className="space-x-6">
+                {authenticated ? (
+                  <Link href="/all">
+                    <Button
+                      variant={"outline"}
+                      className="font-bold py-2 px-4 rounded mt-4"
+                    >
+                      Home <span className="ml-2">→</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/register">
+                      <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                        Register
+                      </Button>
+                    </Link>
+                    <Link href="/login">
+                      <Button className="font-bold py-2 px-4 rounded mt-4">
+                        Login
+                      </Button>
+                    </Link>
+                  </>
+                )}
+              </div>
             </div>
           </>
         </div>

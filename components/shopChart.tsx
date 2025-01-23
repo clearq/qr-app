@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Card } from "./ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
-import { DataTable } from "@/app/(protected)/shop/data-table";
+import DataTable from "@/app/(protected)/shop/data-table";
 import { Shop } from "@prisma/client";
 
 export default function ShopChart() {

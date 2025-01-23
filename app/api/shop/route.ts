@@ -5,20 +5,50 @@ import { prisma } from "@/lib/db";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, address, description } = body;
+    const { name, address, description, customerId } = body;
 
-    if (!name) {
+    // Validate required fields
+    if (!name || !customerId) {
       return NextResponse.json(
-        { error: "Shop name is required" },
+        { error: "Shop name and customer ID are required" },
         { status: 400 }
       );
     }
 
+    // Check if the customer exists
+    const customer = await prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+
+    if (!customer) {
+      return NextResponse.json(
+        { error: "Customer not found" },
+        { status: 404 }
+      );
+    }
+
+    // Check if a shop with the same name and customerId already exists
+    const existingShop = await prisma.shop.findFirst({
+      where: {
+        name,
+        customerId,
+      },
+    });
+
+    if (existingShop) {
+      return NextResponse.json(
+        { error: "A shop with this name already exists for the customer" },
+        { status: 409 }
+      );
+    }
+
+    // Create the shop
     const shop = await prisma.shop.create({
       data: {
         name,
         address,
         description,
+        customerId,
       },
     });
 
@@ -35,13 +65,40 @@ export async function POST(req: NextRequest) {
 // GET: Fetch all Shops
 export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const customerId = searchParams.get("customerId");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+
+    // Fetch shops with optional customerId filter
     const shops = await prisma.shop.findMany({
+      where: customerId ? { customerId } : undefined, // Filter by customerId if provided
+      skip: (page - 1) * limit, // Pagination: skip
+      take: limit, // Pagination: limit
       include: {
-        categories: true, // Include categories relation
-        products: true, // Include products relation
+        customer: true,
+        categories: true,
+        products: true,
       },
     });
-    return NextResponse.json(shops, { status: 200 });
+
+    // Get total count for pagination
+    const totalShops = await prisma.shop.count({
+      where: customerId ? { customerId } : undefined,
+    });
+
+    return NextResponse.json(
+      {
+        data: shops,
+        pagination: {
+          page,
+          limit,
+          total: totalShops,
+          totalPages: Math.ceil(totalShops / limit),
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching shops:", error);
     return NextResponse.json(
@@ -61,6 +118,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
+    // Delete the shop and its related categories and products
     await prisma.shop.delete({
       where: { id: shopId },
     });

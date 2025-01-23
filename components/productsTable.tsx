@@ -31,6 +31,19 @@ interface ProductsTableProps {
   selectedShopId: string | null;
 }
 
+// Utility function to strip HTML tags
+const stripHtml = (html: string): string => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
+};
+
+// Utility function to truncate text
+const truncateText = (text: string, maxWords: number = 3): string => {
+  const words = text.split(" ").filter(Boolean);
+  if (words.length <= maxWords) return text;
+  return words.slice(0, maxWords).join(" ") + "...";
+};
+
 export function ProductsTable({ selectedShopId }: ProductsTableProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,7 +57,7 @@ export function ProductsTable({ selectedShopId }: ProductsTableProps) {
     if (!selectedShopId) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/products?shopId=${selectedShopId}`);
+      const response = await fetch(`/api/product/${selectedShopId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch products.");
       }
@@ -161,26 +174,31 @@ export function ProductsTable({ selectedShopId }: ProductsTableProps) {
         </TableHeader>
         <TableBody>
           {currentProducts.length > 0 ? (
-            currentProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <Checkbox
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => toggleSelectProduct(product.id)}
-                  />
-                </TableCell>
-                <TableCell>{product.title}</TableCell>
-                <TableCell>{product.description || "No description"}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    onClick={() => confirmDelete(product.id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))
+            currentProducts.map((product) => {
+              const plainTextDescription = stripHtml(product.description || "");
+              const truncatedDescription = truncateText(plainTextDescription);
+
+              return (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={() => toggleSelectProduct(product.id)}
+                    />
+                  </TableCell>
+                  <TableCell>{product.title}</TableCell>
+                  <TableCell>{truncatedDescription}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      onClick={() => confirmDelete(product.id)}
+                    >
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={4} className="text-center py-4">

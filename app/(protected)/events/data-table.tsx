@@ -162,7 +162,8 @@ export const DataTable = ({
   };
 
   return (
-    <div>
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
       {/* Mobile View Message */}
       {isMobile ? (
         <div className="text-center text-sm py-4">
@@ -171,7 +172,7 @@ export const DataTable = ({
       ) : (
         // Desktop & Tablet Content
         <div>
-          <Table className="mb-5">
+          <Table className="mt-20">
             <TableHeader className="h-16">
               <TableRow>
                 <TableHead>ID</TableHead>

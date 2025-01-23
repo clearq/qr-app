@@ -3,12 +3,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { IVCARD } from "@/typings";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "./ui/use-toast";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 import { Button } from "./ui/button";
 
@@ -28,7 +23,7 @@ interface Props {
 export const QrSingelComponent = ({ user }: Props) => {
   const params = useSearchParams();
   const router = useRouter();
-  
+
   const id = params.get("id");
   const [qrcodeData, setQrCodeData] = useState<IVCARD>();
   const { data: session } = useSession();
@@ -157,7 +152,7 @@ export const QrSingelComponent = ({ user }: Props) => {
   }
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
       {session ? (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Button
@@ -168,11 +163,11 @@ export const QrSingelComponent = ({ user }: Props) => {
             {"<-"}
           </Button>
           {user?.id === qrcodeData?.customerId && (
-            <Card className="flex flex-col items-center">
-              <CardHeader>
-                <CardTitle>QR Code</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
+            <div className="flex flex-col items-center">
+              <header>
+                <h1>QR Code</h1>
+              </header>
+              <div className="p-4">
                 <div
                   ref={qrRef}
                   className="flex flex-col items-center justify-center md:w-1/2 md:ml-52 md:mt-0"
@@ -196,8 +191,8 @@ export const QrSingelComponent = ({ user }: Props) => {
                     <Button onClick={copyUrlToClipboard}>Copy URL</Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
       ) : (

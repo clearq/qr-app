@@ -96,7 +96,8 @@ export const DataTable = ({
   };
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
+      {" "}
       <Table className="mb-5">
         <TableHeader className="h-16">
           <TableRow>
@@ -155,10 +156,7 @@ export const DataTable = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="flex flex-col justify-center items-center">
                         <DropdownMenuSeparator />
-                        <DeleteButton
-                          id={ticket.id}
-                          onDelete={handleDelete}
-                        />
+                        <DeleteButton id={ticket.id} onDelete={handleDelete} />
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -168,7 +166,6 @@ export const DataTable = ({
           )}
         </TableBody>
       </Table>
-
       <Pagination>
         <PaginationContent>
           {currentPage === 1 ? (

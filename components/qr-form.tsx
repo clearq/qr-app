@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef} from "react";
+import React, { useState, useRef } from "react";
 import QRCode from "qrcode.react";
 import { saveAs } from "file-saver";
 import { Input } from "@/components/ui/input";
@@ -8,17 +8,10 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList } from "./ui/breadcrumb";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IQR } from "@/typings";
-
-
 
 export const QrForm = () => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
@@ -27,8 +20,7 @@ export const QrForm = () => {
   const [qrcodeData, setQrCodeData] = useState<IQR>();
   const params = useSearchParams();
   const id = params.get("id");
-  const router = useRouter()
-
+  const router = useRouter();
 
   const validation = useFormik({
     initialValues: {
@@ -57,7 +49,7 @@ export const QrForm = () => {
               description: `${new Date().toLocaleDateString()}`,
             });
 
-            window.location.reload()
+            window.location.reload();
           } else {
             toast({
               variant: "destructive",
@@ -76,7 +68,6 @@ export const QrForm = () => {
         });
     },
   });
-  
 
   const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
     const reader = new FileReader();
@@ -166,76 +157,71 @@ export const QrForm = () => {
     }
   };
 
-
-
   return (
-    <div className="flex w-full flex-col">
-
-
-          <CardHeader>
-            <CardTitle className="text-6xl">URL</CardTitle>
-            <CardDescription>Create your Qr here</CardDescription>
-          </CardHeader>
-          <div className="flex flex-col md:flex-row w-full">
-            <form
-              onSubmit={validation.handleSubmit}
-              className="w-full  space-y-4"
+    <div className="w-full h-full p-4 sm:pl-[260px]">
+      {" "}
+      <CardHeader className="mt-5">
+        <CardDescription>Create your Qr here</CardDescription>
+      </CardHeader>
+      <div className="flex flex-col md:flex-row w-full">
+        <form onSubmit={validation.handleSubmit} className="w-full  space-y-4">
+          <div>
+            <Label htmlFor="url">URL</Label>
+            <Input
+              id="url"
+              type="text"
+              name="url"
+              placeholder="https://"
+              value={validation.values.url}
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              className="w-full"
+            />
+            {validation.touched.url && validation.errors.url && (
+              <div className="text-sm text-red-500">
+                {validation.errors.url}
+              </div>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="tag">Label</Label>
+            <Input
+              id="tag"
+              type="text"
+              name="tag"
+              placeholder="Label"
+              value={validation.values.tag}
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              className="w-full"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <label
+              htmlFor="logoType"
+              className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
             >
-              <div>
-                <Label htmlFor="url">URL</Label>
-                <Input
-                  id="url"
-                  type="text"
-                  name="url"
-                  placeholder="https://"
-                  value={validation.values.url}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  className="w-full"
-                />
-                {validation.touched.url && validation.errors.url && (
-                  <div className="text-sm text-red-500">{validation.errors.url}</div>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="tag">Label</Label>
-                <Input
-                  id="tag"
-                  type="text"
-                  name="tag"
-                  placeholder="Label"
-                  value={validation.values.tag}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex items-center space-x-4">
-                <label
-                  htmlFor="logoType"
-                  className="text-[15px] px-5 py-0.5 text-secondary cursor-pointer border rounded-[6px] bg-primary"
-                >
-                  Browse
-                </label>
-                <input
-                  type="file"
-                  id="logoType"
-                  accept="image/*"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleLogoUpload}
-                />
-                {logo && (
-                  <Button onClick={handleRemoveLogo} className="bg-red-500">
-                    Remove Logo
-                  </Button>
-                )}
-              </div>
-              <Button type="submit" className="w-full md:w-auto">
-                Save
+              Browse
+            </label>
+            <input
+              type="file"
+              id="logoType"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleLogoUpload}
+            />
+            {logo && (
+              <Button onClick={handleRemoveLogo} className="bg-red-500">
+                Remove Logo
               </Button>
-            </form>
-            {/* <div
+            )}
+          </div>
+          <Button type="submit" className="w-full md:w-auto">
+            Save
+          </Button>
+        </form>
+        {/* <div
               ref={qrRef}
               className="flex flex-col items-center justify-center md:w-1/2 md:ml-8 md:mr-8 mt-6"
             >
@@ -261,8 +247,7 @@ export const QrForm = () => {
                 </Button>
               </div>
             </div> */}
-          </div>
-        </div>
-
+      </div>
+    </div>
   );
 };

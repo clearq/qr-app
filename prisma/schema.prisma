@@ -29,6 +29,7 @@ model Customer {
   qr        Qr[]
   events    Events[]
   tickets   Ticket[]
+  Shop      Shop[]
 }
 
 model VCard {
@@ -129,6 +130,8 @@ model Shop {
   name        String // Name of the shop
   address     String? // Optional address of the shop
   description String? // Optional description of the shop
+  customer    Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade) // Shop belongs to a customer
+  customerId  String // Foreign key to Customer model
   categories  Category[] // Relation to categories
   products    Product[] // Relation to products
   createdAt   DateTime   @default(now())
@@ -147,12 +150,13 @@ model Category {
 
 model Product {
   id          String   @id @default(cuid())
+  itemId      String?  
   title       String // Title of the product
   shop        Shop     @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Break cascading path
   shopId      String // Foreign key to Shop model
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Allow cascading here
   categoryId  String // Foreign key to Category model
-  description String?
+  description String?  @db.NVarChar(MAX) // Use NVARCHAR(MAX) for long text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

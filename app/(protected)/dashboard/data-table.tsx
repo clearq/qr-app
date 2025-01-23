@@ -33,6 +33,7 @@ import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { QrForm } from "@/components/qr-form";
 import { VcardAnalys } from "@/components/vcardAnalys";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -114,8 +115,23 @@ export const DataTable: React.FC<DataTableProps> = ({
     }
   };
 
+  if (!isMounted) {
+    return (
+      <div className="w-full mt-52 h-full p-4 sm:pl-[260px]">
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+        <Skeleton className="h-10 w-full mb-4" /> {/* Loading skeleton */}
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
+      {/* Adjusted layout */}
+      <h1 className="text-3xl font-bold mb-6"></h1>
       <Table className="mb-5">
         <TableHeader className="h-16">
           <TableRow>
@@ -172,27 +188,25 @@ export const DataTable: React.FC<DataTableProps> = ({
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <div className="">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline">≡</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="flex flex-col justify-center items-center">
-                        <DropdownMenuSeparator />
-                        <Button
-                          className="w-full"
-                          onClick={() => handleAnalyticsOpen(qr)}
-                          variant="ghost"
-                        >
-                          <FaChartLine size={20} />
-                        </Button>
-                        <DropdownMenuSeparator />
-                        <EditButton qrData={qr} />
-                        <DropdownMenuSeparator />
-                        <DeleteButton id={qr.id} onDelete={handleDelete} />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">≡</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="flex flex-col justify-center items-center">
+                      <DropdownMenuSeparator />
+                      <Button
+                        className="w-full"
+                        onClick={() => handleAnalyticsOpen(qr)}
+                        variant="ghost"
+                      >
+                        <FaChartLine size={20} />
+                      </Button>
+                      <DropdownMenuSeparator />
+                      <EditButton qrData={qr} />
+                      <DropdownMenuSeparator />
+                      <DeleteButton id={qr.id} onDelete={handleDelete} />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))
@@ -234,20 +248,11 @@ export const DataTable: React.FC<DataTableProps> = ({
           )}
         </PaginationContent>
       </Pagination>
-
       {/* Dialog for displaying analytics */}
       {selectedQr && (
         <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
           <DialogContent>
-            {/* <h3 className="text-lg font-bold">Analytics for {selectedQr.tag}</h3>
-          {analyticsData ? (
-            <div>
-              <p>Visitors: {analyticsData.visitorCount ?? '0'}</p> 
-            </div>
-          ) : (
-            <p>Loading...</p>
-          )} */}
-            <VcardAnalys id={""} />
+            <VcardAnalys id={selectedQr.id} />
           </DialogContent>
         </Dialog>
       )}

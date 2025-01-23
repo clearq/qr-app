@@ -99,11 +99,12 @@ export const TicketComponent = ({
   });
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
+      {" "}
       <form
         onSubmit={validation.handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="w-full space-y-4"
+        className="mt-20 w-full space-y-4"
       >
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col space-y-1.5">
@@ -175,7 +176,6 @@ export const TicketComponent = ({
           <AddToGoogleWallet ticketId={""} />
         </div> */}
       </form>
-
       <Button
         className="mt-5"
         variant="outline"
