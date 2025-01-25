@@ -3,6 +3,8 @@ import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { getUserById } from "./data/auth";
+import { clearAuthCookies } from "@/actions/auth"; // Import the Server Action
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   pages: {
@@ -13,7 +15,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ account, user }) {
-      // control of google provider
+      // Control of Google provider
       return true;
     },
     async jwt({ token, user }) {
@@ -25,6 +27,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       token.email = existingUser.email;
       token.firstName = existingUser.firstName;
       token.picture = existingUser.image;
+      token.roleId = existingUser.roleId;
+      token.orgNumber = existingUser.orgNumber;
 
       return token;
     },
@@ -35,6 +39,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       return session;
+    },
+  },
+  events: {
+    async signOut(params) {
+      // Check if the params contain a token
+      if ("token" in params) {
+        const { token } = params;
+     
+
+        // Call the Server Action to clear cookies
+        await clearAuthCookies();
+      }
+      // Check if the params contain a session
+      else if ("session" in params) {
+        const { session } = params;
+
+        // Handle session-based cleanup if needed
+      } else {
+      }
     },
   },
 });

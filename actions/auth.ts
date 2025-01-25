@@ -1,11 +1,13 @@
 "use server";
 import { prisma } from "@/lib/db";
 import { hash } from "bcryptjs";
+import { cookies } from "next/headers";
 
 // Function to create a customer
 export const createCustomer = async (values: any) => {
   try {
-    const { email, firstName, lastName, password, company, orgNumber, roleId } = values;
+    const { email, firstName, lastName, password, company, orgNumber, roleId } =
+      values;
 
     // Check required fields
     if (!email || !firstName || !lastName || !password || !roleId) {
@@ -20,7 +22,9 @@ export const createCustomer = async (values: any) => {
 
     // Check for role 2 (company) specific fields
     if (roleId === "2" && (!company || !orgNumber)) {
-      return { message: "Company name and organization number are required for role 2" };
+      return {
+        message: "Company name and organization number are required for role 2",
+      };
     }
 
     // Check if user with the same email already exists
@@ -70,12 +74,12 @@ export const removeCustomer = async (id: string) => {
   try {
     if (!id) {
       return {
-        error: "Id is required!"
+        error: "Id is required!",
       };
     }
 
     await prisma.customer.delete({
-      where: { id }
+      where: { id },
     });
 
     return "Removed customer successfully";
@@ -85,4 +89,10 @@ export const removeCustomer = async (id: string) => {
       message: "Server error",
     };
   }
+};
+
+export const clearAuthCookies = async () => {
+  // Clear custom cookies
+  cookies().delete("custom-auth-token");
+  cookies().delete("another-custom-cookie");
 };

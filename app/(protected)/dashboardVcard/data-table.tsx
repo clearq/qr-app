@@ -137,21 +137,16 @@ export const DataTable = ({
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2 ml-2"
-                  >
-                    <MdAdd />
-                    <span className="hidden sm:inline">Add</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="overflow-y-auto w-[90%] h-[90%]">
-                  <Vcard />
-                </DialogContent>
-              </Dialog>
+            <TableHead className="flex justify-end">
+              <Link href={"/vcard"}>
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2 ml-2"
+                >
+                  <MdAdd />
+                  <span className="hidden sm:inline">Add Event</span>
+                </Button>
+              </Link>
             </TableHead>
           </TableRow>
         </TableHeader>

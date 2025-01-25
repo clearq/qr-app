@@ -15,9 +15,12 @@ interface VcardMonthlyCounts {
   };
 }
 
-export async function getMonthlyCounts() {
+export async function getMonthlyCounts(customerId: string) {
   const result = await prisma.scan.groupBy({
     by: ["scannedAt", "type"],
+    where: {
+      customerId, // Filter by customerId
+    },
     _count: {
       _all: true,
     },
@@ -66,9 +69,12 @@ export async function getMonthlyCounts() {
   }));
 }
 
-export async function getVcardMonthlyCounts() {
+export async function getVcardMonthlyCounts(customerId: string) {
   const result = await prisma.scan.groupBy({
     by: ["scannedAt", "type"],
+    where: {
+      customerId, // Filter by customerId
+    },
     _count: {
       _all: true,
     },

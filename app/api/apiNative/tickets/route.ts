@@ -52,11 +52,6 @@ export async function GET(req: NextRequest) {
   const eventsTitleId = searchParams.get("eventsTitleId");
   const customerId = searchParams.get("customerId");
 
-  console.log("Incoming Request Params:", {
-    qrNumber,
-    eventsTitleId,
-    customerId,
-  });
 
   if (!qrNumber || !eventsTitleId || !customerId) {
     return NextResponse.json(
@@ -75,14 +70,12 @@ export async function GET(req: NextRequest) {
     });
 
     if (!ticket) {
-      console.log("Ticket not found or validation failed.");
       return NextResponse.json(
         { error: "Ticket validation failed. Invalid or not found." },
         { status: 404 }
       );
     }
 
-    console.log("Ticket validated successfully:", ticket);
     return NextResponse.json({ success: "Ticket is valid" }, { status: 200 });
   } catch (error) {
     console.error("Error validating ticket:", error);

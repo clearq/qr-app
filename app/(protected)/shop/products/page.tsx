@@ -14,7 +14,6 @@ export default function ProductsPage() {
         const response = await fetch("/api/shop");
         if (!response.ok) throw new Error("Failed to fetch shops");
         const data = await response.json();
-        console.log("API Response:", data);
 
         if (Array.isArray(data.data) && data.data.length > 0) {
           setShopId(data.data[0].id);

@@ -69,18 +69,15 @@ export function RegisterForm() {
         roleId,
       });
 
-      // Check the response for success or error
       if (response?.customer) {
         toast({
           title: "Success",
-          description: response.message,
+          description: response.message || "Registered successfully",
         });
-        setError("");
+        setError(""); // Clear any previous errors
 
-        // Prepare email data
+        // Send email
         const emailData = { email, firstName, lastName };
-
-        // Call the API route to send the email
         const emailResponse = await fetch("/api/sendEmail", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -102,6 +99,10 @@ export function RegisterForm() {
     } catch (error) {
       console.error("Error during registration:", error);
       setError("Something went wrong");
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+      });
     }
   };
 
@@ -140,30 +141,38 @@ export function RegisterForm() {
       roleId: yup.string().required(),
     }),
     onSubmit: async (values) => {
-      // Determine roleId based on presence of company and orgNumber
       const roleId = values.company && values.orgNumber ? "2" : "1";
 
-      // Create customer with the roleId
-      await createCustomer({ ...values, roleId }).then((response) => {
+      try {
+        const response = await createCustomer({ ...values, roleId });
+
         if (response?.customer) {
           toast({
             title: "Success",
-            description: "Registered successfully",
+            description: response.message || "Registered successfully",
           });
+          setError(""); // Clear any previous errors
           router.replace("/login");
         } else {
+          setError(response?.message || "Something went wrong");
           toast({
             title: "Error",
-            description: response?.message,
+            description: response?.message || "Something went wrong",
           });
-          setError(response?.message);
         }
-      });
+      } catch (error) {
+        console.error("Error during registration:", error);
+        setError("Something went wrong");
+        toast({
+          title: "Error",
+          description: "Something went wrong",
+        });
+      }
     },
   });
 
   return (
-    <div className="flex mt-20 justify-center items-center">
+    <div className="flex mt-20 sm:mt-0 justify-center items-center">
       <Tabs
         defaultValue="account"
         className="w-[400px]"

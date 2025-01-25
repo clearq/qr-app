@@ -75,7 +75,8 @@ export const ShopComponent = ({
   });
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
+      {" "}
       <CardHeader>
         <CardTitle className="text-6xl">New Unit</CardTitle>
         <CardDescription>Add a new business unit here</CardDescription>

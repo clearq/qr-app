@@ -24,12 +24,14 @@ export async function GET() {
         select: {
           qr: true,
           vcard: true,
+          tickets: true,
+          shop: true,
+          events: true,
         },
       },
       role: {
-        // Include the role relation
         select: {
-          id: true, // Include roleId
+          id: true,
         },
       },
     },
@@ -45,10 +47,11 @@ export async function GET() {
     userData.image = imageUrl;
   }
 
-  // Add roleId to the response
+  // Add roleId and customerId to the response
   const responseData = {
     ...userData,
-    roleId: userData.role?.id, // Extract roleId from the role relation
+    roleId: userData.role?.id,
+    customerId: userData.id, // Include customerId in the response
   };
 
   return NextResponse.json(responseData, { status: 200 });
@@ -87,7 +90,10 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Update the user profile with the image key
+    // Determine the roleId based on whether orgNumber is provided
+    const newRoleId = orgNumber ? "2" : "1"; // Assuming "2" is the roleId for companies and "1" for individual accounts
+
+    // Update the user profile with the image key and the new roleId
     const updatedUser = await prisma.customer.update({
       where: { id },
       data: {
@@ -102,7 +108,7 @@ export async function PUT(req: NextRequest) {
         country: country,
         city: city,
         zip: zip,
-        roleId: roleId,
+        roleId: newRoleId, // Update the roleId based on the presence of orgNumber
       },
     });
 

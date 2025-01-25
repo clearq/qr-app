@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import logoImage from "../public/image/qrLogo.png"; // Import the logo image
 import Link from "next/link";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,6 +40,13 @@ export default async function RootLayout({ children }: Props) {
   const session = await auth();
   return (
     <html lang="en">
+      <head>
+        {/* Add the viewport meta tag here */}
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </head>
       <body className={cn(inter.className, "flex flex-col min-h-screen")}>
         <ThemeProvider
           attribute="class"
@@ -48,20 +56,22 @@ export default async function RootLayout({ children }: Props) {
         >
           <SessionProvider session={session}>
             {/* Header with Logo */}
+            <Link className="p-4 absolute" href="/">
+              <Image
+                alt="logo"
+                src={logoImage}
+                className="w-[50px] h-auto"
+                priority // Ensures the logo loads quickly
+              />
+            </Link>
 
             {/* Main Content */}
             <div className="flex-1">
-              <Link className="p-4 absolute" href="/">
-                <Image
-                  alt="logo"
-                  src={logoImage}
-                  className="w-[50px] h-auto"
-                  priority // Ensures the logo loads quickly
-                />
-              </Link>
-              <Sidebar user={session?.user} />
-              <Toaster />
-              {children}
+              <LanguageProvider>
+                <Sidebar user={session?.user} />
+                <Toaster />
+                {children}
+              </LanguageProvider>
             </div>
 
             {/* Footer at the bottom of the page */}

@@ -35,6 +35,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "./ui/chart";
+import { User } from "lucide-react";
 
 interface AllFormProps {
   id: string; // Add id as a prop
@@ -58,15 +59,24 @@ export default function AllForm({ id }: AllFormProps) {
         const userData = await userRes.json();
         setUserData(userData);
 
-        // Fetch product and ticket statistics
-        const statsRes = await fetch("/api/scans");
+        // Ensure customerId is available
+        if (!userData.customerId) {
+          throw new Error("Customer ID not found in user data");
+        }
+
+        // Fetch product and ticket statistics for the logged-in user
+        const statsRes = await fetch(
+          `/api/scans?customerId=${userData.customerId}`
+        );
         if (!statsRes.ok) throw new Error("Failed to fetch statistics");
         const statsData = await statsRes.json();
         setShopStats(statsData.shopStats);
         setEventStats(statsData.eventStats);
 
-        // Fetch all analytics data (URL, VCard, Products, Tickets)
-        const analyticsRes = await fetch("/api/scans");
+        // Fetch all analytics data (URL, VCard, Products, Tickets) for the logged-in user
+        const analyticsRes = await fetch(
+          `/api/scans?customerId=${userData.customerId}`
+        );
         if (!analyticsRes.ok) throw new Error("Failed to fetch analytics data");
         const analyticsData = await analyticsRes.json();
         setChartData(analyticsData.monthlyCounts); // Set the chart data
@@ -105,16 +115,17 @@ export default function AllForm({ id }: AllFormProps) {
     },
     product: {
       label: "Products",
-      color: "#787878", // Pink
+      color: "hsl(var(--chart-1))", // Pink
     },
     ticket: {
       label: "Tickets",
-      color: "#36A2EB", // Light Blue
+      color: "hsl(var(--chart-4))", // Light Blue
     },
   };
 
   return (
     <div className="flex flex-col mt-16 w-full h-full p-4 sm:pl-[260px]">
+      <CardTitle className="text-2xl">Overview</CardTitle>
       <main className="mt-24 flex flex-wrap items-start gap-4">
         {userData ? (
           <>
@@ -168,8 +179,17 @@ export default function AllForm({ id }: AllFormProps) {
                   }
                 </CardDescription>
               </CardHeader>
-              <CardFooter>
-                <Button onClick={handleProfile}>View Your Profile</Button>
+              <CardFooter className=" flex justify-end">
+                {" "}
+                {/* Align the icon to the right */}
+                <Button
+                  onClick={handleProfile}
+                  variant="ghost" // Use a ghost variant for a minimal look
+                  size="icon" // Make the button circular and icon-sized
+                  className="rounded-full" // Ensure the button is circular
+                >
+                  <User className="h-5 w-5" /> {/* Use the User icon */}
+                </Button>
               </CardFooter>
             </Card>
 

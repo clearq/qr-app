@@ -7,8 +7,14 @@ import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
 import { format, addDays } from "date-fns";
-import { DateRange } from "react-day-picker";
-// import AddToGoogleWallet from "./addToGoogleWallet";
+import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"; // Import the Select components
 
 interface Event {
   id: string;
@@ -23,6 +29,7 @@ export const TicketComponent = ({
   const today = new Date();
   const [events, setEvents] = useState<Event[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -78,7 +85,7 @@ export const TicketComponent = ({
               title: `Tickets generated successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-            window.location.reload();
+            router.replace("/events");
           } else {
             toast({
               variant: "destructive",
@@ -100,7 +107,6 @@ export const TicketComponent = ({
 
   return (
     <div className="w-full h-full p-4 sm:pl-[260px]">
-      {" "}
       <form
         onSubmit={validation.handleSubmit}
         onClick={(e) => e.stopPropagation()}
@@ -108,14 +114,26 @@ export const TicketComponent = ({
       >
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="eventTitle">Selected Event</Label>
-            <Input
-              id="eventTitle"
-              value={selectedEvent?.title || ""}
-              disabled
-              className="w-full"
-            />
-            {validation.errors.eventId && (
+            <Label htmlFor="eventId">Select Event</Label>
+            <Select
+              value={validation.values.eventId}
+              onValueChange={(value) =>
+                validation.setFieldValue("eventId", value)
+              }
+              disabled={validation.isSubmitting}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select an event" />
+              </SelectTrigger>
+              <SelectContent>
+                {events.map((event) => (
+                  <SelectItem key={event.id} value={event.id}>
+                    {event.eventsTitle}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {validation.touched.eventId && validation.errors.eventId && (
               <div className="text-sm text-red-500">
                 {validation.errors.eventId}
               </div>
@@ -172,9 +190,6 @@ export const TicketComponent = ({
             Generate Tickets
           </Button>
         </div>
-        {/* <div>
-          <AddToGoogleWallet ticketId={""} />
-        </div> */}
       </form>
       <Button
         className="mt-5"

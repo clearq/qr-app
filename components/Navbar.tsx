@@ -14,7 +14,21 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { PowerOff, Menu } from "lucide-react"; // Import Menu icon
+import {
+  PowerOff,
+  Menu,
+  Home,
+  User,
+  Link as LinkIcon,
+  Contact,
+  Calendar,
+  Ticket,
+  Building,
+  FolderPlus,
+  List,
+  Plus,
+  Folder,
+} from "lucide-react"; // Import icons
 import { Button } from "./ui/button";
 import {
   Tooltip,
@@ -23,6 +37,22 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { ICUSTOMER } from "@/typings";
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { toast } from "./ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { useLanguage } from "@/context/LanguageContext";
+
+export const ROLES = {
+  ACCOUNT: "1",
+  COMPANY: "2",
+};
 
 interface Props {
   user?: ExtendedUser;
@@ -35,23 +65,47 @@ export const Sidebar = ({ user: userData }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const { translations, setLanguage, language } = useLanguage();
 
   const handleSignOut = async () => {
-    await logOut();
-    router.replace("/");
+    toast({
+      title: `Do you want to signout?`,
+      description: `Please confirm`,
+      action: (
+        <button
+          onClick={async () => {
+            await logOut();
+            window.location.replace("/");
+          }}
+          className="bg-red-500 text-white px-4 py-2 rounded-md"
+        >
+          Confirm Logout
+        </button>
+      ),
+    });
   };
+
+  const validation = useFormik({
+    initialValues: {
+      roleId: userData?.roleId || "",
+    },
+    validationSchema: yup.object({
+      roleId: yup.string().required("Role ID is required"),
+    }),
+    onSubmit: () => {},
+  });
 
   React.useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("/api/profile");
       const data = await res.json();
       setUser(data);
+      validation.setValues({ roleId: data.roleId });
     };
 
     fetchData();
   }, []);
 
-  // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -62,36 +116,28 @@ export const Sidebar = ({ user: userData }: Props) => {
       }
     };
 
-    // Add event listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // Hide burger menu and page title on scroll
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       if (scrollY > 50) {
-        setIsVisible(false); // Hide when scrolled down
+        setIsVisible(false);
       } else {
-        setIsVisible(true); // Show when at the top
+        setIsVisible(true);
       }
     };
 
-    // Add scroll event listener
     window.addEventListener("scroll", handleScroll);
-
-    // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  // Map route to header title
   const pageTitles: Record<string, string> = {
     "/all": "Overview",
     "/events": "Events",
@@ -105,6 +151,8 @@ export const Sidebar = ({ user: userData }: Props) => {
     "/login": "Login",
     "/register": "Register",
     "/qr": "Create URL",
+    "/shop/products": "Create Item",
+    "/shop/category": "Create Category",
   };
   const pageTitle = pageTitles[pathname] || "";
 
@@ -112,7 +160,9 @@ export const Sidebar = ({ user: userData }: Props) => {
     pathname === "/" ||
     pathname === "/login" ||
     pathname === "/register" ||
-    pathname === "/shop/products/details"
+    pathname === "/shop/products/details" ||
+    pathname === "/reset-password" ||
+    pathname === "/forgot-password"
   ) {
     return (
       <main className="flex-1 overflow-auto">
@@ -125,15 +175,15 @@ export const Sidebar = ({ user: userData }: Props) => {
   }
 
   return (
-    <div className="flex h-screen z-50 fixed">
+    <div className="flex z-50 h-screen fixed">
       {/* Mobile Menu Button */}
       <button
         className={`fixed top-4 right-4 z-50 p-2 lg:hidden transition-opacity duration-300 ${
           isMobileMenuOpen || !isVisible ? "opacity-0" : "opacity-100"
-        }`} // Hide button when sidebar is open or when scrolling down
+        }`}
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       >
-        <Menu className="w-6 h-6 sm:w-0 sm:h-0" /> {/* Hamburger icon */}
+        <Menu className="w-6 h-6 sm:w-0 sm:h-0" />
       </button>
 
       {/* Overlay */}
@@ -151,10 +201,10 @@ export const Sidebar = ({ user: userData }: Props) => {
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
-        }`} // Hide sidebar on mobile by default
+        }`}
       >
         <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
-          <Link href="/">
+          <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
             <Image alt="logo" src={logoImage} className="w-[50px] h-auto" />
           </Link>
           <ModeToggle />
@@ -164,201 +214,274 @@ export const Sidebar = ({ user: userData }: Props) => {
             <>
               <Link
                 href="/all"
-                className={`py-2 flex-row rounded-lg hover:underline ${
-                  pathname === "/all"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-2 flex items-center space-x-2 rounded-lg hover:underline ${
+                  pathname === "/all" ? "font-bold" : ""
                 }`}
               >
-                Overview
+                <Home className="w-5 h-5" />
+                <span>Overview</span>
               </Link>
               <Link
                 href="/profile"
-                className={`py-2 rounded-lg hover:underline ${
-                  pathname === "/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-2 flex items-center space-x-2 mt-2 rounded-lg hover:underline ${
+                  pathname === "/profile" ? "font-bold" : ""
                 }`}
               >
-                Profile
+                <User className="w-5 h-5" />
+                <span>Profile</span>
               </Link>
               <Accordion className="ml-1" type="single" collapsible>
                 <AccordionItem value="item-1">
-                  <AccordionTrigger>URL</AccordionTrigger>
+                  <AccordionTrigger className="flex items-center space-x-2">
+                    <LinkIcon className="w-5 h-5" />
+                    <span>Link</span>
+                  </AccordionTrigger>
                   <AccordionContent>
                     <Link
-                      href="/dashboard"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/dashboard"
+                      href="/qr"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/qr" ? "font-bold" : ""
                       }`}
                     >
-                      URL Table
+                      <Plus className="w-5 h-5" />
+                      <span>Create Link</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
                     <Link
-                      href="/qr"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/qr"
+                      href="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/dashboard" ? "font-bold" : ""
                       }`}
                     >
-                      Create URL
+                      <List className="w-5 h-5" />
+                      <span>Link Table</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
-                  <AccordionTrigger>VCard</AccordionTrigger>
+                  <AccordionTrigger className="flex items-center space-x-2">
+                    <Contact className="w-5 h-5" />
+                    <span>VCard</span>
+                  </AccordionTrigger>
                   <AccordionContent>
                     <Link
-                      href="/dashboardVcard"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/dashboard"
+                      href="/vcard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/qr" ? "font-bold" : ""
                       }`}
                     >
-                      VCard Table
+                      <Plus className="w-5 h-5" />
+                      <span>Create VCard</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
                     <Link
-                      href="/vcard"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/qr"
+                      href="/dashboardVcard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/dashboard" ? "font-bold" : ""
                       }`}
                     >
-                      Create VCard
+                      <List className="w-5 h-5" />
+                      <span>VCard Table</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
-                  <AccordionTrigger>Event</AccordionTrigger>
+                  <AccordionTrigger className="flex items-center space-x-2">
+                    <Calendar className="w-5 h-5" />
+                    <span>Event</span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Link
+                      href="/events/createEvent"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/events/createEvent" ? "font-bold" : ""
+                      }`}
+                    >
+                      <Plus className="w-5 h-5" />
+                      <span>Create Event</span>
+                    </Link>
+                  </AccordionContent>
                   <AccordionContent>
                     <Link
                       href="/events"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/dashboard" ? "font-bold" : ""
                       }`}
                     >
-                      Events Table
+                      <List className="w-5 h-5" />
+                      <span>Events Table</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
                     <Link
                       href="/ticket"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/qr"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                        pathname === "/ticket" ? "font-bold" : ""
                       }`}
                     >
-                      Create Tickets
+                      <Ticket className="w-5 h-5" />
+                      <span>Create Tickets</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
-
-                <AccordionItem value="item-4">
-                  <AccordionTrigger>Business Unit</AccordionTrigger>
-                  <AccordionContent>
-                    <Link
-                      href="/shop"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/dashboard"
-                      }`}
-                    >
-                      Business Unit Table
-                    </Link>
-                  </AccordionContent>
-                  <AccordionContent>
-                    <Link
-                      href="/shop/products/datatable"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/shop/products/datatable"
-                      }`}
-                    >
-                      Items Table
-                    </Link>
-                  </AccordionContent>
-                  <AccordionContent>
-                    <Link
-                      href="/shop/category"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/qr"
-                      }`}
-                    >
-                      Create Category
-                    </Link>
-                  </AccordionContent>
-                  <AccordionContent>
-                    <Link
-                      href="/shop/products"
-                      className={`py-2 px-3 rounded-lg hover:underline ${
-                        pathname === "/qr"
-                      }`}
-                    >
-                      Create Items
-                    </Link>
-                  </AccordionContent>
-                </AccordionItem>
+                {validation.values.roleId === ROLES.COMPANY && (
+                  <AccordionItem value="item-4">
+                    <AccordionTrigger className="flex items-center space-x-2">
+                      <Building className="w-5 h-5" />
+                      <span>Business Unit</span>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <Link
+                        href="/shop/createShop"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                          pathname === "/shop/createShop" ? "font-bold" : ""
+                        }`}
+                      >
+                        <Plus className="w-5 h-5" />
+                        <span>Create Unit</span>
+                      </Link>
+                    </AccordionContent>
+                    <AccordionContent>
+                      <Link
+                        href="/shop"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                          pathname === "/shop" ? "font-bold" : ""
+                        }`}
+                      >
+                        <List className="w-5 h-5" />
+                        <span>Business Unit Table</span>
+                      </Link>
+                    </AccordionContent>
+                    <AccordionContent>
+                      <Link
+                        href="/shop/category"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                          pathname === "/shop/category" ? "font-bold" : ""
+                        }`}
+                      >
+                        <FolderPlus className="w-5 h-5" />
+                        <span>Create Category</span>
+                      </Link>
+                    </AccordionContent>
+                    <AccordionContent>
+                      <Link
+                        href="/shop/products"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                          pathname === "/shop/products" ? "font-bold" : ""
+                        }`}
+                      >
+                        <Plus className="w-5 h-5" />
+                        <span>Create Items</span>
+                      </Link>
+                    </AccordionContent>
+                    <AccordionContent>
+                      <Link
+                        href="/shop/products/datatable"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`py-2 px-3 flex items-center space-x-2 rounded-lg hover:underline ${
+                          pathname === "/shop/products/datatable"
+                            ? "font-bold"
+                            : ""
+                        }`}
+                      >
+                        <List className="w-5 h-5" />
+                        <span>Items Table</span>
+                      </Link>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
               </Accordion>
             </>
           ) : (
             <>
               <Link
                 href="/login"
-                className={`py-2 px-3 rounded-lg ${
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-2 px-3 flex items-center space-x-2 rounded-lg ${
                   pathname === "/login"
                     ? "bg-gray-200 dark:bg-gray-800"
                     : "hover:bg-gray-200 dark:hover:bg-gray-800"
                 }`}
               >
-                Login
+                <Home className="w-5 h-5" />
+                <span>Login</span>
               </Link>
               <Link
                 href="/register"
-                className={`py-2 px-3 rounded-lg ${
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-2 px-3 flex items-center space-x-2 rounded-lg ${
                   pathname === "/register"
                     ? "bg-gray-200 dark:bg-gray-800"
                     : "hover:bg-gray-200 dark:hover:bg-gray-800"
                 }`}
               >
-                Register
+                <User className="w-5 h-5" />
+                <span>Register</span>
               </Link>
             </>
           )}
         </nav>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                className="p-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
-                onClick={handleSignOut}
-              >
-                <PowerOff />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="flex justify-start items-start">Logout</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex flex-row mr-1 space-x-10">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="p-2 mb-16 flex flex-row space-x-2 sm:mb-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
+                  onClick={handleSignOut}
+                >
+                  <PowerOff className="w-5 h-5" />
+                  <p className="flex justify-start items-start">Logout</p>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="flex justify-start items-start">Logout</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* <Select
+            value={language}
+            onValueChange={(value) => setLanguage(value)}
+          >
+            <SelectTrigger className=" p-2 border rounded-md">
+              <SelectValue placeholder="Language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="sv">Sv</SelectItem>
+              <SelectItem value="en">En</SelectItem>
+              <SelectItem value="ar">Ar</SelectItem>
+            </SelectContent>
+          </Select> */}
+        </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div
-          className={`p-4 transition-opacity duration-300 ${
-            isVisible ? "opacity-100" : "opacity-0"
-          }`} // Hide page title when scrolling down
-        >
-          <h1 className="sm:ml-16 mt-16 sm:mt-16 text-3xl font-bold">
-            {pageTitle}
-          </h1>
-        </div>
-        <section className="p-4">
-          {pathname === "/all"}
-          {pathname === "/events"}
-          {pathname === "/dashboard"}
-          {pathname === "/ticket"}
-          {pathname === "/dashboardVcard"}
-          {pathname === "/profile"}
-          {pathname === "/login"}
-          {pathname === "/register"}
-          {pathname === "/"}
-        </section>
-      </main>
+      <section className="p-4">
+        {pathname === "/all"}
+        {pathname === "/events"}
+        {pathname === "/dashboard"}
+        {pathname === "/ticket"}
+        {pathname === "/dashboardVcard"}
+        {pathname === "/profile"}
+        {pathname === "/login"}
+        {pathname === "/register"}
+        {pathname === "/"}
+      </section>
     </div>
   );
 };

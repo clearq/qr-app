@@ -37,6 +37,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { EventsComponent } from "@/components/events";
 import { EventsTable } from "@/components/eventsTable";
+import Link from "next/link";
 
 interface Ticket {
   id: string;
@@ -183,20 +184,15 @@ export const DataTable = ({
                 <TableHead>View</TableHead>
                 <TableHead>Action</TableHead>
                 <TableHead className="flex justify-end">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="flex items-center space-x-2 ml-2"
-                      >
-                        <MdAdd />
-                        <span className="hidden sm:inline">Add Event</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="overflow-y-auto w-full md:w-[700px] max-h-[90vh] p-6">
-                      <EventsComponent />
-                    </DialogContent>
-                  </Dialog>
+                  <Link href={"/events/createEvent"}>
+                    <Button
+                      variant="outline"
+                      className="flex items-center space-x-2 ml-2"
+                    >
+                      <MdAdd />
+                      <span className="hidden sm:inline">Add Event</span>
+                    </Button>
+                  </Link>
                 </TableHead>
               </TableRow>
             </TableHeader>

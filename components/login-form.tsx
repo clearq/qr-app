@@ -80,7 +80,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex mt-20 justify-center items-center">
+    <div className="flex mt-20 sm:mt-5 justify-center items-center">
       <Tabs defaultValue="account" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="account">Account</TabsTrigger>
@@ -120,6 +120,9 @@ export function LoginForm() {
                   {error && error}
                 </p>
               </form>
+              <Link href="/forgot-password" className="text-sm hover:underline">
+                Forgot Password?
+              </Link>
               <div className="text-center text-gray-500 text-[20px]">
                 - OR -
               </div>
@@ -168,6 +171,9 @@ export function LoginForm() {
                   {error && error}
                 </p>
               </form>
+              <Link href="/forgot-password" className="text-sm hover:underline">
+                Forgot Password?
+              </Link>
               <div className="text-center text-gray-500 text-[20px]">
                 - OR -
               </div>

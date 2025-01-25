@@ -1,6 +1,6 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Button } from './ui/button';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Button } from "./ui/button";
 
 interface CookieConsent {
   accepted: boolean;
@@ -8,8 +8,8 @@ interface CookieConsent {
   expiryTime?: number;
 }
 
-const COOKIE_NAME = 'cookieConsent';
-const COOKIE_EXPIRY_MINUTES = 30; // Set to 24 hours
+const COOKIE_NAME = "cookieConsent";
+const COOKIE_EXPIRY_MINUTES = 1440; // Set to 24 hours
 
 const CookieConsentBanner: React.FC = () => {
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -27,11 +27,14 @@ const CookieConsentBanner: React.FC = () => {
   };
 
   const setCookie = (value: Partial<CookieConsent>) => {
-    localStorage.setItem(COOKIE_NAME, JSON.stringify({
-      ...getStoredCookie(),
-      ...value,
-      expiryTime: new Date().getTime() + COOKIE_EXPIRY_MINUTES * 60 * 1000,
-    }));
+    localStorage.setItem(
+      COOKIE_NAME,
+      JSON.stringify({
+        ...getStoredCookie(),
+        ...value,
+        expiryTime: new Date().getTime() + COOKIE_EXPIRY_MINUTES * 60 * 1000,
+      })
+    );
   };
 
   const getStoredCookie = (): CookieConsent => {
@@ -65,8 +68,12 @@ const CookieConsentBanner: React.FC = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gray-100 text-black p-4 text-center">
       <p>
-        This website uses <span className='ml-0.5 font-bold mr-0.5 hover:text-cyan-700'><a href="/cookiespolicy">cookies</a></span> to ensure you get the best experience on our website.
-        By continuing to use our site, you accept our use of cookies.
+        This website uses{" "}
+        <span className="ml-0.5 font-bold mr-0.5 hover:text-cyan-700">
+          <a href="/cookiespolicy">cookies</a>
+        </span>{" "}
+        to ensure you get the best experience on our website. By continuing to
+        use our site, you accept our use of cookies.
       </p>
       <Button
         className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-2"

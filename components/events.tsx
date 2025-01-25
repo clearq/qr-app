@@ -59,7 +59,8 @@ export const EventsComponent = ({
   });
 
   return (
-    <div>
+    <div className="w-full h-full p-4 sm:pl-[260px]">
+      {" "}
       <CardHeader>
         <CardTitle className="text-6xl">New Event</CardTitle>
         <CardDescription>Add your events here</CardDescription>
