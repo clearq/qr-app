@@ -51,7 +51,6 @@ export function TicketsTable({ selectedEventId }: TicketsTableProps) {
         `/api/downloadTicket?eventId=${selectedEventId}`
       );
       const tickets: Ticket[] = await response.json();
-      console.log(tickets);
       setTickets(tickets);
     } catch (error) {
       toast({

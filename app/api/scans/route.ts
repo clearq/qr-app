@@ -174,22 +174,26 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    // Fetch monthly counts along with detailed data for analytics
-    const monthlyCounts = await getMonthlyCounts();
-    const vCardmonthlyCounts = await getVcardMonthlyCounts();
-    const qrData = await prisma.qr.findMany({ include: { customer: true } });
-    const vCardData = await prisma.vCard.findMany({
-      include: { customer: true },
-    });
     const url = new URL(req.url);
-    const id = url.searchParams.get("id");
+    const customerId = url.searchParams.get("customerId");
 
-    // Fetch shop statistics
-    const shopStats = await prisma.shop.findMany();
+    if (!customerId) {
+      return NextResponse.json(
+        { error: "Customer ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Fetch shop statistics filtered by customerId
+    const shopStats = await prisma.shop.findMany({
+      where: { customerId },
+    });
     const totalShops = shopStats.length;
 
-    // Fetch events statistics
-    const eventStats = await prisma.events.findMany();
+    // Fetch events statistics filtered by customerId
+    const eventStats = await prisma.events.findMany({
+      where: { customerId },
+    });
     const totalEvents = eventStats.length;
 
     // Calculate upcoming and past events based on `fromDate`
@@ -198,94 +202,25 @@ export async function GET(req: Request) {
     ).length;
     const pastEvents = totalEvents - upcomingEvents;
 
-    // Fetch ticket statistics
-    const ticketStats = await prisma.ticket.findMany();
+    // Fetch ticket statistics filtered by customerId
+    const ticketStats = await prisma.ticket.findMany({
+      where: { customerId },
+    });
     const totalTickets = ticketStats.length;
 
-    // Fetch product statistics
-    const productStats = await prisma.product.findMany();
+    // Fetch product statistics filtered by customerId
+    const productStats = await prisma.product.findMany({
+      where: { shop: { customerId } },
+    });
     const totalProducts = productStats.length;
 
-    if (id) {
-      const qrData = await prisma.qr.findUnique({
-        where: { id },
-        include: { customer: true },
-      });
-
-      const visitorCount = await getVisitorCount(id);
-
-      if (qrData) {
-        return NextResponse.json({ ...qrData, visitorCount }, { status: 200 });
-      }
-
-      const vCardData = await prisma.vCard.findUnique({
-        where: { id },
-        include: { customer: true },
-      });
-
-      if (vCardData) {
-        return NextResponse.json(
-          { ...vCardData, visitorCount },
-          { status: 200 }
-        );
-      }
-
-      const eventData = await prisma.events.findUnique({
-        where: { id },
-        include: { customer: true },
-      });
-
-      if (eventData) {
-        return NextResponse.json(
-          { ...eventData, visitorCount },
-          { status: 200 }
-        );
-      }
-
-      const shopData = await prisma.shop.findUnique({
-        where: { id },
-        include: { customer: true },
-      });
-
-      if (shopData) {
-        return NextResponse.json(
-          { ...shopData, visitorCount },
-          { status: 200 }
-        );
-      }
-
-      const ticketData = await prisma.ticket.findUnique({
-        where: { id },
-        include: { customer: true },
-      });
-
-      if (ticketData) {
-        return NextResponse.json(
-          { ...ticketData, visitorCount },
-          { status: 200 }
-        );
-      }
-
-      const productData = await prisma.product.findUnique({
-        where: { id },
-        include: { shop: { include: { customer: true } } },
-      });
-
-      if (productData) {
-        return NextResponse.json(
-          { ...productData, visitorCount },
-          { status: 200 }
-        );
-      }
-
-      return NextResponse.json({ error: "Data not found" }, { status: 404 });
-    }
+    // Fetch monthly counts along with detailed data for analytics
+    const monthlyCounts = await getMonthlyCounts(customerId); // Pass customerId here
+    const vCardmonthlyCounts = await getVcardMonthlyCounts(customerId); // Pass customerId here
 
     const data = {
       monthlyCounts,
       vCardmonthlyCounts,
-      qrData,
-      vCardData,
       shopStats: {
         totalShops,
       },

@@ -103,7 +103,6 @@ export const ProductPublicSingle = ({ user }: ProductSingleProps) => {
         return res.json();
       })
       .then((data) => {
-        console.log("Fetched product data:", data); // Debugging
         if (data.error) {
           toast({
             title: `${data.error}`,

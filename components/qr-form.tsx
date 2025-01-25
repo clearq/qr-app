@@ -158,15 +158,17 @@ export const QrForm = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 sm:pl-[260px]">
+    <div className="w-full mt-16 h-full p-4 sm:pl-[260px]">
       {" "}
+      <CardTitle className="text-2xl">Create Link</CardTitle>
       <CardHeader className="mt-5">
+        <CardTitle className="text-2xl">New Link</CardTitle>
         <CardDescription>Create your Qr here</CardDescription>
       </CardHeader>
       <div className="flex flex-col md:flex-row w-full">
         <form onSubmit={validation.handleSubmit} className="w-full  space-y-4">
           <div>
-            <Label htmlFor="url">URL</Label>
+            <Label htmlFor="url">Link</Label>
             <Input
               id="url"
               type="text"

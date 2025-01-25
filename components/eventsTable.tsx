@@ -51,7 +51,6 @@ export function EventsTable({ selectedEventId }: EventsTableProps) {
         `/api/eventsTable?eventId=${selectedEventId}`
       );
       const eventTables: Events[] = await response.json();
-      console.log(eventTables);
       setEventTables(eventTables);
     } catch (error) {
       toast({

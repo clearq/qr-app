@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
@@ -57,7 +57,8 @@ export const ChangePasswordForm = () => {
             toast({
               variant: "destructive",
               title: `Error updating password`,
-              description: errorData.error || `${new Date().toLocaleDateString()}`,
+              description:
+                errorData.error || `${new Date().toLocaleDateString()}`,
             });
           }
         })
@@ -73,7 +74,10 @@ export const ChangePasswordForm = () => {
   });
 
   return (
-    <form onSubmit={validation.handleSubmit} className="w-full grid grid-cols-1 gap-4 mt-4">
+    <form
+      onSubmit={validation.handleSubmit}
+      className="w-full grid grid-cols-1 gap-4 mt-4"
+    >
       <div className="flex flex-col space-y-1.5 relative">
         <Label htmlFor="currentPassword">Current Password</Label>
         <Input
@@ -83,7 +87,10 @@ export const ChangePasswordForm = () => {
           value={validation.values.currentPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("currentPassword")}>
+        <span
+          className="absolute right-2 top-6 cursor-pointer"
+          onClick={() => toggleShowPassword("currentPassword")}
+        >
           {showPassword.currentPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>
@@ -96,7 +103,10 @@ export const ChangePasswordForm = () => {
           value={validation.values.newPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("newPassword")}>
+        <span
+          className="absolute right-2 top-6 cursor-pointer"
+          onClick={() => toggleShowPassword("newPassword")}
+        >
           {showPassword.newPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>
@@ -109,7 +119,10 @@ export const ChangePasswordForm = () => {
           value={validation.values.confirmPassword}
           onChange={validation.handleChange}
         />
-        <span className="absolute right-2 top-6 cursor-pointer" onClick={() => toggleShowPassword("confirmPassword")}>
+        <span
+          className="absolute right-2 top-6 cursor-pointer"
+          onClick={() => toggleShowPassword("confirmPassword")}
+        >
           {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
         </span>
       </div>

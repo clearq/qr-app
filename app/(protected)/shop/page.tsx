@@ -13,7 +13,6 @@ export default function Event() {
         throw new Error("Failed to fetch shops");
       }
       const shopJSON = await shopResponse.json();
-      console.log("API Response:", shopJSON);
 
       if (!Array.isArray(shopJSON.data)) {
         console.error("Expected an array but received:", shopJSON);

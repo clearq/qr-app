@@ -121,7 +121,6 @@ export const DataTable = ({
           throw new Error("Failed to fetch shops.");
         }
         const data = await response.json();
-        console.log("API Response:", data); // Log the API response
 
         if (!Array.isArray(data.data)) {
           console.error("Expected an array but received:", data);

@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 interface Shop {
   id: string;
@@ -29,6 +30,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
   ); // Selected shop ID
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingShops, setIsLoadingShops] = useState(true); // Loading state for shops
+  const router = useRouter();
 
   // Fetch shops on component mount
   useEffect(() => {
@@ -37,7 +39,6 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
         const response = await fetch("/api/shop");
         if (!response.ok) throw new Error("Failed to fetch shops");
         const data = await response.json();
-        console.log("API Response (Shops):", data);
 
         if (!Array.isArray(data.data)) {
           console.error("Expected an array but received:", data);
@@ -93,11 +94,6 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
 
     setIsSubmitting(true);
     try {
-      console.log("Submitting categories:", {
-        categories,
-        shopId: selectedShopId,
-      }); // Log the data being sent
-
       const response = await fetch(`/api/category`, {
         method: "POST",
         headers: {
@@ -107,14 +103,13 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
       });
 
       const data = await response.json();
-      console.log("API Response:", data); // Log the API response
 
       if (response.ok) {
         toast({
           title: `Categories created successfully!`,
           description: `${new Date().toLocaleDateString()}`,
         });
-        window.location.reload();
+        router.replace("/shop");
         setCategories([{ name: "" }]); // Clear all inputs after success
       } else {
         toast({
@@ -136,10 +131,11 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
   };
 
   return (
-    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+    <div className="w-full mt-16 h-full p-4 sm:pl-[260px]">
       {" "}
-      <CardHeader>
-        <CardTitle className="text-6xl">New Categories</CardTitle>
+      <CardTitle className="text-2xl">Create Category</CardTitle>
+      <CardHeader className="relative right-5 mt-10">
+        <CardTitle className=" text-3xl">New Categories</CardTitle>
         <CardDescription>Add multiple categories here</CardDescription>
       </CardHeader>
       <form
@@ -154,7 +150,6 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
           <Select
             value={selectedShopId || ""} // Set the value of the dropdown
             onValueChange={(value) => {
-              console.log("Selected Shop ID:", value); // Log the selected shop ID
               setSelectedShopId(value);
             }}
             disabled={isLoadingShops || isSubmitting}

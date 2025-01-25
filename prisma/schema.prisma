@@ -8,28 +8,30 @@ datasource db {
 }
 
 model Customer {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  firstName String
-  lastName  String
-  phone     String?
-  password  String
-  orgNumber String?
-  address   String?
-  country   String?
-  city      String?
-  zip       String?
-  company   String?
-  image     String?  @db.NVarChar(MAX)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  roleId    String
-  role      Role     @relation(fields: [roleId], references: [id])
-  vcard     VCard[]
-  qr        Qr[]
-  events    Events[]
-  tickets   Ticket[]
-  Shop      Shop[]
+  id                        String    @id @default(cuid())
+  email                     String    @unique
+  firstName                 String
+  lastName                  String
+  phone                     String?
+  password                  String
+  orgNumber                 String?
+  address                   String?
+  country                   String?
+  city                      String?
+  zip                       String?
+  company                   String?
+  image                     String?   @db.NVarChar(MAX)
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  roleId                    String
+  role                      Role      @relation(fields: [roleId], references: [id])
+  vcard                     VCard[]
+  qr                        Qr[]
+  events                    Events[]
+  tickets                   Ticket[]
+  shop                      Shop[]
+  resetPasswordToken        String? // OTP
+  resetPasswordTokenExpires DateTime? // OTP expiration time
 }
 
 model VCard {
@@ -150,7 +152,7 @@ model Category {
 
 model Product {
   id          String   @id @default(cuid())
-  itemId      String?  
+  itemId      String?
   title       String // Title of the product
   shop        Shop     @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Break cascading path
   shopId      String // Foreign key to Shop model

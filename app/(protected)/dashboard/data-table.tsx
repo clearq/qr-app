@@ -139,21 +139,15 @@ export const DataTable: React.FC<DataTableProps> = ({
             <TableHead>Label</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Qr-code</TableHead>
-            <TableHead>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center space-x-2"
-                  >
-                    <MdAdd />
-                    <span className="hidden sm:inline">Add</span>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <QrForm />
-                </DialogContent>
-              </Dialog>
+            <TableHead className="flex justify-end">
+              <Link href={"/qr"}>
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2 ml-2"
+                >
+                  <MdAdd />
+                </Button>
+              </Link>
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -174,7 +168,7 @@ export const DataTable: React.FC<DataTableProps> = ({
                   <Link href={`qr/details?id=${qr.id}`}>
                     <QRCode
                       className="hover:border hover:border-cyan-500 hover:border-opacity-10 transition-color"
-                      value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
+                      value={`https://qrgen.clearq.se/redirect?id=${qr?.id}&type=qr`}
                       size={50}
                       renderAs="canvas"
                       imageSettings={{

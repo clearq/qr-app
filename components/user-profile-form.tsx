@@ -32,6 +32,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   const [uploading, setUploading] = useState(false);
   const [retrievedFile, setRetrievedFile] = useState<string>("");
   const [fileKey, setFileKey] = useState<string>("");
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const validation = useFormik({
     initialValues: {
@@ -184,9 +185,10 @@ export const EditProfileForm = ({ user: userData }: Props) => {
 
   return (
     <div className=" container">
-      <div className="mt-24 sm:ml-60 flex flex-col justify-center items-center">
+      <CardTitle className="text-2xl mt-20 sm:ml-56">Profile</CardTitle>
+      <div className="mt-16 sm:ml-60 flex flex-col justify-center items-center">
         <header>
-          <h1 className="mt-10 font-bold">Edit your Profile</h1>
+          <h1 className="font-bold">Edit your Profile</h1>
           <h2>Update your profile here.</h2>
         </header>
         <div className="w-[124px] h-[124px] relative rounded-full">
@@ -328,11 +330,33 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               Save changes
             </Button>
           </form>
-          <CardTitle>Change password</CardTitle>
-          <ChangePasswordForm
-            //@ts-ignore
-            user={userData}
-          />
+          {/* Updated Change Password Section */}
+          <div className="mt-6">
+            {!showChangePassword ? (
+              <Button
+                variant="link"
+                className="text-sm justify-start mr-2 text-gray-600 hover:text-gray-900"
+                onClick={() => setShowChangePassword(true)}
+              >
+                Do you want to change password?
+              </Button>
+            ) : (
+              <div>
+                <CardTitle className="mb-4">Change Password</CardTitle>
+                <ChangePasswordForm
+                  //@ts-ignore
+                  user={userData}
+                />
+                <Button
+                  variant="link"
+                  className="text-sm text-gray-600 hover:text-gray-900 mt-2"
+                  onClick={() => setShowChangePassword(false)}
+                >
+                  Hide Change Password
+                </Button>
+              </div>
+            )}
+          </div>
           <DeleteUser user={userData} />
         </CardContent>
       </div>

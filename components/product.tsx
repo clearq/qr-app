@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RichTextEditor } from "./RichTextEditor"; // Import the RichTextEditor
+import { useRouter } from "next/navigation";
 
 interface Category {
   id: string;
@@ -37,6 +38,7 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
     { title: "", description: "", categoryId: "", itemId: "" }, // Add itemId
   ]); // Array for multiple products
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   // Fetch shops on mount
   useEffect(() => {
@@ -45,7 +47,6 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
         const response = await fetch("/api/shop");
         if (!response.ok) throw new Error("Failed to fetch shops");
         const data = await response.json();
-        console.log("API Response:", data); // Log the API response
 
         if (!Array.isArray(data.data)) {
           console.error("Expected an array but received:", data);
@@ -82,7 +83,6 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
           );
           if (!response.ok) throw new Error("Failed to fetch categories");
           const data = await response.json();
-          console.log("Categories API Response:", data); // Log the API response
           setCategories(data);
         } catch (error) {
           console.error("Error fetching categories:", error);
@@ -141,14 +141,13 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
       });
 
       const data = await response.json();
-      console.log("Submission Response:", data); // Log the API response
 
       if (response.ok) {
         toast({
           title: "Products created successfully!",
           description: `${new Date().toLocaleDateString()}`,
         });
-        window.location.reload();
+        router.replace("/shop/products/datatable");
         setProducts([
           { title: "", description: "", categoryId: "", itemId: "" },
         ]);
@@ -174,8 +173,8 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
       {" "}
-      <CardHeader>
-        <CardTitle className="text-4xl font-bold">New Item</CardTitle>
+      <CardHeader className="relative right-5 mt-10">
+        <CardTitle className=" text-3xl">New Item</CardTitle>
         <CardDescription>Add a new items here</CardDescription>
       </CardHeader>
       {/* Shop Selector Dropdown */}
