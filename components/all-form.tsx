@@ -36,6 +36,8 @@ import {
   ChartTooltipContent,
 } from "./ui/chart";
 import { User } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
+import { Skeleton } from "./ui/skeleton";
 
 interface AllFormProps {
   id: string; // Add id as a prop
@@ -49,6 +51,7 @@ export default function AllForm({ id }: AllFormProps) {
   const [error, setError] = React.useState(null); // Error state
   const [chartData, setChartData] = React.useState([]); // State for chart data
   const router = useRouter();
+  const { translations } = useLanguage(); // Use the translations
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -96,36 +99,101 @@ export default function AllForm({ id }: AllFormProps) {
   };
 
   if (loading) {
-    return <Progress value={87} className="" />; // Loading state
+    return (
+      <div className="flex flex-col mt-16 w-full h-full p-4 sm:pl-[260px]">
+        <div className="mt-24 flex flex-wrap items-start gap-4">
+          {/* Skeleton for User Details Card */}
+          <Card className="w-full sm:w-[30%] h-64">
+            <CardHeader className="pb-3">
+              <Skeleton className="h-6 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-full mb-1" />
+            </CardHeader>
+            <CardFooter className="flex justify-end">
+              <Skeleton className="h-10 w-10 rounded-full" />
+            </CardFooter>
+          </Card>
+
+          {/* Skeleton for URL and VCard Cards */}
+          <div className="flex flex-col w-full sm:w-[20%] gap-4">
+            <Card className="w-full h-[171px]">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-12 w-full" />
+              </CardHeader>
+            </Card>
+
+            <Card className="w-full">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-12 w-full" />
+              </CardHeader>
+            </Card>
+          </div>
+
+          {/* Skeleton for Event and Shop Cards */}
+          <div className="flex flex-col w-full sm:w-[20%] gap-4">
+            <Card className="w-full">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-12 w-full" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+            </Card>
+
+            <Card className="w-full">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-1/2 mb-2" />
+                <Skeleton className="h-12 w-full" />
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+        <div className="mt-10">
+          <Card className="w-full">
+            <CardHeader className="pb-2">
+              <Skeleton className="h-[200px] sm:h-[500px] w-full" />
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>; // Error state
+    return <div className="text-red-500">Error: {error}</div>;
   }
 
   // Define colors and labels for each analytics type
   const chartsConfig = {
     url: {
-      label: "URL",
-      color: "#0197B2", // Blue
+      label: translations.link,
+      color: "#D4AF37", // Gold
     },
     vcard: {
-      label: "VCard",
-      color: "#2b2b2b", // Black
+      label: translations.vcard,
+      color: "#151515", // Black
     },
     product: {
-      label: "Products",
-      color: "hsl(var(--chart-1))", // Pink
+      label: translations.products,
+      color: "#4169E1", // Brown
     },
     ticket: {
-      label: "Tickets",
-      color: "hsl(var(--chart-4))", // Light Blue
+      label: translations.tickets,
+      color: "#B22222", // Light Blue
     },
   };
 
   return (
     <div className="flex flex-col mt-16 w-full h-full p-4 sm:pl-[260px]">
-      <CardTitle className="text-2xl">Overview</CardTitle>
+      <CardTitle className="text-2xl">{translations.overview}</CardTitle>
       <main className="mt-24 flex flex-wrap items-start gap-4">
         {userData ? (
           <>
@@ -199,9 +267,9 @@ export default function AllForm({ id }: AllFormProps) {
               <Card className="w-full h-[171px]">
                 <CardHeader className="pb-2">
                   <CardDescription className="text-l font-semibold">
-                    URL
+                    {translations.link}
                   </CardDescription>
-                  <CardTitle className="text-5xl flex justify-center items-center">
+                  <CardTitle className="text-5xl text-[#937100] flex justify-center items-center">
                     {
                       //@ts-ignore
                       userData._count.qr
@@ -216,9 +284,9 @@ export default function AllForm({ id }: AllFormProps) {
               <Card className="w-full">
                 <CardHeader className="pb-2">
                   <CardDescription className="text-l font-semibold">
-                    VCard
+                    {translations.vcard}
                   </CardDescription>
-                  <CardTitle className="text-5xl flex justify-center items-center">
+                  <CardTitle className="text-5xl text-[#937100] flex justify-center items-center">
                     {
                       //@ts-ignore
                       userData._count.vcard
@@ -236,9 +304,9 @@ export default function AllForm({ id }: AllFormProps) {
               <Card className="w-full">
                 <CardHeader className="pb-2">
                   <CardDescription className="text-l font-semibold">
-                    Events
+                    {translations.events}
                   </CardDescription>
-                  <CardTitle className="text-5xl flex justify-center items-center">
+                  <CardTitle className="text-5xl text-[#937100] flex justify-center items-center">
                     {
                       //@ts-ignore
                       eventStats?.totalEvents || 0
@@ -247,14 +315,14 @@ export default function AllForm({ id }: AllFormProps) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-500">
-                    Upcoming Events:{" "}
+                    {translations.upcomingEvents}:{" "}
                     {
                       //@ts-ignore
                       eventStats?.upcomingEvents || 0
                     }
                   </p>
                   <p className="text-sm text-gray-500">
-                    Past Events:{" "}
+                    {translations.pastEvents}:{" "}
                     {
                       //@ts-ignore
                       eventStats?.pastEvents || 0
@@ -267,9 +335,9 @@ export default function AllForm({ id }: AllFormProps) {
               <Card className="w-full">
                 <CardHeader className="pb-2">
                   <CardDescription className="text-l font-semibold">
-                    Business Units
+                    {translations.businessUnit}
                   </CardDescription>
-                  <CardTitle className="text-5xl flex justify-center items-center">
+                  <CardTitle className="text-5xl text-[#937100] flex justify-center items-center">
                     {
                       //@ts-ignore
                       shopStats?.totalShops || 0
@@ -282,13 +350,13 @@ export default function AllForm({ id }: AllFormProps) {
             </div>
           </>
         ) : (
-          <div>No user data found.</div>
+          <div>{translations.noUserDataFound}</div>
         )}
       </main>
 
       {/* Analytics Section */}
       <div className="mt-8 w-full">
-        <h2 className="text-xl font-semibold mb-4">Analytics</h2>
+        <h2 className="text-xl font-semibold mb-4">{translations.analytics}</h2>
 
         {/* Chart */}
         <Card className="w-full h-full">

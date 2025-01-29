@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface Shop {
   id: string;
@@ -31,6 +32,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingShops, setIsLoadingShops] = useState(true); // Loading state for shops
   const router = useRouter();
+  const { translations } = useLanguage(); // Use the translations
 
   // Fetch shops on component mount
   useEffect(() => {
@@ -56,8 +58,8 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
         console.error("Error fetching shops:", error);
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to fetch shops. Please try again later.",
+          title: translations.error,
+          description: translations.failedToFetchShops,
         });
       } finally {
         setIsLoadingShops(false);
@@ -65,7 +67,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
     };
 
     fetchShops();
-  }, [initialShopId]); // Add initialShopId as a dependency
+  }, [initialShopId, translations]); // Add initialShopId and translations as dependencies
 
   const handleCategoryChange = (index: number, value: string) => {
     const updatedCategories = [...categories];
@@ -86,8 +88,8 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
     if (!selectedShopId) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Please select a shop before submitting categories.",
+        title: translations.error,
+        description: translations.selectShopBeforeSubmit,
       });
       return;
     }
@@ -106,24 +108,24 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
 
       if (response.ok) {
         toast({
-          title: `Categories created successfully!`,
-          description: `${new Date().toLocaleDateString()}`,
+          title: translations.categoriesCreatedSuccessfully,
+          description: new Date().toLocaleDateString(),
         });
         router.replace("/shop");
         setCategories([{ name: "" }]); // Clear all inputs after success
       } else {
         toast({
           variant: "destructive",
-          title: `Error creating Categories`,
-          description: data.error || "Something went wrong.",
+          title: translations.errorCreatingCategories,
+          description: data.error || translations.somethingWentWrong,
         });
       }
     } catch (error) {
       console.error("Error:", error);
       toast({
         variant: "destructive",
-        title: `Something went wrong`,
-        description: `${new Date().toLocaleDateString()}`,
+        title: translations.somethingWentWrong,
+        description: new Date().toLocaleDateString(),
       });
     } finally {
       setIsSubmitting(false);
@@ -132,11 +134,10 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
 
   return (
     <div className="w-full mt-16 h-full p-4 sm:pl-[260px]">
-      {" "}
-      <CardTitle className="text-2xl">Create Category</CardTitle>
+      <CardTitle className="text-2xl">{translations.createCategory}</CardTitle>
       <CardHeader className="relative right-5 mt-10">
-        <CardTitle className=" text-3xl">New Categories</CardTitle>
-        <CardDescription>Add multiple categories here</CardDescription>
+        <CardTitle className="text-3xl">{translations.newCategories}</CardTitle>
+        <CardDescription>{translations.addMultipleCategories}</CardDescription>
       </CardHeader>
       <form
         onSubmit={(e) => {
@@ -155,7 +156,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
             disabled={isLoadingShops || isSubmitting}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a shop" />
+              <SelectValue placeholder={translations.selectShop} />
             </SelectTrigger>
             <SelectContent>
               {shops.map((shop) => (
@@ -175,7 +176,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
                 name={`category-${index}`}
                 value={category.name}
                 onChange={(e) => handleCategoryChange(index, e.target.value)}
-                placeholder="Enter category name"
+                placeholder={translations.enterCategoryName}
                 className="mb-2"
                 disabled={isSubmitting || !selectedShopId} // Disable if no shop is selected
               />
@@ -188,7 +189,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
                 isSubmitting || categories.length === 1 || !selectedShopId
               } // Prevent removing last field or if no shop is selected
             >
-              Remove
+              {translations.remove}
             </Button>
           </div>
         ))}
@@ -202,7 +203,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
             onClick={addCategoryField}
             disabled={isSubmitting || !selectedShopId} // Disable if no shop is selected
           >
-            Add Another Category
+            {translations.addAnotherCategory}
           </Button>
         </div>
 
@@ -213,7 +214,7 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
             className="w-full mt-3 md:w-auto"
             disabled={isSubmitting || !selectedShopId} // Disable if no shop is selected
           >
-            {isSubmitting ? "Saving..." : "Save All"}
+            {isSubmitting ? translations.saving : translations.saveAll}
           </Button>
         </div>
       </form>

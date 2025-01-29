@@ -7,7 +7,9 @@ import Globe from "@/components/magicui/globe";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 import LottieAnimation from "@/components/animations/QrAnimation";
-import PeopleAnimation from "@/components/animations/PeopleAnimation";
+import ThemeImage from "@/components/ThemeImage";
+import Image from "next/image";
+// import PeopleAnimation from "@/components/animations/PeopleAnimation";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -47,11 +49,20 @@ export default function Home() {
         />
         <div className="flex gap-10 items-center justify-center">
           <>
-            <div>
-              <LottieAnimation />
+            <div className="p-52">
+              <Link href="/">
+                <Image
+                  alt="Qaaf"
+                  src="/image/QaafGold.png" // Dark mode image
+                  width={100}
+                  height={100}
+                  className="w-[700px] h-auto"
+                  priority
+                />
+              </Link>
             </div>
             <div className="text-left z-50">
-              <h1 className="mt-20 mb-5  text-start text-5xl font-bold">
+              <h1 className="text-[#937100] mt-20 mb-5  text-start text-5xl font-bold">
                 QrGen
               </h1>
               <div className="mb-16 md:text-2xl text-lg w-[85%] ml- mr-9">
@@ -81,7 +92,7 @@ export default function Home() {
                 ) : (
                   <>
                     <Link href="/register">
-                      <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                      <Button className="bg-[#937100] hover:bg-[#D4AF37] text-white font-bold py-2 px-4 rounded mt-4">
                         Register
                       </Button>
                     </Link>

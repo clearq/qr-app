@@ -47,11 +47,12 @@ export async function GET() {
     userData.image = imageUrl;
   }
 
-  // Add roleId and customerId to the response
+  // Add roleId, customerId, and language to the response
   const responseData = {
     ...userData,
     roleId: userData.role?.id,
-    customerId: userData.id, // Include customerId in the response
+    customerId: userData.id,
+    language: userData.language, // Include the `language` property
   };
 
   return NextResponse.json(responseData, { status: 200 });
@@ -81,6 +82,7 @@ export async function PUT(req: NextRequest) {
       city,
       zip,
       roleId,
+      language, // Include the `language` property
     } = requestBody;
 
     if (!email || !firstName || !lastName) {
@@ -93,7 +95,7 @@ export async function PUT(req: NextRequest) {
     // Determine the roleId based on whether orgNumber is provided
     const newRoleId = orgNumber ? "2" : "1"; // Assuming "2" is the roleId for companies and "1" for individual accounts
 
-    // Update the user profile with the image key and the new roleId
+    // Update the user profile with the image key, roleId, and language
     const updatedUser = await prisma.customer.update({
       where: { id },
       data: {
@@ -109,6 +111,7 @@ export async function PUT(req: NextRequest) {
         city: city,
         zip: zip,
         roleId: newRoleId, // Update the roleId based on the presence of orgNumber
+        language: language, // Update the `language` property
       },
     });
 

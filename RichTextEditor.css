@@ -13,10 +13,10 @@
 .ql-image-resize {
   position: relative; /* Position the container for handles */
   display: inline-block;
-  border: 1px dashed #888; /* Visual indicator for resizing */
+  border: 1px dashed #D4AF37; /* Visual indicator for resizing */
   padding: 4px; /* Optional padding for better visibility */
-  background-color: rgba(255, 255, 255, 0.8); /* Subtle background */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Optional shadow for better focus */
+  background-color: rgba(212, 175, 55, 0.1); /* Subtle background */
+  box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* Optional shadow for better focus */
 }
 
 /* Styles for image resize handles */
@@ -24,7 +24,7 @@
   position: absolute;
   width: 12px; /* Handle size */
   height: 12px;
-  background: #000; /* Black handles */
+  background: #D4AF37; /* Handle color */
   border-radius: 50%; /* Rounded handles for better aesthetics */
   cursor: nwse-resize; /* Default resize cursor */
   z-index: 10;
@@ -33,7 +33,7 @@
 
 /* Handle hover effect */
 .ql-image-resize-handle:hover {
-  background-color: #555; /* Lighter on hover */
+  background-color: #C4A53D; /* Lighter on hover */
 }
 
 /* Top-left handle */
@@ -62,4 +62,22 @@
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .ql-image-resize-handle {
+    width: 16px; /* Larger handles for easier interaction on mobile */
+    height: 16px;
+  }
+
+  .ql-image-resize-handle[data-position="top-left"],
+  .ql-image-resize-handle[data-position="top-right"],
+  .ql-image-resize-handle[data-position="bottom-left"],
+  .ql-image-resize-handle[data-position="bottom-right"] {
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+  }
 }

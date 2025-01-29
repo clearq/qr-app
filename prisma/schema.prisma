@@ -24,14 +24,15 @@ model Customer {
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
   roleId                    String
+  resetPasswordToken        String? // OTP
+  resetPasswordTokenExpires DateTime? // OTP expiration time
+  language                  String    @default("en")
   role                      Role      @relation(fields: [roleId], references: [id])
   vcard                     VCard[]
   qr                        Qr[]
   events                    Events[]
   tickets                   Ticket[]
   shop                      Shop[]
-  resetPasswordToken        String? // OTP
-  resetPasswordTokenExpires DateTime? // OTP expiration time
 }
 
 model VCard {

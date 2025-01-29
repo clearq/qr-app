@@ -46,7 +46,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Check if the params contain a token
       if ("token" in params) {
         const { token } = params;
-     
 
         // Call the Server Action to clear cookies
         await clearAuthCookies();

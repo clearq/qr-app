@@ -210,9 +210,11 @@ END:VCARD
   };
 
   return (
-    <div>
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
+      <CardTitle className="text-2xl">Create VCard</CardTitle>
       <CardHeader>
-        <CardTitle>VCard</CardTitle>
+        <CardTitle className="text-3xl">VCard</CardTitle>
         <CardDescription>Create your VCard here</CardDescription>
       </CardHeader>
       <label htmlFor="imageInput" className="flex justify-center items-center">

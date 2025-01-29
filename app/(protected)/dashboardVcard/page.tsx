@@ -25,7 +25,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mt-15 mx-auto py-10">
+    <div className="">
       <DataTable vcardData={vData} refetchDataTable={refetchDataTable} />
     </div>
   );

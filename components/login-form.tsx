@@ -17,6 +17,12 @@ import { signIn, useSession } from "next-auth/react";
 import { AuthError } from "next-auth";
 import Link from "next/link";
 
+// Import SVG icons for the providers
+import TimeerIcon from "@/public/image/timeerSVG.svg";
+import StaffinIcon from "@/public/image/staffinSVG.svg";
+import GoogleIcon from "@/public/image/googleSVG.svg";
+import AppleIcon from "@/public/image/appleSVG.svg";
+
 export function LoginForm() {
   const [error, setError] = useState("");
   const router = useRouter();
@@ -79,17 +85,29 @@ export function LoginForm() {
     }
   };
 
+  const handleProviderSignIn = async (provider: string) => {
+    try {
+      await signIn(provider, { callbackUrl: "/all" });
+    } catch (error) {
+      setError("Failed to sign in with provider");
+    }
+  };
+
   return (
     <div className="flex mt-20 sm:mt-5 justify-center items-center">
       <Tabs defaultValue="account" className="w-[400px]">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="company">Company</TabsTrigger>
-        </TabsList>
+        {/* <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="account" className="text-[#D4AF37]">
+            Account
+          </TabsTrigger>
+          <TabsTrigger value="company" className=" text-[#D4AF37]">
+            Company
+          </TabsTrigger>
+        </TabsList> */}
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>User</CardTitle>
+              <CardTitle>Login</CardTitle>
               <CardDescription>Sign in with your email here.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -97,7 +115,7 @@ export function LoginForm() {
                 <Label>Email</Label>
                 <Input
                   type="text"
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   placeholder="example@qrgen.se"
                   required
                 />
@@ -105,15 +123,11 @@ export function LoginForm() {
                 <Input
                   autoComplete="password"
                   type="password"
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none"
                   placeholder="Password"
                   required
                 />
-                <Button
-                  type="submit"
-                  className="text-white hover:text-white py-2 rounded bg-slate-800 hover:bg-slate-950"
-                  variant="outline"
-                >
+                <Button type="submit" className="">
                   Sign in
                 </Button>
                 <p className="text-red-600 text-[16px] mb-4">
@@ -126,6 +140,32 @@ export function LoginForm() {
               <div className="text-center text-gray-500 text-[20px]">
                 - OR -
               </div>
+              {/* <div className="flex justify-center gap-4 mt-4">
+                <button
+                  onClick={() => handleProviderSignIn("timeer")}
+                  className="p-2"
+                >
+                  <TimeerIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("staffin")}
+                  className="p-2"
+                >
+                  <StaffinIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("google")}
+                  className="p-2"
+                >
+                  <GoogleIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("apple")}
+                  className="p-2"
+                >
+                  <AppleIcon className="w-12 h-12" />
+                </button>
+              </div> */}
               <Link
                 href="/register"
                 className="block text-center mb-4 text-[16px] text-grey-500 hover:underline mt-2"
@@ -148,7 +188,7 @@ export function LoginForm() {
                 <Label>Email</Label>
                 <Input
                   type="text"
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none"
                   placeholder="example@qrgen.se"
                   required
                 />
@@ -156,15 +196,11 @@ export function LoginForm() {
                 <Input
                   autoComplete="password"
                   type="password"
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none"
                   placeholder="Password"
                   required
                 />
-                <Button
-                  type="submit"
-                  className="text-white hover:text-white py-2 rounded bg-slate-800 hover:bg-slate-950"
-                  variant="outline"
-                >
+                <Button type="submit" className="">
                   Sign in
                 </Button>
                 <p className="text-red-600 text-[16px] mb-4">
@@ -177,6 +213,32 @@ export function LoginForm() {
               <div className="text-center text-gray-500 text-[20px]">
                 - OR -
               </div>
+              {/* <div className="flex justify-center gap-4 mt-4">
+                <button
+                  onClick={() => handleProviderSignIn("timeer")}
+                  className="p-2"
+                >
+                  <TimeerIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("staffin")}
+                  className="p-2"
+                >
+                  <StaffinIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("google")}
+                  className="p-2"
+                >
+                  <GoogleIcon className="w-12 h-12" />
+                </button>
+                <button
+                  onClick={() => handleProviderSignIn("apple")}
+                  className="p-2"
+                >
+                  <AppleIcon className="w-12 h-12" />
+                </button>
+              </div> */}
               <Link
                 href="/register"
                 className="block text-center mb-4 text-[16px] text-grey-500 hover:underline mt-2"

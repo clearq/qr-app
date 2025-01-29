@@ -3,22 +3,20 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Navbar";
 import SessionProvider from "@/utils/SessionProvider";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider"; // From shadcn/ui
 import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/toaster";
 import CookieConsentBanner from "@/components/Cookies";
 import "@uploadthing/react/styles.css";
 import { cn } from "@/lib/utils";
 import Footer from "@/components/Footer";
-import Image from "next/image";
-import logoImage from "../public/image/qrLogo.png"; // Import the logo image
-import Link from "next/link";
 import { LanguageProvider } from "@/context/LanguageContext";
+import LogoWrapper from "@/components/LogoWrapper"; // Import the new LogoWrapper component
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Qr Generator App",
+  title: "Qaaf",
   description: "Powered by ClearQ",
   icons: [
     {
@@ -38,8 +36,14 @@ interface Props {
 
 export default async function RootLayout({ children }: Props) {
   const session = await auth();
+  const language = session?.user?.language || "en"; // Default to "en" if language is not set
+
   return (
-    <html lang="en">
+    <html
+      lang={language}
+      dir={language === "ar" ? "rtl" : "ltr"}
+      suppressHydrationWarning
+    >
       <head>
         {/* Add the viewport meta tag here */}
         <meta
@@ -50,20 +54,13 @@ export default async function RootLayout({ children }: Props) {
       <body className={cn(inter.className, "flex flex-col min-h-screen")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           <SessionProvider session={session}>
-            {/* Header with Logo */}
-            <Link className="p-4 absolute" href="/">
-              <Image
-                alt="logo"
-                src={logoImage}
-                className="w-[50px] h-auto"
-                priority // Ensures the logo loads quickly
-              />
-            </Link>
+            {/* Use the LogoWrapper component */}
+            <LogoWrapper />
 
             {/* Main Content */}
             <div className="flex-1">

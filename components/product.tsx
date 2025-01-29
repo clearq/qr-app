@@ -173,6 +173,7 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
       {" "}
+      <CardTitle className="text-2xl">Create Items</CardTitle>
       <CardHeader className="relative right-5 mt-10">
         <CardTitle className=" text-3xl">New Item</CardTitle>
         <CardDescription>Add a new items here</CardDescription>

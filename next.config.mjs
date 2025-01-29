@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['cdn.clearq.se']
+    domains: ['cdn.clearq.se'],
+  },
+  webpack(config) {
+    // Add SVGR loader to handle SVG files as React components
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
   },
 };
 

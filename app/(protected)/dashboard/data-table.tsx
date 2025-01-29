@@ -34,6 +34,7 @@ import Link from "next/link";
 import { QrForm } from "@/components/qr-form";
 import { VcardAnalys } from "@/components/vcardAnalys";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CardTitle } from "@/components/ui/card";
 
 interface DataTableProps {
   qrData: IQR[];
@@ -130,6 +131,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
       {" "}
+      <CardTitle className="text-2xl">Links Table</CardTitle>
       {/* Adjusted layout */}
       <h1 className="text-3xl font-bold mb-6"></h1>
       <Table className="mb-5">

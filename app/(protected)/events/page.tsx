@@ -11,7 +11,10 @@ export default function event() {
     try {
       const eventResponse = await fetch("/api/events");
       const eventJSON = await eventResponse.json();
-      setEventsData(eventJSON);
+
+      // Extract the events array if the response is an object
+      const eventsArray = eventJSON.events || eventJSON;
+      setEventsData(eventsArray);
     } catch (error) {
       console.error("Error fetching data", error);
     }
@@ -24,6 +27,7 @@ export default function event() {
   const refetchDataTable = () => {
     fetchData();
   };
+
   return (
     <div>
       <DataTable eventData={eData} refetchDataTable={refetchDataTable} />

@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import Crentials from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
+// import AppleProvider from "@auth/core/providers/apple";
+// import GoogleProvider from "@auth/core/providers/google";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
   providers: [
-    Crentials({
+    Credentials({
       id: "credentials",
       name: "credentials",
       credentials: {
@@ -40,5 +42,14 @@ export default {
         return null;
       },
     }),
+    // AppleProvider({
+    //   clientId: process.env.APPLE_ID,
+    //   clientSecret: process.env.APPLE_SECRET,
+    // }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
+    // Add Timeer and Staffin providers here if they have OAuth support
   ],
 };

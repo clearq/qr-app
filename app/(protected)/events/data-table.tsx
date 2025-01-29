@@ -38,6 +38,7 @@ import { saveAs } from "file-saver";
 import { EventsComponent } from "@/components/events";
 import { EventsTable } from "@/components/eventsTable";
 import Link from "next/link";
+import { CardTitle } from "@/components/ui/card";
 
 interface Ticket {
   id: string;
@@ -64,7 +65,7 @@ const DisabledPaginationItem: React.FC<{ children: React.ReactNode }> = ({
 );
 
 export const DataTable = ({
-  eventData: eData = [],
+  eventData: eData = [], // Default to an empty array if eventData is undefined
   refetchDataTable,
 }: DataTableProps) => {
   const [selectedEvent, setSelectedEvent] = useState<{
@@ -75,7 +76,7 @@ export const DataTable = ({
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(5);
+  const [itemsPerPage] = useState<number>(5); // Ensure itemsPerPage is always > 0
   const router = useRouter();
 
   useEffect(() => {
@@ -98,8 +99,13 @@ export const DataTable = ({
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = eData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(eData.length / itemsPerPage);
+  const currentData = Array.isArray(eData)
+    ? eData.slice(indexOfFirstItem, indexOfLastItem)
+    : [];
+
+  // Ensure totalPages is always valid
+  const totalPages =
+    eData.length > 0 ? Math.ceil(eData.length / itemsPerPage) : 1;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -167,12 +173,22 @@ export const DataTable = ({
       {" "}
       {/* Mobile View Message */}
       {isMobile ? (
-        <div className="text-center text-sm py-4">
+        <div className="text-center mt-20 text-sm py-4">
           <p>This content is only visible on desktop or tablet.</p>
+          <p>You can still create tickets or events.</p>
+          <div className="mt-4 space-x-2">
+            <Link href={"/shop/products"}>
+              <Button variant={"outline"}>Create Tickets</Button>
+            </Link>
+            <Link href={"/shop/category"}>
+              <Button>Create Events</Button>
+            </Link>
+          </div>
         </div>
       ) : (
         // Desktop & Tablet Content
         <div>
+          <CardTitle className="text-2xl">Events Table</CardTitle>
           <Table className="mt-20">
             <TableHeader className="h-16">
               <TableRow>

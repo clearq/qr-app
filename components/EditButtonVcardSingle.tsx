@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useLanguage } from "@/context/LanguageContext"; // Import the language context
 
 interface EditButtonProps {
   vcardData?: VCard;
@@ -29,6 +30,9 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   >(vData?.image ? vData.image : null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch translations and language from context
+  const { translations, language } = useLanguage();
 
   const validation = useFormik({
     initialValues: {
@@ -52,10 +56,19 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     },
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
-      customerEmail: yup.string().email().required("Email is required"),
-      firstName: yup.string().min(3).required("First name is required"),
-      lastName: yup.string().min(3).required("Last name is required"),
-      tag: yup.string().min(3).required("Label is required"),
+      customerEmail: yup.string().email().required(translations.emailRequired),
+      firstName: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.firstNameRequired),
+      lastName: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.lastNameRequired),
+      tag: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.labelRequired),
       phone: yup.number().nullable(),
       company: yup.string().nullable(),
       image: yup.string().nullable(),
@@ -79,14 +92,14 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
         .then(async (response) => {
           if (response.status === 201) {
             toast({
-              title: `Updated successfully!`,
+              title: translations.updateSuccess,
               description: `${new Date().toLocaleDateString()}`,
             });
             window.location.reload();
           } else {
             toast({
               variant: "destructive",
-              title: `Error updating data`,
+              title: translations.updateError,
               description: `${new Date().toLocaleDateString()}`,
             });
           }
@@ -95,7 +108,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
           console.error("Error:", error);
           toast({
             variant: "destructive",
-            title: `Something went wrong`,
+            title: translations.somethingWentWrong,
             description: `${new Date().toLocaleDateString()}`,
           });
         });
@@ -164,8 +177,6 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-
-    // Submit the form to update the server immediately after removing the image
     validation.handleSubmit();
   };
 
@@ -173,46 +184,46 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     <>
       <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
         <DialogTrigger>
-          <Button variant="outline">Edit your vCard</Button>
+          <Button variant="outline">{translations.editVCard}</Button>
         </DialogTrigger>
         <DialogContent className="overflow-y-auto h-[90%] w-[90%]">
           <form onSubmit={validation.handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Edit your vCard</DialogTitle>
+              <DialogTitle>{translations.editVCard}</DialogTitle>
               <DialogDescription>
-                Edit your vCard here and save your changes.
+                {translations.editVCardDescription}
               </DialogDescription>
               <label
                 htmlFor="imageInput"
                 className="flex justify-center items-center"
               >
-              <div className="relative w-32 h-32">
-                <Avatar
-                  ref={qrRef}
-                  className="absolute inset-0 flex items-center justify-center w-full h-full"
-                >
-                  <AvatarFallback>
-                    {validation.values.firstName
-                      ? validation.values.firstName[0]
-                      : ""}
-                    {validation.values.lastName
-                      ? validation.values.lastName[0]
-                      : ""}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
+                <div className="relative w-32 h-32">
+                  <Avatar
+                    ref={qrRef}
+                    className="absolute inset-0 flex items-center justify-center w-full h-full"
+                  >
+                    <AvatarFallback>
+                      {validation.values.firstName
+                        ? validation.values.firstName[0]
+                        : ""}
+                      {validation.values.lastName
+                        ? validation.values.lastName[0]
+                        : ""}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
               </label>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="firstName">
-                  First Name
+                  {translations.firstName}
                   <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="firstName"
                   name="firstName"
-                  placeholder="First Name"
+                  placeholder={translations.firstName}
                   value={validation.values.firstName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -220,13 +231,13 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="lastName">
-                  Last Name
+                  {translations.lastName}
                   <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="lastName"
                   name="lastName"
-                  placeholder="Last Name"
+                  placeholder={translations.lastName}
                   value={validation.values.lastName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -234,11 +245,12 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">
-                  Email<span className="text-red-700">*</span>
+                  {translations.email}
+                  <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="customerEmail"
-                  placeholder="Email"
+                  placeholder={translations.email}
                   value={validation.values.customerEmail}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -246,18 +258,19 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="label">
-                  Label<span className="text-red-700">*</span>
+                  {translations.label}
+                  <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="tag"
-                  placeholder="Label"
+                  placeholder={translations.label}
                   value={validation.values.tag}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="url">Website</Label>
+                <Label htmlFor="url">{translations.website}</Label>
                 <Input
                   id="url"
                   placeholder="https://"
@@ -267,30 +280,30 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">{translations.phone}</Label>
                 <Input
                   id="phone"
-                  placeholder="Tel."
+                  placeholder={translations.phone}
                   value={validation.values.phone}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">{translations.company}</Label>
                 <Input
                   id="company"
-                  placeholder="Company"
+                  placeholder={translations.company}
                   value={validation.values.company}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{translations.title}</Label>
                 <Input
                   id="title"
-                  placeholder="Title"
+                  placeholder={translations.title}
                   value={validation.values.title}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
@@ -358,7 +371,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">{translations.saveChanges}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

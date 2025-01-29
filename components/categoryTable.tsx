@@ -20,6 +20,14 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Category {
   id: string;
@@ -37,6 +45,10 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage] = useState<number>(5); // Number of items per page
 
   const fetchCategories = useCallback(async () => {
     if (!selectedShopId) return;
@@ -121,6 +133,17 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
     }
   };
 
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCategories = categories.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   if (loading) {
     return <div>Loading categories...</div>;
   }
@@ -142,8 +165,8 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {categories.length > 0 ? (
-            categories.map((category) => (
+          {currentCategories.length > 0 ? (
+            currentCategories.map((category) => (
               <TableRow key={category.id}>
                 <TableCell>
                   <Checkbox
@@ -179,6 +202,61 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
         <span className="text-sm text-muted-foreground">
           {selectedCategories.length} of {categories.length} selected.
         </span>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center w-full mt-4">
+        <Pagination>
+          <PaginationContent>
+            {currentPage === 1 ? (
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                  style={{ pointerEvents: "none", color: "#ccc" }}
+                >
+                  &lt;
+                </PaginationLink>
+              </PaginationItem>
+            ) : (
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                />
+              </PaginationItem>
+            )}
+            {[...Array(totalPages)].map((_, pageIndex) => (
+              <PaginationItem key={pageIndex}>
+                <PaginationLink
+                  href="#"
+                  onClick={() => handlePageChange(pageIndex + 1)}
+                  isActive={currentPage === pageIndex + 1}
+                >
+                  {pageIndex + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            {currentPage === totalPages ? (
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                  style={{ pointerEvents: "none", color: "#ccc" }}
+                >
+                  &gt;
+                </PaginationLink>
+              </PaginationItem>
+            ) : (
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                />
+              </PaginationItem>
+            )}
+          </PaginationContent>
+        </Pagination>
       </div>
 
       {/* Delete Confirmation Dialog */}

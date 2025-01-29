@@ -25,7 +25,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mt-15 mx-auto py-10">
+    <div className="">
       {/* <h1 className="text-3xl font-bold mb-4">URL Dashboard</h1> */}
       {/**@ts-ignore */}
       <DataTable qrData={qrData} refetchDataTable={refetchDataTable} />

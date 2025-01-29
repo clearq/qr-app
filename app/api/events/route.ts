@@ -11,15 +11,23 @@ type Params = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { eventsTitle, description, numberOfTables, availabilityPerTable } =
-      body;
+    const {
+      eventsTitle,
+      description,
+      numberOfTables,
+      availabilityPerTable,
+      fromDate,
+      toDate,
+    } = body;
 
     // Validate inputs
     if (
       !eventsTitle ||
       !description ||
       numberOfTables == null ||
-      availabilityPerTable == null
+      availabilityPerTable == null ||
+      !fromDate ||
+      !toDate
     ) {
       return NextResponse.json(
         { message: "Missing required fields" },
@@ -47,6 +55,8 @@ export async function POST(req: Request) {
           description,
           numberOfTables,
           availabilityPerTable,
+          fromDate: new Date(fromDate),
+          toDate: new Date(toDate),
           customer: { connect: { id: customerId } },
         },
       });
@@ -84,7 +94,7 @@ export async function GET(req: Request) {
         where: { id },
         include: {
           customer: true,
-          eventTables: true, // Include event tables when fetching a single event
+          eventTables: true,
         },
       });
 
@@ -95,7 +105,6 @@ export async function GET(req: Request) {
         );
       }
 
-      // Include the number of tables for the single event
       const eventWithTableCount = {
         ...event,
         tableCount: event.eventTables.length,
@@ -126,21 +135,37 @@ export async function GET(req: Request) {
     const events = await prisma.events.findMany({
       where: { customerId: userId },
       include: {
-        eventTables: true, // Ensure eventTables are included
+        eventTables: true,
         ticket: {
           select: { id: true },
         },
       },
     });
 
+    // Calculate past and upcoming events
+    const currentDate = new Date();
+    const pastEvents = events.filter(
+      (event) => event.toDate && new Date(event.toDate) < currentDate
+    );
+    const upcomingEvents = events.filter(
+      (event) => event.toDate && new Date(event.toDate) >= currentDate
+    );
+
     // Map events to include ticket count and table count
     const eventsWithCounts = events.map((event) => ({
       ...event,
       ticketCount: event.ticket.length,
-      tableCount: event.eventTables.length, // Add table count to the event
+      tableCount: event.eventTables.length,
     }));
 
-    return NextResponse.json(eventsWithCounts, { status: 200 });
+    return NextResponse.json(
+      {
+        events: eventsWithCounts,
+        pastEvents: pastEvents.length,
+        upcomingEvents: upcomingEvents.length,
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json({ error: "Cannot fetch events" }, { status: 500 });

@@ -15,6 +15,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select"; // Import the Select components
+import { CardTitle } from "./ui/card";
 
 interface Event {
   id: string;
@@ -35,7 +36,10 @@ export const TicketComponent = ({
     const fetchEvents = async () => {
       const response = await fetch("/api/events");
       const data = await response.json();
-      setEvents(data);
+
+      // Extract the events array if the response is an object
+      const eventsArray = data.events || data;
+      setEvents(eventsArray);
     };
     fetchEvents();
   }, []);
@@ -54,8 +58,8 @@ export const TicketComponent = ({
         .number()
         .min(1)
         .required("Enter the number of tickets to generate"),
-      fromDate: yup.date().required(),
-      toDate: yup.date().required(),
+      fromDate: yup.date().required("Start date is required"),
+      toDate: yup.date().required("End date is required"),
     }),
     onSubmit: (values) => {
       // Format dates
@@ -106,13 +110,15 @@ export const TicketComponent = ({
   });
 
   return (
-    <div className="w-full h-full p-4 sm:pl-[260px]">
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
+      <CardTitle className="text-2xl">Create Tickets</CardTitle>
       <form
         onSubmit={validation.handleSubmit}
         onClick={(e) => e.stopPropagation()}
         className="mt-20 w-full space-y-4"
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-7">
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="eventId">Select Event</Label>
             <Select
@@ -122,15 +128,16 @@ export const TicketComponent = ({
               }
               disabled={validation.isSubmitting}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="Select an event" />
               </SelectTrigger>
               <SelectContent>
-                {events.map((event) => (
-                  <SelectItem key={event.id} value={event.id}>
-                    {event.eventsTitle}
-                  </SelectItem>
-                ))}
+                {Array.isArray(events) &&
+                  events.map((event) => (
+                    <SelectItem key={event.id} value={event.id}>
+                      {event.eventsTitle}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             {validation.touched.eventId && validation.errors.eventId && (
@@ -161,27 +168,37 @@ export const TicketComponent = ({
           </div>
 
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="fromDate">From Date</Label>
+            <Label htmlFor="fromDate">Start Date</Label>
             <Input
               id="fromDate"
               name="fromDate"
-              placeholder="YYYY-MM-DD"
+              type="date"
               value={validation.values.fromDate}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
             />
+            {validation.touched.fromDate && validation.errors.fromDate && (
+              <div className="text-sm text-red-500">
+                {validation.errors.fromDate}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="toDate">To Date</Label>
+            <Label htmlFor="toDate">End Date</Label>
             <Input
               id="toDate"
               name="toDate"
-              placeholder="YYYY-MM-DD"
+              type="date"
               value={validation.values.toDate}
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
             />
+            {validation.touched.toDate && validation.errors.toDate && (
+              <div className="text-sm text-red-500">
+                {validation.errors.toDate}
+              </div>
+            )}
           </div>
         </div>
 

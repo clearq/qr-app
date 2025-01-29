@@ -5,19 +5,19 @@ export type ExtendedUser = DefaultSession["user"] & {
   lastName: string;
   id: string;
   emailVerified: DateTime;
-  roleId: string; // Add roleId
+  roleId: string;
+  language: string; // Add the `language` property
 };
 
 declare module "next-auth" {
-  // session
   interface Session {
     user: ExtendedUser;
   }
 }
 
 declare module "next-auth/jwt" {
-  // JWT
   interface JWT {
-    emailVerified: DateTime;
+    emailVerified: Date;
+    language: string; // Add the `language` property to JWT
   }
 }

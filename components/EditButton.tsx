@@ -19,15 +19,19 @@ import { toast } from "@/components/ui/use-toast";
 import { Qr } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { MdModeEdit } from "react-icons/md";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface EditButtonProps {
   qrData: Qr;
 }
 
-export const  EditButton = ({ qrData: qr }: EditButtonProps) => {
-  const [logo, setLogo] = useState<string | ArrayBuffer | null>(qr.logoType || null);
+export const EditButton = ({ qrData: qr }: EditButtonProps) => {
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(
+    qr.logoType || null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter()
+  const router = useRouter();
+  const { translations } = useLanguage(); // Use the translations
 
   const validation = useFormik({
     initialValues: {
@@ -51,21 +55,22 @@ export const  EditButton = ({ qrData: qr }: EditButtonProps) => {
       }).then((response) => {
         if (response.status === 201) {
           toast({
-            title: `Updated successfully!`,
-            description: `${new Date().toLocaleDateString()}`,
+            title: translations.updatedSuccessfully,
+            description: new Date().toLocaleDateString(),
           });
           validation.resetForm();
           window.location.reload();
         } else {
           toast({
             variant: "destructive",
-            title: `Something went wrong`,
-            description: `${new Date().toLocaleDateString()}`,
+            title: translations.somethingWentWrong,
+            description: new Date().toLocaleDateString(),
           });
         }
       });
     },
   });
+
   const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -125,104 +130,113 @@ export const  EditButton = ({ qrData: qr }: EditButtonProps) => {
 
   const handleRemoveLogo = () => {
     setLogo(null);
-    validation.setFieldValue('logoType', '');
+    validation.setFieldValue("logoType", "");
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleCancel = () =>{
-    window.location.reload()
-  }
+  const handleCancel = () => {
+    window.location.reload();
+  };
 
   return (
     <>
-    <Dialog>
-      <DialogTrigger className="w-full">
-        <Button className="w-full" variant="ghost">
-        <MdModeEdit size={20} />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">
-        <DialogHeader>
-          <DialogTitle>Edit your QR</DialogTitle>
-          <DialogDescription>
-            Edit your QR here and save your changes.
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            validation.handleSubmit();
-          }}
-        >
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="url" className="text-right">
-                URL
-              </Label>
-              <Input
-                type="text"
-                id="url"
-                value={validation.values.url}
-                className="col-span-3"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
+      <Dialog>
+        <DialogTrigger className="w-full">
+          <Button className="w-full" variant="ghost">
+            <MdModeEdit size={20} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>{translations.editYourQR}</DialogTitle>
+            <DialogDescription>
+              {translations.editQRDescription}
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+            }}
+          >
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="url" className="text-right">
+                  {translations.url}
+                </Label>
+                <Input
+                  type="text"
+                  id="url"
+                  value={validation.values.url}
+                  className="col-span-3"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="tag" className="text-right">
+                  {translations.label}
+                </Label>
+                <Input
+                  id="tag"
+                  value={validation.values.tag}
+                  className="col-span-3"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                />
+              </div>
+              <div className="flex flex-col space-x-4">
+                {logo ? (
+                  <Button onClick={handleRemoveLogo} className="bg-red-500">
+                    {translations.removeLogo}
+                  </Button>
+                ) : (
+                  <>
+                    <label
+                      htmlFor="logoType"
+                      className="text-[15px] px-5 py-2 text-center text-secondary cursor-pointer border rounded-[6px] bg-primary"
+                    >
+                      {translations.browse}
+                    </label>
+                    <input
+                      type="file"
+                      id="logoType"
+                      accept="image/*"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleLogoUpload}
+                    />
+                  </>
+                )}
+              </div>
+              <QRCode
+                className="flex flex-col left-5 md:left-1 justify-center items-center mt-5 relative"
+                value={`https://qrgen.clearq.se/redirect?id=${qr?.id}&type=qr`}
+                size={window.innerWidth > 768 ? 500 : 300}
+                imageSettings={{
+                  src: logo ? logo.toString() : "",
+                  height: 55,
+                  width: 55,
+                  excavate: true,
+                }}
+                renderAs="svg"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="tag" className="text-right">
-                Label
-              </Label>
-              <Input
-                id="tag"
-                value={validation.values.tag}
-                className="col-span-3"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-              />
-            </div>
-            <div className="flex flex-col space-x-4">
-              {logo ? (
-                <Button onClick={handleRemoveLogo} className=" bg-red-500">
-                  Remove Logo
-                </Button>
-              ) : (
-                <>
-                  <label htmlFor="logoType" className="text-[15px] px-5 py-2 text-center text-secondary cursor-pointer border rounded-[6px] bg-primary">
-                    Browse
-                  </label>
-                  <input
-                    type="file"
-                    id="logoType"
-                    accept="image/*"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleLogoUpload}
-                  />
-                </>
-              )}
-            </div>
-            <QRCode
-              className="flex flex-col left-5 md:left-1 justify-center items-center mt-5 relative"
-              value={`https://qrgen.clearq.se/redirect?id=${qr?.id}`}
-              size={window.innerWidth > 768 ? 500 : 300}
-              imageSettings={{
-                src: logo ? logo.toString() : '',
-                height: 55,
-                width: 55,
-                excavate: true,
-              }}
-              renderAs="svg"
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
-        </form>
-            <Button variant={"destructive"} className="top-" onClick={handleCancel}>Cancel</Button>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit">{translations.saveChanges}</Button>
+            </DialogFooter>
+          </form>
+          <Button
+            variant={"destructive"}
+            className="top-"
+            onClick={handleCancel}
+          >
+            {translations.cancel}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

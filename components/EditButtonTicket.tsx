@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface EditButtonProps {
   ticketData: Ticket;
@@ -33,6 +34,7 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
   const [tooltipMessage, setTooltipMessage] = useState("Copy");
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [tableOptions, setTableOptions] = useState<number[]>([]);
+  const { translations } = useLanguage(); // Use the translations
 
   useEffect(() => {
     const fetchTableOptions = async () => {
@@ -78,21 +80,21 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
         });
 
         if (response.ok) {
-          toast({ title: "Ticket updated successfully!" });
+          toast({ title: translations.ticketUpdatedSuccessfully });
           window.location.reload();
         } else {
           const error = await response.json();
           toast({
             variant: "destructive",
-            title: "Error updating ticket",
-            description: error.error || "Unknown error occurred",
+            title: translations.errorUpdatingTicket,
+            description: error.error || translations.unknownErrorOccurred,
           });
         }
       } catch (error) {
         console.error("Error:", error);
         toast({
           variant: "destructive",
-          title: "Something went wrong",
+          title: translations.somethingWentWrong,
         });
       }
     },
@@ -100,14 +102,14 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(formik.values.qrNumber);
-    setTooltipMessage("Copied");
+    setTooltipMessage(translations.copied);
 
     // Hide tooltip after clicking
     setIsTooltipVisible(true);
 
     // Reset the tooltip message back to "Copy" after a short delay
     setTimeout(() => {
-      setTooltipMessage("Copy");
+      setTooltipMessage(translations.copy);
       setIsTooltipVisible(false); // Hide tooltip after delay
     }, 2000); // Change this delay as needed
   };
@@ -125,12 +127,12 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
       >
         <form onSubmit={formik.handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Edit your ticket</DialogTitle>
+            <DialogTitle>{translations.editYourTicket}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             {/* Ticket ID */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="id">Ticket ID</Label>
+              <Label htmlFor="id">{translations.ticketId}</Label>
               <Input
                 id="id"
                 name="id"
@@ -142,11 +144,11 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
 
             {/* Ticket Name */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="ticketsName">Ticket Name</Label>
+              <Label htmlFor="ticketsName">{translations.ticketName}</Label>
               <Input
                 id="ticketsName"
                 name="ticketsName"
-                placeholder="Ticket Name"
+                placeholder={translations.ticketName}
                 value={formik.values.ticketsName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -155,19 +157,20 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
 
             {/* Description */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{translations.description}</Label>
               <Input
                 id="description"
                 name="description"
-                placeholder="Description"
+                placeholder={translations.description}
                 value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
             </div>
 
+            {/* Full Name */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName">{translations.fullName}</Label>
               <Input
                 id="fullName"
                 name="fullName"
@@ -178,11 +181,11 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
 
             {/* Guest Email */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="guestMail">Guest Email</Label>
+              <Label htmlFor="guestMail">{translations.guestEmail}</Label>
               <Input
                 id="guestMail"
                 name="guestMail"
-                placeholder="Email"
+                placeholder={translations.email}
                 value={formik.values.guestMail}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -191,20 +194,21 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
 
             {/* QR Number */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="qrNumber">QR Generated ID</Label>
+              <Label htmlFor="qrNumber">{translations.qrGeneratedId}</Label>
               <Input
                 disabled
                 id="qrNumber"
                 name="qrNumber"
-                placeholder="QR Code"
+                placeholder={translations.qrCode}
                 value={formik.values.qrNumber}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
             </div>
 
+            {/* Event Title ID */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="eventsTitleId">Event Title ID</Label>
+              <Label htmlFor="eventsTitleId">{translations.eventTitleId}</Label>
               <Input
                 id="eventsTitleId"
                 name="eventsTitleId"
@@ -212,8 +216,10 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
                 onChange={formik.handleChange}
               />
             </div>
+
+            {/* Table Number */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="tableNumber">Table Number</Label>
+              <Label htmlFor="tableNumber">{translations.tableNumber}</Label>
               <Input
                 id="tableNumber"
                 name="tableNumber"
@@ -222,8 +228,12 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
                 onChange={formik.handleChange}
               />
             </div>
+
+            {/* Amount of People */}
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="amountOfPeople">Amount of People</Label>
+              <Label htmlFor="amountOfPeople">
+                {translations.amountOfPeople}
+              </Label>
               <Input
                 id="amountOfPeople"
                 name="amountOfPeople"
@@ -234,7 +244,7 @@ const EditButton = ({ ticketData: tData }: EditButtonProps) => {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit">{translations.saveChanges}</Button>
           </DialogFooter>
         </form>
         <TooltipProvider>
