@@ -35,6 +35,7 @@ import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { VcardAnalys } from "@/components/vcardAnalys";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CardTitle } from "@/components/ui/card";
 
 interface DataTableProps {
   vcardData: IVCARD[];
@@ -129,7 +130,7 @@ export const DataTable = ({
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
       {" "}
-      <h1 className="text-3xl font-bold mb-6"></h1>
+      <CardTitle className="text-2xl">VCard Table</CardTitle>
       <Table className="mb-5">
         <TableHeader className="h-16">
           <TableRow>

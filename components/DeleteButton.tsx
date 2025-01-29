@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"; // Assuming you're using a dialog component
 import { toast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface DeleteButtonProps {
   id: string;
@@ -19,18 +20,19 @@ interface DeleteButtonProps {
 
 export const DeleteButton: React.FC<DeleteButtonProps> = ({ id, onDelete }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { translations } = useLanguage(); // Use the translations
 
   const handleDelete = async () => {
     try {
       await onDelete(id);
       toast({
-        title: "Success",
-        description: "The item has been deleted.",
+        title: translations.success,
+        description: translations.itemDeletedSuccessfully,
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete the item. Please try again.",
+        title: translations.error,
+        description: translations.failedToDeleteItem,
         variant: "destructive",
       });
     } finally {
@@ -50,10 +52,9 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ id, onDelete }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogTitle>{translations.confirmDeletion}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this item? This action cannot be
-            undone.
+            {translations.deleteConfirmationMessage}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -62,14 +63,14 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ id, onDelete }) => {
             onClick={() => setIsDialogOpen(false)}
             className="hover:bg-gray-100"
           >
-            Cancel
+            {translations.cancel}
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
             className="bg-red-600 hover:bg-red-700 text-white"
           >
-            Delete
+            {translations.delete}
           </Button>
         </DialogFooter>
       </DialogContent>

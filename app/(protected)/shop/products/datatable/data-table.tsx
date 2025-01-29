@@ -38,6 +38,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton"; // For loading state
 import { ProductSingle } from "@/components/ProductSingle"; // Import the new component
 import Link from "next/link";
+import { CardTitle } from "@/components/ui/card";
 
 interface DataTableProps {
   productData: PRODUCT[];
@@ -262,6 +263,8 @@ export const DataTable = ({
         </div>
       ) : (
         <div>
+          <CardTitle className="text-2xl">Items Table</CardTitle>
+
           {/* Shop Selector Dropdown */}
           <div className="flex mb-6 justify-end items-end">
             <Select

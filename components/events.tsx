@@ -5,23 +5,32 @@ import { Button } from "@/components/ui/button";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
+import { format, addDays } from "date-fns";
 import { CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { useRouter } from "next/navigation";
 
 export const EventsComponent = ({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) => {
+  const today = new Date();
+  const router = useRouter();
+
   const validation = useFormik({
     initialValues: {
       eventsTitle: "",
       description: "",
       numberOfTables: 0,
-      availabilityPerTable: 0 || "",
+      availabilityPerTable: 0,
+      fromDate: format(today, "yyyy-MM-dd"),
+      toDate: format(addDays(today, 20), "yyyy-MM-dd"),
     },
     validationSchema: yup.object({
       eventsTitle: yup.string().required("Title is required"),
       description: yup.string().required("Description is required"),
       numberOfTables: yup.number(),
       availabilityPerTable: yup.number(),
+      fromDate: yup.date().required("Start date is required"),
+      toDate: yup.date().required("End date is required"),
     }),
     onSubmit: (values) => {
       fetch("/api/events", {
@@ -38,7 +47,7 @@ export const EventsComponent = ({
               title: `Created successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-            window.location.reload();
+            router.replace("/events");
           } else {
             toast({
               variant: "destructive",
@@ -59,10 +68,11 @@ export const EventsComponent = ({
   });
 
   return (
-    <div className="w-full h-full p-4 sm:pl-[260px]">
+    <div className="w-full h-full mt-16 p-4 sm:pl-[260px]">
       {" "}
+      <CardTitle className="text-2xl">Create Event</CardTitle>
       <CardHeader>
-        <CardTitle className="text-6xl">New Event</CardTitle>
+        <CardTitle className="text-3xl">New Event</CardTitle>
         <CardDescription>Add your events here</CardDescription>
       </CardHeader>
       <form onSubmit={validation.handleSubmit} className="w-full space-y-4">
@@ -121,6 +131,28 @@ export const EventsComponent = ({
             }}
             onBlur={validation.handleBlur}
             min={0} // Prevents typing values below 0 in supported browsers
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <label htmlFor="fromDate">Start Date</label>
+          <Input
+            id="fromDate"
+            name="fromDate"
+            type="date"
+            value={validation.values.fromDate}
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+          />
+        </div>
+        <div className="flex flex-col space-y-1.5">
+          <label htmlFor="toDate">End Date</label>
+          <Input
+            id="toDate"
+            name="toDate"
+            type="date"
+            value={validation.values.toDate}
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
           />
         </div>
         <div>

@@ -42,39 +42,33 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --background: 0 0% 15%; /* Equivalent to #252525 in HSL */
+    --foreground: 210 40% 98%;
+  
+    --card: 0 0% 15%; /* Dark mode card background */
+    --card-foreground: 210 40% 98%;
+  
+    --popover: 0 0% 15%; /* Dark mode popover background */
+    --popover-foreground: 210 40% 98%;
+  
+    --primary: 210 40% 98%; /* Dark mode primary color */
+    --primary-foreground: 222.2 47.4% 11.2%;
+  
+    --secondary: 0 0% 20%; /* Dark mode secondary color */
+    --secondary-foreground: 210 40% 98%;
+  
+    --muted: 0 0% 20%; /* Dark mode muted color */
+    --muted-foreground: 215 20% 65%;
+  
+    --accent: 0 0% 20%; /* Dark mode accent color */
+    --accent-foreground: 210 40% 98%;
+  
+    --destructive: 0 62.8% 30.6%; /* Dark mode destructive color */
+    --destructive-foreground: 210 40% 98%;
+  
+    --border: 0 0% 20%; /* Dark mode border color */
+    --input: 0 0% 20%; /* Dark mode input background */
+    --ring: 212.7 26.8% 83.9%; /* Dark mode ring color */
   }
 }
 
@@ -187,4 +181,49 @@ a:link {
   color: #a0aec0;
   font-style: italic;
   position: absolute;
+}
+
+body[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+body[dir="rtl"] .sidebar {
+  right: 0;
+  left: auto;
+}
+
+body[dir="rtl"] .navbar {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.theme-image {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.light-image {
+  display: block;
+}
+
+.dark-image {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .light-image {
+    display: none;
+  }
+
+  .dark-image {
+    display: block;
+  }
+}
+
+/* Add this to your global CSS file */
+input, textarea, select, button {
+  font-size: 16px;
 }

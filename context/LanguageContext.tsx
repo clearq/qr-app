@@ -16,7 +16,7 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [language, setLanguage] = useState("sv");
+  const [language, setLanguage] = useState("en");
   const [translations, setTranslations] = useState<Record<string, string>>({});
 
   const loadTranslations = async (lang: string) => {

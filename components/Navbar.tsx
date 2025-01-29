@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useLanguage } from "@/context/LanguageContext";
+import ThemeImage from "./ThemeImage";
 
 export const ROLES = {
   ACCOUNT: "1",
@@ -148,8 +149,6 @@ export const Sidebar = ({ user: userData }: Props) => {
     "/shop/products/datatable": "Items Table",
     "/shop/products/details": "Items ",
     "/profile": "Profile",
-    "/login": "Login",
-    "/register": "Register",
     "/qr": "Create URL",
     "/shop/products": "Create Item",
     "/shop/category": "Create Category",
@@ -197,7 +196,7 @@ export const Sidebar = ({ user: userData }: Props) => {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`w-48 shadow-md flex flex-col fixed lg:relative h-screen bg-white dark:bg-gray-800 transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`w-48 shadow-md flex flex-col fixed lg:relative h-screen bg-white dark:bg-[#151515] transform transition-transform duration-300 ease-in-out z-50 ${
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
@@ -205,7 +204,8 @@ export const Sidebar = ({ user: userData }: Props) => {
       >
         <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-800">
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
-            <Image alt="logo" src={logoImage} className="w-[50px] h-auto" />
+            {/* <Image alt="logo" src={logoImage} className="w-[50px] h-auto" /> */}
+            <ThemeImage />
           </Link>
           <ModeToggle />
         </div>
@@ -220,7 +220,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                 }`}
               >
                 <Home className="w-5 h-5" />
-                <span>Overview</span>
+                <span>{translations.overview}</span>
               </Link>
               <Link
                 href="/profile"
@@ -230,13 +230,13 @@ export const Sidebar = ({ user: userData }: Props) => {
                 }`}
               >
                 <User className="w-5 h-5" />
-                <span>Profile</span>
+                <span>{translations.profile}</span>
               </Link>
               <Accordion className="ml-1" type="single" collapsible>
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="flex items-center space-x-2">
                     <LinkIcon className="w-5 h-5" />
-                    <span>Link</span>
+                    <span>{translations.link}</span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <Link
@@ -247,7 +247,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <Plus className="w-5 h-5" />
-                      <span>Create Link</span>
+                      <span>{translations.createLink}</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
@@ -259,14 +259,14 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <List className="w-5 h-5" />
-                      <span>Link Table</span>
+                      <span>{translations.linkTable}</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="flex items-center space-x-2">
                     <Contact className="w-5 h-5" />
-                    <span>VCard</span>
+                    <span>{translations.vcard}</span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <Link
@@ -277,7 +277,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <Plus className="w-5 h-5" />
-                      <span>Create VCard</span>
+                      <span>{translations.createVCard}</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
@@ -289,14 +289,14 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <List className="w-5 h-5" />
-                      <span>VCard Table</span>
+                      <span>{translations.vcardTable}</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="flex items-center space-x-2">
                     <Calendar className="w-5 h-5" />
-                    <span>Event</span>
+                    <span>{translations.event}</span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <Link
@@ -307,7 +307,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <Plus className="w-5 h-5" />
-                      <span>Create Event</span>
+                      <span>{translations.createEvent}</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
@@ -319,7 +319,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <List className="w-5 h-5" />
-                      <span>Events Table</span>
+                      <span>{translations.eventsTable}</span>
                     </Link>
                   </AccordionContent>
                   <AccordionContent>
@@ -331,7 +331,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                       }`}
                     >
                       <Ticket className="w-5 h-5" />
-                      <span>Create Tickets</span>
+                      <span>{translations.createTickets}</span>
                     </Link>
                   </AccordionContent>
                 </AccordionItem>
@@ -339,7 +339,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                   <AccordionItem value="item-4">
                     <AccordionTrigger className="flex items-center space-x-2">
                       <Building className="w-5 h-5" />
-                      <span>Business Unit</span>
+                      <span>{translations.businessUnit}</span>
                     </AccordionTrigger>
                     <AccordionContent>
                       <Link
@@ -350,7 +350,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                         }`}
                       >
                         <Plus className="w-5 h-5" />
-                        <span>Create Unit</span>
+                        <span>{translations.createUnit}</span>
                       </Link>
                     </AccordionContent>
                     <AccordionContent>
@@ -362,7 +362,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                         }`}
                       >
                         <List className="w-5 h-5" />
-                        <span>Business Unit Table</span>
+                        <span>{translations.businessUnitTable}</span>
                       </Link>
                     </AccordionContent>
                     <AccordionContent>
@@ -374,7 +374,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                         }`}
                       >
                         <FolderPlus className="w-5 h-5" />
-                        <span>Create Category</span>
+                        <span>{translations.createCategory}</span>
                       </Link>
                     </AccordionContent>
                     <AccordionContent>
@@ -386,7 +386,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                         }`}
                       >
                         <Plus className="w-5 h-5" />
-                        <span>Create Items</span>
+                        <span>{translations.createItems}</span>
                       </Link>
                     </AccordionContent>
                     <AccordionContent>
@@ -400,7 +400,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                         }`}
                       >
                         <List className="w-5 h-5" />
-                        <span>Items Table</span>
+                        <span>{translations.itemsTable}</span>
                       </Link>
                     </AccordionContent>
                   </AccordionItem>
@@ -419,7 +419,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                 }`}
               >
                 <Home className="w-5 h-5" />
-                <span>Login</span>
+                <span>{translations.login}</span>
               </Link>
               <Link
                 href="/register"
@@ -431,7 +431,7 @@ export const Sidebar = ({ user: userData }: Props) => {
                 }`}
               >
                 <User className="w-5 h-5" />
-                <span>Register</span>
+                <span>{translations.register}</span>
               </Link>
             </>
           )}
@@ -441,20 +441,24 @@ export const Sidebar = ({ user: userData }: Props) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="p-2 mb-16 flex flex-row space-x-2 sm:mb-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
+                  className="p-2 mb-28 flex flex-row space-x-2 sm:mb-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
                   onClick={handleSignOut}
                 >
                   <PowerOff className="w-5 h-5" />
-                  <p className="flex justify-start items-start">Logout</p>
+                  <p className="flex justify-start items-start">
+                    {translations.logout}
+                  </p>
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="flex justify-start items-start">Logout</p>
+                <p className="flex justify-start items-start">
+                  {translations.logout}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
-          {/* <Select
+          <Select
             value={language}
             onValueChange={(value) => setLanguage(value)}
           >
@@ -462,11 +466,11 @@ export const Sidebar = ({ user: userData }: Props) => {
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sv">Sv</SelectItem>
               <SelectItem value="en">En</SelectItem>
+              <SelectItem value="sv">Sv</SelectItem>
               <SelectItem value="ar">Ar</SelectItem>
             </SelectContent>
-          </Select> */}
+          </Select>
         </div>
       </aside>
 

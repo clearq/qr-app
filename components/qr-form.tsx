@@ -48,8 +48,7 @@ export const QrForm = () => {
               title: `Created successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-
-            window.location.reload();
+            router.replace("/dashboard");
           } else {
             toast({
               variant: "destructive",

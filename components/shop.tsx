@@ -75,10 +75,11 @@ export const ShopComponent = ({
   });
 
   return (
-    <div className="w-full h-full p-4 sm:pl-[260px]">
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
       {" "}
+      <CardTitle className="text-2xl">Create Unit</CardTitle>
       <CardHeader>
-        <CardTitle className="text-6xl">New Unit</CardTitle>
+        <CardTitle className="text-3xl">New Unit</CardTitle>
         <CardDescription>Add a new business unit here</CardDescription>
       </CardHeader>
       <form onSubmit={validation.handleSubmit} className="w-full space-y-4">

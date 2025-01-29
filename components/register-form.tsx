@@ -179,13 +179,17 @@ export function RegisterForm() {
         onValueChange={(value) => setActiveTab(value)}
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="company">Company</TabsTrigger>
+          <TabsTrigger value="account" className="text-[#D4AF37]">
+            Account
+          </TabsTrigger>
+          <TabsTrigger value="company" className="text-[#D4AF37]">
+            Company
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>User Register</CardTitle>
+              <CardTitle>Register</CardTitle>
               <CardDescription>Sign up as user here.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -197,7 +201,7 @@ export function RegisterForm() {
                   value={validation.values.firstName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   placeholder="James"
                   required
                 />
@@ -208,7 +212,7 @@ export function RegisterForm() {
                   value={validation.values.lastName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   placeholder="Rodrigez"
                   required
                 />
@@ -219,7 +223,7 @@ export function RegisterForm() {
                   value={validation.values.email}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   placeholder="example@qrgen.se"
                   required
                 />
@@ -230,7 +234,7 @@ export function RegisterForm() {
                   value={validation.values.password}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
-                  className="w-full border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                  className="w-full border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   placeholder="Password"
                   autoComplete="new-password"
                   required
@@ -242,11 +246,7 @@ export function RegisterForm() {
                 )}
 
                 <p className="text-red-600 text-sm mt-2">{error}</p>
-                <Button
-                  type="submit"
-                  className=" text-white hover:text-white py-2 rounded bg-slate-800 hover:bg-slate-950"
-                  variant="outline"
-                >
+                <Button type="submit" className="">
                   {" "}
                   Register
                 </Button>
@@ -283,7 +283,7 @@ export function RegisterForm() {
                     value={validation.values.firstName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="James"
                     required
                   />
@@ -296,7 +296,7 @@ export function RegisterForm() {
                     value={validation.values.lastName}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="Rodrigez"
                     required
                   />
@@ -309,7 +309,7 @@ export function RegisterForm() {
                     value={validation.values.orgNumber}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="123456-7890"
                     required
                   />
@@ -322,7 +322,7 @@ export function RegisterForm() {
                     value={validation.values.company}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="QrGen"
                     required
                   />
@@ -335,7 +335,7 @@ export function RegisterForm() {
                     value={validation.values.email}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="example@qrgen.se"
                     required
                   />
@@ -348,7 +348,7 @@ export function RegisterForm() {
                     value={validation.values.address}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="1017 Airline Dr"
                     required
                   />
@@ -361,7 +361,7 @@ export function RegisterForm() {
                     value={validation.values.city}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="Kenner"
                     required
                   />
@@ -374,7 +374,7 @@ export function RegisterForm() {
                     value={validation.values.zip}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="70062"
                     required
                   />
@@ -387,7 +387,7 @@ export function RegisterForm() {
                     value={validation.values.password}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="Password"
                     autoComplete="new-password"
                     required
@@ -406,7 +406,7 @@ export function RegisterForm() {
                     name="roleId"
                     value={activeTab === "account" ? "1" : "2"} // Automatically set roleId
                     readOnly
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                   />
                 </div> */}
                 <div>
@@ -417,15 +417,11 @@ export function RegisterForm() {
                     value={validation.values.image}
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
-                    className="w-[90%] border border-gray-30 text-black rounded px-3 py-2 mb-4 focus:outline-none focus:text-black focus:border-blue-400"
+                    className="w-[90%] border border-gray-30 rounded px-3 py-2 mb-4 focus:outline-none "
                     placeholder="Image URL"
                   /> */}
                 </div>
-                <Button
-                  type="submit"
-                  className="w-[50%] text-white hover:text-white py-2 rounded bg-slate-800 hover:bg-slate-950"
-                  variant="outline"
-                >
+                <Button type="submit" className="w-[50%]">
                   {" "}
                   Register
                 </Button>

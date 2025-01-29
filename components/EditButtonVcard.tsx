@@ -17,6 +17,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { MdModeEdit } from "react-icons/md";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface EditButtonProps {
   vcardData: VCard;
@@ -27,6 +28,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const qrRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { translations } = useLanguage(); // Use the translations
 
   const validation = useFormik({
     initialValues: {
@@ -50,10 +52,19 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
     },
     validationSchema: yup.object({
       url: yup.string().url().nullable(),
-      customerEmail: yup.string().email().required("Email is required"),
-      firstName: yup.string().min(3).required("First name is required"),
-      lastName: yup.string().min(3).required("Last name is required"),
-      tag: yup.string().min(3).required("Label is required"),
+      customerEmail: yup.string().email().required(translations.emailRequired),
+      firstName: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.firstNameRequired),
+      lastName: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.lastNameRequired),
+      tag: yup
+        .string()
+        .min(3, translations.minLength)
+        .required(translations.labelRequired),
       phone: yup.number().nullable(),
       company: yup.string().nullable(),
       image: yup.string().nullable(),
@@ -77,15 +88,15 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
         .then(async (response) => {
           if (response.status === 201) {
             toast({
-              title: `Updated successfully!`,
-              description: `${new Date().toLocaleDateString()}`,
+              title: translations.updatedSuccessfully,
+              description: new Date().toLocaleDateString(),
             });
             window.location.reload();
           } else {
             toast({
               variant: "destructive",
-              title: `Error updating data`,
-              description: `${new Date().toLocaleDateString()}`,
+              title: translations.errorUpdatingData,
+              description: new Date().toLocaleDateString(),
             });
           }
         })
@@ -93,8 +104,8 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
           console.error("Error:", error);
           toast({
             variant: "destructive",
-            title: `Something went wrong`,
-            description: `${new Date().toLocaleDateString()}`,
+            title: translations.somethingWentWrong,
+            description: new Date().toLocaleDateString(),
           });
         });
     },
@@ -174,9 +185,9 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
         <DialogContent className="overflow-y-auto h-[90%] w-[90%]">
           <form onSubmit={validation.handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Edit your vCard</DialogTitle>
+              <DialogTitle>{translations.editYourVCard}</DialogTitle>
               <DialogDescription>
-                Edit your vCard here and save your changes.
+                {translations.editVCardDescription}
               </DialogDescription>
               <label
                 htmlFor="imageInput"
@@ -197,90 +208,107 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </label>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
+              {/* First Name */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="firstName">
-                  First Name
+                  {translations.firstName}
                   <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="firstName"
                   name="firstName"
-                  placeholder="First Name"
+                  placeholder={translations.firstName}
                   value={validation.values.firstName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Last Name */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="lastName">
-                  Last Name
+                  {translations.lastName}
                   <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="lastName"
                   name="lastName"
-                  placeholder="Last Name"
+                  placeholder={translations.lastName}
                   value={validation.values.lastName}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Email */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">
-                  Email<span className="text-red-700">*</span>
+                  {translations.email}
+                  <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="customerEmail"
-                  placeholder="Email"
+                  placeholder={translations.email}
                   value={validation.values.customerEmail}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Label */}
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="label">
-                  Label<span className="text-red-700">*</span>
+                  {translations.label}
+                  <span className="text-red-700">*</span>
                 </Label>
                 <Input
                   id="tag"
-                  placeholder="Label"
+                  placeholder={translations.label}
                   value={validation.values.tag}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Title */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{translations.title}</Label>
                 <Input
                   id="title"
-                  placeholder="Title"
+                  placeholder={translations.title}
                   value={validation.values.title}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Phone */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone">{translations.phone}</Label>
                 <Input
                   id="phone"
-                  placeholder="Tel."
+                  placeholder={translations.phone}
                   value={validation.values.phone}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Company */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">{translations.company}</Label>
                 <Input
                   id="company"
-                  placeholder="Company"
+                  placeholder={translations.company}
                   value={validation.values.company}
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Website */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="url">Website</Label>
+                <Label htmlFor="url">{translations.website}</Label>
                 <Input
                   id="url"
                   placeholder="https://"
@@ -289,8 +317,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* LinkedIn */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="linkedIn">LinkedIn</Label>
+                <Label htmlFor="linkedIn">{translations.linkedIn}</Label>
                 <Input
                   id="linkedIn"
                   placeholder="https://"
@@ -299,8 +329,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Facebook */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="facebook">Facebook</Label>
+                <Label htmlFor="facebook">{translations.facebook}</Label>
                 <Input
                   id="facebook"
                   placeholder="https://"
@@ -309,8 +341,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Instagram */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="instagram">Instagram</Label>
+                <Label htmlFor="instagram">{translations.instagram}</Label>
                 <Input
                   id="instagram"
                   placeholder="https://"
@@ -319,8 +353,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* TikTok */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="tiktok">Tiktok</Label>
+                <Label htmlFor="tiktok">{translations.tiktok}</Label>
                 <Input
                   id="tiktok"
                   placeholder="https://"
@@ -329,8 +365,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* Snapchat */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="snapchat">Snapchat</Label>
+                <Label htmlFor="snapchat">{translations.snapchat}</Label>
                 <Input
                   id="snapchat"
                   placeholder="https://"
@@ -339,8 +377,10 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
                   onBlur={validation.handleBlur}
                 />
               </div>
+
+              {/* X (Twitter) */}
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="x">X</Label>
+                <Label htmlFor="x">{translations.x}</Label>
                 <Input
                   id="x"
                   placeholder="https://"
@@ -351,7 +391,7 @@ const EditButton = ({ vcardData: vData }: EditButtonProps) => {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">{translations.saveChanges}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

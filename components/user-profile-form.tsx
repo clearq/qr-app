@@ -21,6 +21,7 @@ import { redirect } from "next/navigation";
 import { uploadFile, autoLoginToCDN, getImageUrl } from "@/actions/api";
 import { Icon } from "@iconify/react";
 import MediaPreview from "@/app/MediaPreview";
+import { Skeleton } from "./ui/skeleton";
 
 interface Props {
   user: Customer;
@@ -31,6 +32,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [retrievedFile, setRetrievedFile] = useState<string>("");
+  const [loading, setLoading] = React.useState(true); // Loading state
   const [fileKey, setFileKey] = useState<string>("");
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -184,14 +186,15 @@ export const EditProfileForm = ({ user: userData }: Props) => {
   }
 
   return (
-    <div className=" container">
-      <CardTitle className="text-2xl mt-20 sm:ml-56">Profile</CardTitle>
-      <div className="mt-16 sm:ml-60 flex flex-col justify-center items-center">
+    <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
+      {" "}
+      <CardTitle className="text-2xl ">Profile</CardTitle>
+      <div className="mt-5">
         <header>
           <h1 className="font-bold">Edit your Profile</h1>
           <h2>Update your profile here.</h2>
         </header>
-        <div className="w-[124px] h-[124px] relative rounded-full">
+        <div className="w-[124px] h-[124px] sm:ml-[40rem] ml-[7rem] relative rounded-full">
           {retrievedFile ? (
             <MediaPreview retrievedFile={retrievedFile} fileKey={fileKey} />
           ) : (
@@ -246,6 +249,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="First Name"
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -257,6 +261,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Last Name"
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -269,6 +274,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Email"
                 value={validation.values.email}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -279,6 +285,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Phone"
                 value={validation.values.phone}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -288,6 +295,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Company"
                 value={validation.values.company}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -297,6 +305,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="123456-7890"
                 value={validation.values.orgNumber}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -306,6 +315,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="1017 Airline Dr"
                 value={validation.values.address}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -315,6 +325,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="Kenner"
                 value={validation.values.city}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -324,6 +335,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 placeholder="70062"
                 value={validation.values.zip}
                 onChange={validation.handleChange}
+                style={{ fontSize: "16px" }} // Ensure font size is 16px
               />
             </div>
             <Button type="submit" className="mt-[25px] mb-4 w-full">
@@ -335,7 +347,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             {!showChangePassword ? (
               <Button
                 variant="link"
-                className="text-sm justify-start mr-2 text-gray-600 hover:text-gray-900"
+                className="text-sm justify-start mr-2"
                 onClick={() => setShowChangePassword(true)}
               >
                 Do you want to change password?
@@ -349,7 +361,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 />
                 <Button
                   variant="link"
-                  className="text-sm text-gray-600 hover:text-gray-900 mt-2"
+                  className="text-sm mt-2"
                   onClick={() => setShowChangePassword(false)}
                 >
                   Hide Change Password

@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css"; // Import the styles
@@ -76,7 +74,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             // Clear Formatting
             ["clean"], // Clear formatting
           ],
-          imageResize: {}, // Correct configuration for the image resize module
+          imageResize: {
+            modules: ["Resize", "DisplaySize"], // Ensure the resize module is active
+          },
         }}
         formats={[
           "font",

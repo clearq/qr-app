@@ -42,6 +42,7 @@ import Category from "@/components/category";
 import Product from "@/components/product";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { CardTitle } from "@/components/ui/card";
 
 interface DataTableProps {
   shopData: SHOP[];
@@ -154,6 +155,7 @@ const DataTable = ({
         </div>
       ) : (
         <div>
+          <CardTitle className="text-2xl">Business Unit Table</CardTitle>
           <Table className="mt-20">
             <TableHeader className="h-16">
               <TableRow>
