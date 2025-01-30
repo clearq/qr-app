@@ -17,9 +17,7 @@ export async function POST(request: Request) {
 
   try {
     // Check if the email exists in the database
-    const user = await prisma.customer.findUnique({
-      where: { email },
-    });
+    const user = await prisma.customer.findUnique({ where: { email } });
 
     if (!user) {
       return NextResponse.json({ error: "Email not found." }, { status: 404 });
@@ -28,53 +26,54 @@ export async function POST(request: Request) {
     // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Set OTP expiration time (30 seconds from now)
-    const resetPasswordTokenExpires = new Date(Date.now() + 30 * 1000); // 30 seconds
+    // Set OTP expiration time (2 minutes from now)
+    const resetPasswordTokenExpires = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
 
-    // Save the OTP and its expiration time in the database
+    // Save OTP and expiration in the database
     await prisma.customer.update({
       where: { email },
-      data: {
-        resetPasswordToken: otp,
-        resetPasswordTokenExpires,
-      },
+      data: { resetPasswordToken: otp, resetPasswordTokenExpires },
     });
 
     // Email content
-    const logoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/image/qrLogo.png`;
+    const logoUrl = `${process.env.NEXT_PUBLIC_APP_URL}/image/QaafGold.png`;
     const resetPasswordUrl = `${
       process.env.NEXT_PUBLIC_PASSWORD_URL
     }/reset-password?email=${encodeURIComponent(email)}`;
 
     const mailOptions = {
-      from: `"QrGen" <${process.env.GMAIL_USER}>`,
+      from: `"Qaaf Support" <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: "Password Reset OTP",
+      subject: "🔐 Reset Your Password - OTP Inside",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px;">
-          <p style="font-size: 18px; color: #333;">Dear ${user.firstName},</p>
-          <p style="font-size: 16px; color: #555;">We received a request to reset your password. Here is your OTP:</p>
-          <p style="font-size: 16px; color: #555;"><strong>OTP:</strong> ${otp}</p>
-          <p style="font-size: 16px; color: #555;">This OTP will expire in <strong>30 seconds</strong>.</p>
-          <p style="font-size: 16px; color: #555;">Click the button below to reset your password:</p>
-          <div style="text-align: center; margin: 20px 0;">
-            <a href="${resetPasswordUrl}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px;">
-              Reset Password
-            </a>
+        <div style="background-color: #252525; color: #D4AF37; font-family: Arial, sans-serif; padding: 30px; border-radius: 8px; text-align: center;">
+          <img src="${logoUrl}" alt="Qaaf Logo" style="width: 80px; margin-bottom: 20px;" />
+          <h2 style="color: #D4AF37; margin-bottom: 10px;">Password Reset Request</h2>
+          <p style="font-size: 16px; color: #ffffff; margin-bottom: 20px;">
+            Hello <strong>${user.firstName}</strong>,<br>
+            We received a request to reset your password. Use the OTP below to proceed:
+          </p>
+          <div style="font-size: 24px; font-weight: bold; background-color: #D4AF37; color: #252525; padding: 10px 20px; display: inline-block; border-radius: 5px; margin-bottom: 20px;">
+            ${otp}
           </div>
-          <p style="font-size: 16px; color: #555;">If you did not request this, please ignore this email.</p>
-          <p style="font-size: 16px; color: #555;">Best Regards,<br>QrGen</p>
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="${logoUrl}" alt="QrGen Logo" style="width: 50px; height: auto;" />
-          </div>
-          <footer style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
-            &copy; ${new Date().getFullYear()} QrGen. All rights reserved.
+          <p style="font-size: 14px; color: #bbbbbb; margin-bottom: 10px;">
+            This OTP is valid for <strong>2 minutes</strong>. Please do not share it with anyone.
+          </p>
+          <a href="${resetPasswordUrl}" style="background-color: #D4AF37; color: #252525; padding: 12px 24px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px;">
+            Reset Password
+          </a>
+          <p style="font-size: 12px; color: #aaaaaa; margin-top: 30px;">
+            If you did not request this, please ignore this email.<br>
+            Need help? Contact our <a href="mailto:support@qaaf.com" style="color: #D4AF37; text-decoration: none;">Support Team</a>.
+          </p>
+          <footer style="font-size: 12px; color: #888888; margin-top: 20px;">
+            &copy; ${new Date().getFullYear()} Qaaf. All rights reserved.
           </footer>
         </div>
       `,
     };
 
-    // Send the OTP via email using Nodemailer
+    // Send OTP via email
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ message: "OTP sent successfully." });

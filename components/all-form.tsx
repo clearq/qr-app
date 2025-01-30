@@ -57,7 +57,8 @@ export default function AllForm({ id }: AllFormProps) {
   const [vcardData, setVcardData] = React.useState([]); // State for vcard data
   const [urlData, setUrlData] = React.useState([]); // State for url data
   const [productData, setProductData] = React.useState([]); // State for product data
-  const [ticketData, setTicketData] = React.useState([]); // State for ticket data
+  // const [ticketData, setTicketData] = React.useState([]); // State for ticket data
+  const [selectedAnalytics, setSelectedAnalytics] = React.useState("vcard");
   const router = useRouter();
   const { translations } = useLanguage(); // Use the translations
 
@@ -94,7 +95,7 @@ export default function AllForm({ id }: AllFormProps) {
         setVcardData(analyticsData.vCardmonthlyCounts); // Set the vcard data
         setUrlData(analyticsData.urlCounts); // Set the url data
         setProductData(analyticsData.productCounts); // Set the product data
-        setTicketData(analyticsData.ticketCounts); // Set the ticket data
+        // setTicketData(analyticsData.ticketCounts); // Set the ticket data
       } catch (err: any) {
         console.error("Error fetching data:", err);
         setError(err.message);
@@ -197,10 +198,10 @@ export default function AllForm({ id }: AllFormProps) {
       label: translations.products,
       color: "#4169E1", // Brown
     },
-    ticket: {
-      label: translations.tickets,
-      color: "#B22222", // Light Blue
-    },
+    // ticket: {
+    //   label: translations.tickets,
+    //   color: "#B22222", // Light Blue
+    // },
   };
 
   return (
@@ -392,21 +393,36 @@ export default function AllForm({ id }: AllFormProps) {
                 <Bar dataKey="url" fill="var(--color-url)" radius={4} />
                 <Bar dataKey="vcard" fill="var(--color-vcard)" radius={4} />
                 <Bar dataKey="product" fill="var(--color-product)" radius={4} />
-                <Bar dataKey="ticket" fill="var(--color-ticket)" radius={4} />
+                {/* <Bar dataKey="ticket" fill="var(--color-ticket)" radius={4} /> */}
               </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
       </div>
-      {/* <div className="mt-5 space-y-5">
-        <VCardAnalytics data={vcardData} />
+      <div className="my-4 w-64">
+        <Select
+          onValueChange={(value) => setSelectedAnalytics(value)}
+          value={selectedAnalytics}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select Analytics Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="vcard">{translations.vcard}</SelectItem>
+            <SelectItem value="url">{translations.link}</SelectItem>
+            <SelectItem value="product">{translations.products}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-        <URLAnalytics data={urlData} />
-
-        <ProductAnalytics data={productData} />
-
-        <TicketAnalytics data={ticketData} />
-      </div> */}
+      {/* Conditionally Render Analytics Component */}
+      <div className="mt-5 space-y-5">
+        {selectedAnalytics === "vcard" && <VCardAnalytics data={vcardData} />}
+        {selectedAnalytics === "url" && <URLAnalytics data={urlData} />}
+        {selectedAnalytics === "product" && (
+          <ProductAnalytics data={productData} />
+        )}
+      </div>
     </div>
   );
 }

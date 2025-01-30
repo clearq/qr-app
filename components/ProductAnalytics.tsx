@@ -28,7 +28,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { TrendingUp } from "lucide-react";
 
 interface ProductAnalyticsProps {
-  data: { product: string; count: number }[];
+  data: { month: string; product: number }[];
 }
 
 export function ProductAnalytics({ data }: ProductAnalyticsProps) {
@@ -37,12 +37,12 @@ export function ProductAnalytics({ data }: ProductAnalyticsProps) {
   const chartConfig = {
     product: {
       label: translations.products,
-      color: "hsl(var(--chart-3))",
+      color: "#151515",
     },
   } satisfies ChartConfig;
 
   return (
-    <Card>
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>{translations.productAnalytics}</CardTitle>
         <CardDescription>
@@ -50,30 +50,39 @@ export function ProductAnalytics({ data }: ProductAnalyticsProps) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            data={data}
-            layout="vertical"
-            margin={{
-              left: -20,
-            }}
+        {data.length === 0 ? (
+          <div className="text-center text-gray-500">No data available</div>
+        ) : (
+          <ChartContainer
+            className="h-[200px] sm:h-[500px] w-[100%]"
+            config={chartConfig}
           >
-            <XAxis type="number" dataKey="count" hide />
-            <YAxis
-              dataKey="product"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => String(value).slice(0, 3)} // Convert value to string
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="count" fill="var(--color-product)" radius={5} />
-          </BarChart>
-        </ChartContainer>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                data={data}
+                layout="vertical"
+                margin={{
+                  left: -20,
+                }}
+              >
+                <XAxis type="number" dataKey="product" hide />
+                <YAxis
+                  dataKey="month"
+                  type="category"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => String(value).slice(0, 3)} // Convert value to string
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="product" fill="var(--color-product)" radius={5} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        )}
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">

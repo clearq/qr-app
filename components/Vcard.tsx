@@ -15,12 +15,14 @@ import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { Icon } from "@iconify/react";
 
 export const Vcard = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [logo, setLogo] = useState<string | ArrayBuffer | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const validation = useFormik({
     initialValues: {
@@ -106,21 +108,23 @@ export const Vcard = () => {
     },
   });
 
+  // Handle the logo upload
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogo(reader.result);
-        validation.setFieldValue("logoType", reader.result);
+        validation.setFieldValue("image", reader.result); // Save the image to the form field
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // Remove the uploaded logo
   const handleRemoveLogo = () => {
     setLogo(null);
-    validation.setFieldValue("logoType", "");
+    validation.setFieldValue("image", ""); // Clear the form field value
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -137,17 +141,66 @@ export const Vcard = () => {
         <h1 className="font-bold">VCard</h1>
         <h2>Create your vcard here.</h2>
       </header>
+
+      {/* Image Upload Section */}
       <label
         htmlFor="imageInput"
         className="flex mt-5 justify-center items-center"
       >
-        <div className="flex flex-col items-center text-center">
+        <div className="w-[124px] mt-5 h-[124px] mb-5 relative rounded-full">
           <Avatar className="w-32 h-32 mb-4">
-            <AvatarFallback className="uppercase text-[16px]">
-              {validation.values.firstName[0]}
-              {validation.values.lastName[0]}
-            </AvatarFallback>
+            {logo ? (
+              <AvatarImage src={logo as string} alt="Uploaded Logo" />
+            ) : (
+              <AvatarFallback className="uppercase text-[16px]">
+                {validation.values.firstName[0]}
+                {validation.values.lastName[0]}
+              </AvatarFallback>
+            )}
           </Avatar>
+          <Button
+            asChild
+            size="icon"
+            className="h-8 w-8 rounded-full cursor-pointer absolute bottom-0 right-0"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Label htmlFor="image">
+              <Icon
+                className={`w-5 h-5 ${
+                  uploading ? "text-gray-400" : "text-primary-foreground"
+                }`}
+                icon={
+                  uploading ? "heroicons:refresh" : "heroicons:pencil-square"
+                }
+              />
+            </Label>
+          </Button>
+          <input
+            ref={fileInputRef}
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleLogoUpload}
+          />
+          {/* <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Upload Image
+          </Button> */}
+          {logo && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleRemoveLogo}
+              className="w-[40px] h-[40px] right-1 bottom-[52px] relative rounded-full"
+            >
+              X
+            </Button>
+          )}
         </div>
       </label>
       <CardContent>

@@ -164,7 +164,6 @@ const DataTable = ({
                 <TableHead>Address</TableHead>
                 <TableHead>Categories</TableHead>
                 <TableHead>Products</TableHead>
-                <TableHead>View</TableHead>
                 <TableHead>Delete</TableHead>
                 <TableHead className="flex justify-end">
                   <Link href={"/shop/createShop"}>
@@ -222,19 +221,6 @@ const DataTable = ({
                           <ProductsTable selectedShopId={shop.id} />
                         </DialogContent>
                       </Dialog>
-                    </TableCell>
-
-                    <TableCell>
-                      <Button
-                        className="relative right-2"
-                        variant={"link"}
-                        onClick={() => {
-                          setSelectedShopId(shop.id);
-                          router.push(`/shop/${shop.id}`);
-                        }}
-                      >
-                        <FaEye />
-                      </Button>
                     </TableCell>
                     <TableCell>
                       <DeleteButton

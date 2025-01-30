@@ -28,6 +28,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 interface Category {
   id: string;
@@ -50,6 +51,8 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage] = useState<number>(5); // Number of items per page
 
+  const { translations } = useLanguage(); // Use the translations
+
   const fetchCategories = useCallback(async () => {
     if (!selectedShopId) return;
     setLoading(true);
@@ -64,14 +67,14 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast({
-        title: "Error fetching categories",
-        description: "Failed to load categories. Please try again later.",
+        title: translations.error,
+        description: translations.failedToFetchShops,
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
-  }, [selectedShopId]);
+  }, [selectedShopId, translations]);
 
   useEffect(() => {
     fetchCategories();
@@ -95,15 +98,15 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
       );
 
       toast({
-        title: "Category Deleted",
-        description: "The category was successfully deleted.",
+        title: translations.success,
+        description: translations.itemDeletedSuccessfully,
         variant: "default",
       });
     } catch (error) {
       console.error("Error deleting category:", error);
       toast({
-        title: "Error Deleting Category",
-        description: "An unexpected error occurred.",
+        title: translations.error,
+        description: translations.failedToDeleteItem,
         variant: "destructive",
       });
     } finally {
@@ -145,7 +148,7 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
   };
 
   if (loading) {
-    return <div>Loading categories...</div>;
+    return <div>{translations.loading}...</div>;
   }
 
   return (
@@ -159,9 +162,9 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
                 onChange={handleSelectAll}
               />
             </TableHead>
-            <TableHead>Category Name</TableHead>
-            <TableHead>Number of Products</TableHead>
-            <TableHead>Delete</TableHead>
+            <TableHead>{translations.categoryName}</TableHead>
+            <TableHead>{translations.numberOfProducts}</TableHead>
+            <TableHead>{translations.delete}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -183,7 +186,7 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
                     variant="destructive"
                     onClick={() => confirmDelete(category.id)}
                   >
-                    Delete
+                    {translations.delete}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -191,7 +194,7 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
           ) : (
             <TableRow>
               <TableCell colSpan={4} className="text-center py-4">
-                No categories available.
+                {translations.noCategoriesAvailable}
               </TableCell>
             </TableRow>
           )}
@@ -200,7 +203,8 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
 
       <div className="flex items-center justify-between py-4">
         <span className="text-sm text-muted-foreground">
-          {selectedCategories.length} of {categories.length} selected.
+          {selectedCategories.length} {translations.of} {categories.length}{" "}
+          {translations.selected}.
         </span>
       </div>
 
@@ -263,21 +267,18 @@ export function CategoryTable({ selectedShopId }: CategoryTableProps) {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogTitle>{translations.confirmDeletion}</DialogTitle>
           </DialogHeader>
-          <p>
-            Are you sure you want to delete this category? This action cannot be
-            undone.
-          </p>
+          <p>{translations.deleteConfirmationMessage}</p>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
             >
-              Cancel
+              {translations.cancel}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {translations.delete}
             </Button>
           </DialogFooter>
         </DialogContent>

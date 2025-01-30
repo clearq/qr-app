@@ -72,16 +72,17 @@ export const Sidebar = ({ user: userData }: Props) => {
     toast({
       title: `Do you want to signout?`,
       description: `Please confirm`,
+      variant: "destructive",
       action: (
-        <button
+        <Button
+          variant={"outline"}
           onClick={async () => {
             await logOut();
             window.location.replace("/");
           }}
-          className="bg-red-500 text-white px-4 py-2 rounded-md"
         >
-          Confirm Logout
-        </button>
+          {translations.confirmLogut}
+        </Button>
       ),
     });
   };

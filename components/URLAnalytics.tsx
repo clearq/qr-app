@@ -27,21 +27,21 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 
 interface URLAnalyticsProps {
-  data: { tag: string; count: number }[]; // Data structure matches your requirements
+  data: { month: string; url: number }[]; // Data structure matches your requirements
 }
 
 export function URLAnalytics({ data }: URLAnalyticsProps) {
   const { translations } = useLanguage();
 
   const chartConfig = {
-    tag: {
-      label: translations.tag, // Use translation for the label
-      color: "hsl(var(--chart-1))", // Use your desired color
+    url: {
+      label: translations.link, // Use translation for the label
+      color: "#D4AF37", // Use your desired color
     },
   } satisfies ChartConfig;
 
   return (
-    <Card>
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle>{translations.urlAnalytics}</CardTitle>
         <CardDescription>
@@ -52,7 +52,10 @@ export function URLAnalytics({ data }: URLAnalyticsProps) {
         {data.length === 0 ? (
           <div className="text-center text-gray-500">No data available</div>
         ) : (
-          <ChartContainer config={chartConfig}>
+          <ChartContainer
+            className="h-[200px] sm:h-[500px] w-[100%]"
+            config={chartConfig}
+          >
             <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 accessibilityLayer
@@ -62,23 +65,23 @@ export function URLAnalytics({ data }: URLAnalyticsProps) {
                   left: -20, // Adjust margin for better alignment
                 }}
               >
-                <XAxis type="number" dataKey="count" hide /> {/* Hide X-axis */}
+                <XAxis type="number" dataKey="url" hide /> {/* Hide X-axis */}
                 <YAxis
-                  dataKey="tag"
+                  dataKey="month"
                   type="category"
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
                   tickFormatter={(value) =>
                     value ? String(value).slice(0, 3) : ""
-                  } // Format tag to 3 letters
+                  } // Format month to 3 letters
                 />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}
                 />
-                <Bar dataKey="count" fill="var(--color-tag)" radius={5} />{" "}
-                {/* Use count as dataKey */}
+                <Bar dataKey="url" fill="var(--color-url)" radius={5} />{" "}
+                {/* Use url as dataKey */}
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>

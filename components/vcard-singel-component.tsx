@@ -247,7 +247,7 @@ END:VCARD
               <CardDescription></CardDescription>
             </CardHeader>
             <Avatar className="flex justify-center items-center w-24 h-24 sm:w-52 sm:h-52">
-              <AvatarImage src={vcardData?.logoType || ""} alt="User Image" />
+              <AvatarImage src={vcardData?.image || ""} alt="User Image" />
               <AvatarFallback>
                 {vcardData?.firstName ? vcardData?.firstName[0] : ""}
                 {vcardData?.lastName ? vcardData?.lastName[0] : ""}
