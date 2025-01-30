@@ -174,3 +174,131 @@ export async function getMonthlyCountsForVcard(id: string) {
 
   return groupedByMonth;
 }
+
+
+export async function getUrlMonthlyCounts(customerId: string) {
+  const result = await prisma.scan.groupBy({
+    by: ["scannedAt"],
+    where: {
+      customerId,
+      type: 0, // Only URL type scans
+    },
+    _count: {
+      _all: true,
+    },
+    _min: {
+      scannedAt: true,
+    },
+    orderBy: {
+      _min: {
+        scannedAt: "asc",
+      },
+    },
+  });
+
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
+
+  const groupedByMonth = result.reduce((acc: Record<string, number>, curr) => {
+    if (!curr._min.scannedAt) return acc;
+
+    const month = monthFormatter.format(curr._min.scannedAt);
+
+    if (!acc[month]) {
+      acc[month] = 0;
+    }
+
+    acc[month] += curr._count._all;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  return Object.entries(groupedByMonth).map(([month, count]) => ({
+    month,
+    url: count,
+  }));
+}
+
+export async function getProductMonthlyCounts(customerId: string) {
+  const result = await prisma.scan.groupBy({
+    by: ["scannedAt"],
+    where: {
+      customerId,
+      type: 5, // Only Product type scans
+    },
+    _count: {
+      _all: true,
+    },
+    _min: {
+      scannedAt: true,
+    },
+    orderBy: {
+      _min: {
+        scannedAt: "asc",
+      },
+    },
+  });
+
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
+
+  const groupedByMonth = result.reduce((acc: Record<string, number>, curr) => {
+    if (!curr._min.scannedAt) return acc;
+
+    const month = monthFormatter.format(curr._min.scannedAt);
+
+    if (!acc[month]) {
+      acc[month] = 0;
+    }
+
+    acc[month] += curr._count._all;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  return Object.entries(groupedByMonth).map(([month, count]) => ({
+    month,
+    product: count,
+  }));
+}
+
+export async function getTicketMonthlyCounts(customerId: string) {
+  const result = await prisma.scan.groupBy({
+    by: ["scannedAt"],
+    where: {
+      customerId,
+      type: 4, // Only Ticket type scans
+    },
+    _count: {
+      _all: true,
+    },
+    _min: {
+      scannedAt: true,
+    },
+    orderBy: {
+      _min: {
+        scannedAt: "asc",
+      },
+    },
+  });
+
+  const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long" });
+
+  const groupedByMonth = result.reduce((acc: Record<string, number>, curr) => {
+    if (!curr._min.scannedAt) return acc;
+
+    const month = monthFormatter.format(curr._min.scannedAt);
+
+    if (!acc[month]) {
+      acc[month] = 0;
+    }
+
+    acc[month] += curr._count._all;
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  return Object.entries(groupedByMonth).map(([month, count]) => ({
+    month,
+    ticket: count,
+  }));
+}
+

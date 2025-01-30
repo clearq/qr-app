@@ -38,6 +38,10 @@ import {
 import { User } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 import { Skeleton } from "./ui/skeleton";
+import { VCardAnalytics } from "./VCardAnalytics";
+import { URLAnalytics } from "./URLAnalytics";
+import { ProductAnalytics } from "./ProductAnalytics";
+import { TicketAnalytics } from "./TicketAnalytics";
 
 interface AllFormProps {
   id: string; // Add id as a prop
@@ -50,6 +54,10 @@ export default function AllForm({ id }: AllFormProps) {
   const [loading, setLoading] = React.useState(true); // Loading state
   const [error, setError] = React.useState(null); // Error state
   const [chartData, setChartData] = React.useState([]); // State for chart data
+  const [vcardData, setVcardData] = React.useState([]); // State for vcard data
+  const [urlData, setUrlData] = React.useState([]); // State for url data
+  const [productData, setProductData] = React.useState([]); // State for product data
+  const [ticketData, setTicketData] = React.useState([]); // State for ticket data
   const router = useRouter();
   const { translations } = useLanguage(); // Use the translations
 
@@ -83,6 +91,10 @@ export default function AllForm({ id }: AllFormProps) {
         if (!analyticsRes.ok) throw new Error("Failed to fetch analytics data");
         const analyticsData = await analyticsRes.json();
         setChartData(analyticsData.monthlyCounts); // Set the chart data
+        setVcardData(analyticsData.vCardmonthlyCounts); // Set the vcard data
+        setUrlData(analyticsData.urlCounts); // Set the url data
+        setProductData(analyticsData.productCounts); // Set the product data
+        setTicketData(analyticsData.ticketCounts); // Set the ticket data
       } catch (err: any) {
         console.error("Error fetching data:", err);
         setError(err.message);
@@ -386,6 +398,15 @@ export default function AllForm({ id }: AllFormProps) {
           </CardContent>
         </Card>
       </div>
+      {/* <div className="mt-5 space-y-5">
+        <VCardAnalytics data={vcardData} />
+
+        <URLAnalytics data={urlData} />
+
+        <ProductAnalytics data={productData} />
+
+        <TicketAnalytics data={ticketData} />
+      </div> */}
     </div>
   );
 }

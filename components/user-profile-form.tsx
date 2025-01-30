@@ -194,7 +194,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           <h1 className="font-bold">Edit your Profile</h1>
           <h2>Update your profile here.</h2>
         </header>
-        <div className="w-[124px] h-[124px] sm:ml-[40rem] ml-[7rem] relative rounded-full">
+        <div className="w-[124px] mt-5 h-[124px] sm:ml-[40rem] ml-[7rem] relative rounded-full">
           {retrievedFile ? (
             <MediaPreview retrievedFile={retrievedFile} fileKey={fileKey} />
           ) : (

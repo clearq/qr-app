@@ -32,7 +32,7 @@ import { FaChartLine } from "react-icons/fa";
 import { MdAdd } from "react-icons/md";
 import Link from "next/link";
 import { QrForm } from "@/components/qr-form";
-import { VcardAnalys } from "@/components/vcardAnalys";
+// import { VcardAnalys } from "@/components/VCardAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardTitle } from "@/components/ui/card";
 
@@ -189,14 +189,13 @@ export const DataTable: React.FC<DataTableProps> = ({
                       <Button variant="outline">≡</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="flex flex-col justify-center items-center">
-                      <DropdownMenuSeparator />
-                      <Button
+                      {/* <Button
                         className="w-full"
                         onClick={() => handleAnalyticsOpen(qr)}
                         variant="ghost"
                       >
                         <FaChartLine size={20} />
-                      </Button>
+                      </Button> */}
                       <DropdownMenuSeparator />
                       <EditButton qrData={qr} />
                       <DropdownMenuSeparator />
@@ -245,13 +244,13 @@ export const DataTable: React.FC<DataTableProps> = ({
         </PaginationContent>
       </Pagination>
       {/* Dialog for displaying analytics */}
-      {selectedQr && (
+      {/* {selectedQr && (
         <Dialog open={!!selectedQr} onOpenChange={() => setSelectedQr(null)}>
           <DialogContent>
             <VcardAnalys id={selectedQr.id} />
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
     </div>
   );
 };
