@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(true); // Disable resend button initially
-  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds countdown
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes countdown (120 seconds)
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
     }
 
     setResendDisabled(true); // Disable resend button
-    setTimeLeft(30); // Reset countdown to 30 seconds
+    setTimeLeft(120); // Reset countdown to 2 minutes (120 seconds)
 
     try {
       const response = await fetch("/api/forgot-password", {
@@ -153,7 +153,11 @@ export default function ResetPasswordPage() {
             <div className="flex flex-row space-x-2">
               <p className="text-sm text-gray-500 mt-2">
                 {resendDisabled
-                  ? `Resend OTP in ${timeLeft} seconds`
+                  ? `Resend OTP in ${Math.floor(timeLeft / 60)}:${(
+                      timeLeft % 60
+                    )
+                      .toString()
+                      .padStart(2, "0")}`
                   : "Didn't receive the OTP?"}
               </p>
               <Button

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { toast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/context/LanguageContext"; // Import the useLanguage hook
 
 export const ChangePasswordForm = () => {
   const [showPassword, setShowPassword] = useState({
@@ -14,6 +15,8 @@ export const ChangePasswordForm = () => {
     newPassword: false,
     confirmPassword: false,
   });
+
+  const { translations } = useLanguage(); // Use the translations
 
   const toggleShowPassword = (field: string) => {
     setShowPassword((prevState) => ({
@@ -30,12 +33,17 @@ export const ChangePasswordForm = () => {
       confirmPassword: "",
     },
     validationSchema: yup.object({
-      currentPassword: yup.string().required("Current password is required"),
-      newPassword: yup.string().required("New password is required"),
+      currentPassword: yup
+        .string()
+        .required(translations.currentPasswordRequired),
+      newPassword: yup.string().required(translations.newPasswordRequired),
       confirmPassword: yup
         .string()
-        .oneOf([yup.ref("newPassword"), undefined], "Passwords must match")
-        .required("Confirm password is required"),
+        .oneOf(
+          [yup.ref("newPassword"), undefined],
+          translations.passwordsMustMatch
+        )
+        .required(translations.confirmPasswordRequired),
     }),
     onSubmit: (values) => {
       fetch("/api/password", {
@@ -48,7 +56,7 @@ export const ChangePasswordForm = () => {
         .then(async (response) => {
           if (response.status === 201) {
             toast({
-              title: `Password updated successfully!`,
+              title: translations.passwordUpdatedSuccessfully,
               description: `${new Date().toLocaleDateString()}`,
             });
             validation.resetForm();
@@ -56,7 +64,7 @@ export const ChangePasswordForm = () => {
             const errorData = await response.json();
             toast({
               variant: "destructive",
-              title: `Error updating password`,
+              title: translations.errorUpdatingPassword,
               description:
                 errorData.error || `${new Date().toLocaleDateString()}`,
             });
@@ -66,7 +74,7 @@ export const ChangePasswordForm = () => {
           console.error("Error:", error);
           toast({
             variant: "destructive",
-            title: `Something went wrong`,
+            title: translations.somethingWentWrong,
             description: `${new Date().toLocaleDateString()}`,
           });
         });
@@ -79,11 +87,11 @@ export const ChangePasswordForm = () => {
       className="w-full grid grid-cols-1 gap-4 mt-4"
     >
       <div className="flex flex-col space-y-1.5 relative">
-        <Label htmlFor="currentPassword">Current Password</Label>
+        <Label htmlFor="currentPassword">{translations.currentPassword}</Label>
         <Input
           type={showPassword.currentPassword ? "text" : "password"}
           name="currentPassword"
-          placeholder="Current Password"
+          placeholder={translations.currentPassword}
           value={validation.values.currentPassword}
           onChange={validation.handleChange}
         />
@@ -95,11 +103,11 @@ export const ChangePasswordForm = () => {
         </span>
       </div>
       <div className="flex flex-col space-y-1.5 relative">
-        <Label htmlFor="newPassword">New Password</Label>
+        <Label htmlFor="newPassword">{translations.newPassword}</Label>
         <Input
           type={showPassword.newPassword ? "text" : "password"}
           name="newPassword"
-          placeholder="New Password"
+          placeholder={translations.newPassword}
           value={validation.values.newPassword}
           onChange={validation.handleChange}
         />
@@ -111,11 +119,11 @@ export const ChangePasswordForm = () => {
         </span>
       </div>
       <div className="flex flex-col space-y-1.5 relative">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <Label htmlFor="confirmPassword">{translations.confirmPassword}</Label>
         <Input
           type={showPassword.confirmPassword ? "text" : "password"}
           name="confirmPassword"
-          placeholder="Confirm Password"
+          placeholder={translations.confirmPassword}
           value={validation.values.confirmPassword}
           onChange={validation.handleChange}
         />
@@ -127,7 +135,7 @@ export const ChangePasswordForm = () => {
         </span>
       </div>
       <Button type="submit" className="mt-4 w-full">
-        Save Password
+        {translations.savePassword}
       </Button>
     </form>
   );

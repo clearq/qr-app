@@ -1,12 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,21 +14,22 @@ import { ChangePasswordForm } from "./change-password-form";
 import { redirect } from "next/navigation";
 import { uploadFile, autoLoginToCDN, getImageUrl } from "@/actions/api";
 import { Icon } from "@iconify/react";
-import MediaPreview from "@/app/MediaPreview";
-import { Skeleton } from "./ui/skeleton";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface Props {
   user: Customer;
 }
 
 export const EditProfileForm = ({ user: userData }: Props) => {
-  const [logo, setLogo] = useState<string>(userData.image || "");
+  const [logo, setLogo] = useState<string | ArrayBuffer | null>(
+    userData.image || null
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-  const [retrievedFile, setRetrievedFile] = useState<string>("");
   const [loading, setLoading] = React.useState(true); // Loading state
   const [fileKey, setFileKey] = useState<string>("");
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const { translations } = useLanguage(); // Use the translation
 
   const validation = useFormik({
     initialValues: {
@@ -51,9 +46,9 @@ export const EditProfileForm = ({ user: userData }: Props) => {
       zip: userData?.zip || "",
     },
     validationSchema: yup.object({
-      email: yup.string().email().required("Email is required"),
-      firstName: yup.string().required("First name is required"),
-      lastName: yup.string().required("Last name is required"),
+      email: yup.string().email().required(`${translations.emailRequired}`),
+      firstName: yup.string().required(`${translations.firstNameRequired}`),
+      lastName: yup.string().required(`${translations.lastNameRequired}`),
       phone: yup.string().nullable(),
       company: yup.string().nullable(),
       orgNumber: yup.string().nullable(),
@@ -74,14 +69,14 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           if (response.status === 201) {
             const data = await response.json();
             toast({
-              title: `Updated successfully!`,
+              title: translations.updatedSuccessfully,
               description: `${new Date().toLocaleDateString()}`,
             });
             window.location.reload();
           } else {
             toast({
               variant: "destructive",
-              title: `Error updating data`,
+              title: translations.errorUpdatingData,
               description: `${new Date().toLocaleDateString()}`,
             });
           }
@@ -90,7 +85,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           console.error("Error:", error);
           toast({
             variant: "destructive",
-            title: `Something went wrong`,
+            title: translations.somethingWentWrong,
             description: `${new Date().toLocaleDateString()}`,
           });
         });
@@ -120,10 +115,6 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         const imageUrl = getImageUrl(key, userId, contentFolder);
 
         if (imageUrl) {
-          // Set the retrieved file and key for preview
-          setRetrievedFile(imageUrl);
-          setFileKey(key);
-
           // Update the user profile with the new image key
           const response = await fetch("/api/profile", {
             method: "PUT",
@@ -155,29 +146,50 @@ export const EditProfileForm = ({ user: userData }: Props) => {
             );
             if (refreshedImageUrl) {
               setLogo(refreshedImageUrl);
-              setRetrievedFile(refreshedImageUrl);
             }
 
             toast({
-              title: "Profile image updated!",
-              description: "Your profile image has been updated successfully.",
+              title: translations.profileImageUpdated,
+              description: translations.profileImageUpdatedDescription,
             });
           } else {
-            throw new Error("Failed to update profile");
+            throw new Error(translations.failedToUpdateProfile);
           }
         } else {
-          throw new Error("Failed to generate image URL.");
+          throw new Error(translations.failedToGenImgUrl);
         }
       } catch (error) {
-        console.error("Error uploading profile image:", error);
+        console.error(translations.errorUploadingProfileImage, error);
         toast({
           variant: "destructive",
-          title: "Error uploading image",
-          description: "There was an error uploading your profile image.",
+          title: translations.errorUploadingImage,
+          description: translations.thereIsAnErrorImage,
         });
       } finally {
         setUploading(false);
       }
+    }
+  };
+
+  // Handle the logo upload
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogo(reader.result);
+        validation.setFieldValue("image", reader.result); // Save the image to the form field
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove the uploaded logo
+  const handleRemoveLogo = () => {
+    setLogo(null);
+    validation.setFieldValue("image", ""); // Clear the form field value
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -187,51 +199,63 @@ export const EditProfileForm = ({ user: userData }: Props) => {
 
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
-      {" "}
-      <CardTitle className="text-2xl ">Profile</CardTitle>
+      <CardTitle className="text-2xl ">{translations.profile}</CardTitle>
       <div className="mt-5">
         <header>
-          <h1 className="font-bold">Edit your Profile</h1>
-          <h2>Update your profile here.</h2>
+          <h1 className="font-bold">{translations.editYourProfile}</h1>
+          <h2>{translations.updateYourProfileHere}</h2>
         </header>
-        <div className="w-[124px] mt-5 h-[124px] sm:ml-[40rem] ml-[7rem] relative rounded-full">
-          {retrievedFile ? (
-            <MediaPreview retrievedFile={retrievedFile} fileKey={fileKey} />
-          ) : (
-            <Avatar className="w-[124px] h-[124px]">
-              <AvatarImage src={logo || undefined} alt="Profile Image" />
-              <AvatarFallback>
-                {userData.firstName[0]}
-                {userData.lastName[0]}
-              </AvatarFallback>
+        <label className="flex mt-5 justify-center items-center">
+          <div className="w-[124px] mt-5 h-[124px] mb-5 relative rounded-full">
+            <Avatar className="w-32 h-32 mb-4">
+              {logo ? (
+                <AvatarImage src={logo as string} alt="Uploaded Logo" />
+              ) : (
+                <AvatarFallback className="uppercase text-[16px]">
+                  {validation.values.firstName[0]}
+                  {validation.values.lastName[0]}
+                </AvatarFallback>
+              )}
             </Avatar>
-          )}
-          <Button
-            asChild
-            size="icon"
-            className="h-8 w-8 rounded-full cursor-pointer absolute bottom-0 right-0"
-            disabled={uploading}
-          >
-            <Label htmlFor="image">
-              <Icon
-                className={`w-5 h-5 ${
-                  uploading ? "text-gray-400" : "text-primary-foreground"
-                }`}
-                icon={
-                  uploading ? "heroicons:refresh" : "heroicons:pencil-square"
-                }
-              />
-            </Label>
-          </Button>
-          <input
-            className="hidden"
-            type="file"
-            name="image"
-            accept="image/jpg, image/jpeg, image/png"
-            onChange={handleInputImageChange}
-            id="image"
-          />
-        </div>
+            <Button
+              asChild
+              size="icon"
+              className="h-8 w-8 rounded-full cursor-pointer absolute bottom-0 right-0"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Label htmlFor="image">
+                <Icon
+                  className={`w-5 h-5 ${
+                    uploading ? "text-gray-400" : "text-primary-foreground"
+                  }`}
+                  icon={
+                    uploading ? "heroicons:refresh" : "heroicons:pencil-square"
+                  }
+                />
+              </Label>
+            </Button>
+            <input
+              ref={fileInputRef}
+              id="imageInput"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleLogoUpload}
+            />
+
+            {logo && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleRemoveLogo}
+                className="w-[35px] h-[35px] right-0 bottom-[52px] relative rounded-full"
+              >
+                X
+              </Button>
+            )}
+          </div>
+        </label>
         <CardContent className="mt-10">
           <form
             onSubmit={(e) => {
@@ -242,104 +266,107 @@ export const EditProfileForm = ({ user: userData }: Props) => {
           >
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="firstName">
-                First Name<span className="text-red-700">*</span>
+                {translations.firstName}
+                <span className="text-red-700">*</span>
               </Label>
               <Input
                 name="firstName"
-                placeholder="First Name"
+                placeholder={translations.firstName}
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="lastName">
-                Last Name<span className="text-red-700">*</span>
+                {translations.lastName}
+                <span className="text-red-700">*</span>
               </Label>
               <Input
                 name="lastName"
-                placeholder="Last Name"
+                placeholder={translations.lastName}
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">
-                Email<span className="text-red-700">*</span>
+                {translations.email}
+                <span className="text-red-700">*</span>
               </Label>
               <Input
                 type="email"
                 name="email"
-                placeholder="Email"
+                placeholder={translations.email}
                 value={validation.values.email}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{translations.phone}</Label>
               <Input
                 type="tel"
                 name="phone"
-                placeholder="Phone"
+                placeholder={translations.phone}
                 value={validation.values.phone}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="company">{translations.company}</Label>
               <Input
                 name="company"
-                placeholder="Company"
+                placeholder={translations.company}
                 value={validation.values.company}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="orgNumber">Org.Number</Label>
+              <Label htmlFor="orgNumber">{translations.orgNumber}</Label>
               <Input
                 name="orgNumber"
-                placeholder="123456-7890"
+                placeholder={translations.orgNr}
                 value={validation.values.orgNumber}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{translations.address}</Label>
               <Input
                 name="address"
-                placeholder="1017 Airline Dr"
+                placeholder={translations.street}
                 value={validation.values.address}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city">{translations.city}</Label>
               <Input
                 name="city"
-                placeholder="Kenner"
+                placeholder={translations.cityName}
                 value={validation.values.city}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="zip">Zip/Postal Code</Label>
+              <Label htmlFor="zip">{translations.zip}</Label>
               <Input
                 name="zip"
-                placeholder="70062"
+                placeholder={translations.zipNr}
                 value={validation.values.zip}
                 onChange={validation.handleChange}
-                style={{ fontSize: "16px" }} // Ensure font size is 16px
+                style={{ fontSize: "16px" }}
               />
             </div>
             <Button type="submit" className="mt-[25px] mb-4 w-full">
-              Save changes
+              {translations.saveChanges}
             </Button>
           </form>
           {/* Updated Change Password Section */}
@@ -350,11 +377,13 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                 className="text-sm justify-start mr-2"
                 onClick={() => setShowChangePassword(true)}
               >
-                Do you want to change password?
+                {translations.passwordChangeConformation}
               </Button>
             ) : (
               <div>
-                <CardTitle className="mb-4">Change Password</CardTitle>
+                <CardTitle className="mb-4">
+                  {translations.changePassword}
+                </CardTitle>
                 <ChangePasswordForm
                   //@ts-ignore
                   user={userData}
@@ -364,7 +393,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
                   className="text-sm mt-2"
                   onClick={() => setShowChangePassword(false)}
                 >
-                  Hide Change Password
+                  {translations.hidePassword}
                 </Button>
               </div>
             )}
