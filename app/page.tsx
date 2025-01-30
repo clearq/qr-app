@@ -3,13 +3,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import "@/components/ui/card";
-import Globe from "@/components/magicui/globe";
 import DotPattern from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
-import LottieAnimation from "@/components/animations/QrAnimation";
-import ThemeImage from "@/components/ThemeImage";
 import Image from "next/image";
-// import PeopleAnimation from "@/components/animations/PeopleAnimation";
 
 export default function Home() {
   const [authenticated, setAuthenticated] = useState(false);
@@ -40,72 +36,70 @@ export default function Home() {
   if (!isMounted) return null;
 
   return (
-    <div className=" flex flex-col justify-between">
+    <div className="flex flex-col">
       <main className="flex-grow">
         <DotPattern
           className={cn(
             "fixed inset-0 -z-10 [mask-image:radial-gradient(3000px_circle_at_center,white,transparent)]"
           )}
         />
-        <div className="flex gap-10 items-center justify-center">
-          <>
-            <div className="p-52">
-              <Link href="/">
-                <Image
-                  alt="Qaaf"
-                  src="/image/QaafGold.png" // Dark mode image
-                  width={100}
-                  height={100}
-                  className="w-[700px] h-auto"
-                  priority
-                />
-              </Link>
+        <div className="container mx-auto px-4  flex flex-col lg:flex-row items-center justify-center ">
+          {/* Image Section */}
+          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end p-4">
+            <Link href="/">
+              <Image
+                alt="Qaaf"
+                src="/image/QaafGold.png"
+                width={150}
+                height={150}
+                className="w-full max-w-[70px] sm:max-w-[150px]"
+                priority
+              />
+            </Link>
+          </div>
+
+          {/* Text Section */}
+          <div className="w-full lg:w-1/2 text-center lg:text-left z-50 p-4">
+            <h1 className="text-[#937100] text-4xl lg:text-5xl font-bold mb-5">
+              QrGen
+            </h1>
+            <div className="mb-8 text-lg lg:text-xl max-w-[85%] mx-auto lg:mx-0">
+              <p className="mb-4">
+                Welcome to QrGen! Our tool lets you create QR codes for sharing
+                research articles, links, and more. We offer URL and VCard
+                creation for all users. Companies can additionally access stamp
+                cards and campaign cards.
+              </p>
+              <p>
+                Enjoy free data analysis to see how your codes are used. Just
+                register to create, save, and edit unlimited QR codes that last
+                a lifetime. Start now to effectively share academic information
+                and engage with your audience!
+              </p>
             </div>
-            <div className="text-left z-50">
-              <h1 className="text-[#937100] mt-20 mb-5  text-start text-5xl font-bold">
-                QrGen
-              </h1>
-              <div className="mb-16 md:text-2xl text-lg w-[85%] ml- mr-9">
-                <p>
-                  Welcome to QrGen! Our tool lets you create QR codes for
-                  sharing research articles, links, and more. We offer URL and
-                  VCard creation for all users. Companies can additionally
-                  access stamp cards and campaign cards.
-                </p>
-                <p>
-                  Enjoy free data analysis to see how your codes are used. Just
-                  register to create, save, and edit unlimited QR codes that
-                  last a lifetime. Start now to effectively share academic
-                  information and engage with your audience!
-                </p>
-              </div>
-              <div className="space-x-6">
-                {authenticated ? (
-                  <Link href="/all">
-                    <Button
-                      variant={"outline"}
-                      className="font-bold py-2 px-4 rounded mt-4"
-                    >
-                      Home <span className="ml-2">→</span>
+            <div className="space-x-4 space-y-4 lg:space-y-0">
+              {authenticated ? (
+                <Link href="/all">
+                  <Button className="bg-[#937100] hover:bg-[#D4AF37] text-white font-bold py-2 px-4 ">
+                    Home <span className="ml-2">→</span>
+                  </Button>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/register">
+                    <Button className="bg-[#937100] hover:bg-[#D4AF37] text-white font-bold py-2 px-4 rounded">
+                      Register
                     </Button>
                   </Link>
-                ) : (
-                  <>
-                    <Link href="/register">
-                      <Button className="bg-[#937100] hover:bg-[#D4AF37] text-white font-bold py-2 px-4 rounded mt-4">
-                        Register
-                      </Button>
-                    </Link>
-                    <Link href="/login">
-                      <Button className="font-bold py-2 px-4 rounded mt-4">
-                        Login
-                      </Button>
-                    </Link>
-                  </>
-                )}
-              </div>
+                  <Link href="/login">
+                    <Button className="font-bold py-2 px-4 rounded">
+                      Login
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
-          </>
+          </div>
         </div>
       </main>
     </div>

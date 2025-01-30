@@ -21,11 +21,11 @@ export const metadata: Metadata = {
   icons: [
     {
       rel: "icon",
-      url: "/image/qrLogo.png",
+      url: "favicon.ico",
     },
     {
       rel: "apple-touch-icon",
-      url: "/image/qrLogo-apple.png",
+      url: "/image/QaafGold.png",
     },
   ],
 };

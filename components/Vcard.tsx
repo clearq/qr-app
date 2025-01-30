@@ -59,7 +59,7 @@ export const Vcard = () => {
         .string()
         .min(3, "Tag must be at least 3 characters")
         .required("Tag is required"),
-      phone: yup.string().nullable(), // Changed to string to match input type
+      phone: yup.string().nullable(),
       company: yup.string().nullable(),
       image: yup.string().nullable(),
       title: yup.string(),
@@ -106,94 +106,15 @@ export const Vcard = () => {
     },
   });
 
-  const generateVCardString = (values: any) => {
-    const photo = values.logoType
-      ? `PHOTO;ENCODING=b;TYPE=PNG:${values.logoType}`
-      : "";
-    return `
-BEGIN:VCARD
-VERSION:3.0
-N: ${values.firstName} ${values.lastName}
-FN:${values.firstName} ${values.lastName}
-EMAIL:${values.customerEmail}
-TEL:${values.phone ?? ""}
-ORG:${values.company ?? ""}
-TITLE:${values.title ?? ""}
-URL:${values.url ?? ""}
-X-LINKEDIN:${values.linkedIn ?? ""}
-X-TWITTER:${values.x ?? ""}
-X-FACEBOOK:${values.facebook ?? ""}
-X-INSTAGRAM:${values.instagram ?? ""}
-X-SNAPCHAT:${values.snapchat ?? ""}
-X-TIKTOK:${values.tiktok ?? ""}
-END:VCARD
-    `.trim();
-  };
-
-  const handleDownloadVcard = () => {
-    const values = validation.values;
-    const vCardData = generateVCardString(values);
-
-    const blob = new Blob([vCardData], { type: "text/vcard" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${values.firstName}_${values.lastName}.vcf`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const resizeImage = (file: File, callback: (dataUrl: string) => void) => {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const maxSize = 40;
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > maxSize) {
-            height *= maxSize / width;
-            width = maxSize;
-          }
-        } else {
-          if (height > maxSize) {
-            width *= maxSize / height;
-            height = maxSize;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const dataUrl = reader.result as string;
-                callback(dataUrl);
-              };
-              reader.readAsDataURL(blob);
-            }
-          }, "image/png");
-        }
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
-
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (file) {
-      resizeImage(file, (resizedDataUrl) => {
-        setLogo(resizedDataUrl);
-        validation.setFieldValue("logoType", resizedDataUrl);
-      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogo(reader.result);
+        validation.setFieldValue("logoType", reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -211,16 +132,18 @@ END:VCARD
 
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
-      {" "}
       <CardTitle className="text-2xl">Create VCard</CardTitle>
-      <CardHeader>
-        <CardTitle className="text-3xl">VCard</CardTitle>
-        <CardDescription>Create your VCard here</CardDescription>
-      </CardHeader>
-      <label htmlFor="imageInput" className="flex justify-center items-center">
+      <header className="mt-5">
+        <h1 className="font-bold">VCard</h1>
+        <h2>Create your vcard here.</h2>
+      </header>
+      <label
+        htmlFor="imageInput"
+        className="flex mt-5 justify-center items-center"
+      >
         <div className="flex flex-col items-center text-center">
           <Avatar className="w-32 h-32 mb-4">
-            <AvatarFallback className="uppercase text-[3rem]">
+            <AvatarFallback className="uppercase text-[16px]">
               {validation.values.firstName[0]}
               {validation.values.lastName[0]}
             </AvatarFallback>
@@ -241,6 +164,7 @@ END:VCARD
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -254,6 +178,7 @@ END:VCARD
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -267,6 +192,7 @@ END:VCARD
                 value={validation.values.tag}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -278,6 +204,7 @@ END:VCARD
                 value={validation.values.title}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -291,6 +218,7 @@ END:VCARD
                 value={validation.values.customerEmail}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -302,6 +230,7 @@ END:VCARD
                 value={validation.values.phone}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -313,6 +242,7 @@ END:VCARD
                 value={validation.values.company}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -324,6 +254,7 @@ END:VCARD
                 value={validation.values.url}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -335,6 +266,7 @@ END:VCARD
                 value={validation.values.linkedIn}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -346,6 +278,7 @@ END:VCARD
                 value={validation.values.x}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -357,6 +290,7 @@ END:VCARD
                 value={validation.values.facebook}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -368,6 +302,7 @@ END:VCARD
                 value={validation.values.instagram}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -379,6 +314,7 @@ END:VCARD
                 value={validation.values.snapchat}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -390,6 +326,7 @@ END:VCARD
                 value={validation.values.tiktok}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
+                style={{ fontSize: "16px" }} // Add this line
               />
             </div>
           </div>

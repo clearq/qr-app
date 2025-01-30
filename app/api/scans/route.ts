@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { getMonthlyCounts, getVcardMonthlyCounts } from "@/actions/scans";
+import {
+  getMonthlyCounts,
+  getProductMonthlyCounts,
+  getTicketMonthlyCounts,
+  getUrlMonthlyCounts,
+  getVcardMonthlyCounts,
+} from "@/actions/scans";
 import { getVisitorCount } from "@/data/qr";
 
 export async function POST(req: Request) {
@@ -215,12 +221,18 @@ export async function GET(req: Request) {
     const totalProducts = productStats.length;
 
     // Fetch monthly counts along with detailed data for analytics
-    const monthlyCounts = await getMonthlyCounts(customerId); // Pass customerId here
-    const vCardmonthlyCounts = await getVcardMonthlyCounts(customerId); // Pass customerId here
+    const monthlyCounts = await getMonthlyCounts(customerId);
+    const vCardmonthlyCounts = await getVcardMonthlyCounts(customerId);
+    const urlCounts = await getUrlMonthlyCounts(customerId);
+    const productCounts = await getProductMonthlyCounts(customerId);
+    const ticketCounts = await getTicketMonthlyCounts(customerId);
 
     const data = {
       monthlyCounts,
       vCardmonthlyCounts,
+      urlCounts,
+      productCounts,
+      ticketCounts,
       shopStats: {
         totalShops,
       },

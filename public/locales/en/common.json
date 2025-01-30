@@ -102,5 +102,18 @@
   "errorUpdatingData": "Error updating data",
   "editVCard": "Edit your vCard",
   "updateSuccess": "Updated successfully!",
-  "updateError": "Error updating data"
+  "updateError": "Error updating data",
+  "vcardAnalytics": "VCard Analytics",
+  "vcardAnalyticsDescription": "Detailed analytics for VCard scans",
+  "vcardAnalyticsFooter": "Showing total scans for each VCard tag",
+  "urlAnalytics": "URL Analytics",
+  "urlAnalyticsDescription": "Detailed analytics for URL scans",
+  "urlAnalyticsFooter": "Showing total scans for each URL",
+  "productAnalytics": "Product Analytics",
+  "productAnalyticsDescription": "Detailed analytics for product scans",
+  "productAnalyticsFooter": "Showing total scans for each product",
+  "ticketAnalytics": "Ticket Analytics",
+  "ticketAnalyticsDescription": "Detailed analytics for ticket scans",
+  "ticketAnalyticsFooter": "Showing total scans for each ticket",
+  "trendingUp": "Trending up by 5.2% this month"
 }
