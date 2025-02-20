@@ -31,8 +31,8 @@ export const ProductSingle = ({ product }: ProductSingleProps) => {
 
   const copyUrlToClipboard = () => {
     //@ts-ignore
-    // const url = `https://qrgen.clearq.se/shop/products/details?id=${product?.id}&type=product`;
-    const url = `localhost:3000/shop/products/details?id=${product?.id}&type=product`;
+    const url = `https://qrgen.clearq.se/shop/products/details?id=${product?.id}&type=product`;
+    // const url = `localhost:3000/shop/products/details?id=${product?.id}&type=product`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
