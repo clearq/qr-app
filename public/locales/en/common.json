@@ -152,5 +152,6 @@
   "passwordUpdatedSuccessfully": "Password updated successfully!",
   "errorUpdatingPassword": "Error updating password",
   "savePassword": "Save Password",
-  "confirmLogout": "Confirm Logut"
+  "confirmLogout": "Confirm Logut",
+  "fieldIsRequierd":"Field is required"
 }

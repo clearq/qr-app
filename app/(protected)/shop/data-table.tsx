@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -20,26 +19,11 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { SHOP } from "@/typings";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/Dropdown";
-import { FaEye, FaProductHunt } from "react-icons/fa";
-import { MdAdd, MdCategory, MdDownload } from "react-icons/md";
+import { MdAdd } from "react-icons/md";
 import { DeleteButton } from "@/components/DeleteButton";
-import { ShopComponent } from "@/components/shop";
 import { useRouter } from "next/navigation";
-import QRCode from "qrcode";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 import { CategoryTable } from "@/components/categoryTable";
 import { ProductsTable } from "@/components/productsTable";
-import Category from "@/components/category";
-import Product from "@/components/product";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { CardTitle } from "@/components/ui/card";

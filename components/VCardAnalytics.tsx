@@ -37,7 +37,7 @@ export function VCardAnalytics({ data }: VCardAnalyticsProps) {
   const chartConfig = {
     vcard: {
       label: translations.vcard,
-      color: "hsl(var(--chart-1))",
+      color: "#151515",
     },
   } satisfies ChartConfig;
 
@@ -84,14 +84,14 @@ export function VCardAnalytics({ data }: VCardAnalyticsProps) {
           </ChartContainer>
         )}
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
+      {/* <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           {translations.trendingUp} <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
           {translations.vcardAnalyticsFooter}
         </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

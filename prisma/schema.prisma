@@ -33,6 +33,7 @@ model Customer {
   events                    Events[]
   tickets                   Ticket[]
   shop                      Shop[]
+  product                   Product[]
 }
 
 model VCard {
@@ -152,14 +153,17 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   itemId      String?
-  title       String // Title of the product
-  shop        Shop     @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction) // Break cascading path
-  shopId      String // Foreign key to Shop model
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade) // Allow cascading here
-  categoryId  String // Foreign key to Category model
-  description String?  @db.NVarChar(MAX) // Use NVARCHAR(MAX) for long text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  title       String
+  shop        Shop      @relation(fields: [shopId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  shopId      String
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String
+  description String?   @db.NVarChar(MAX)
+  image       String?   @db.NVarChar(MAX) // Add this line for the image field
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  customer    Customer? @relation(fields: [customerId], references: [id])
+  customerId  String?
 }

@@ -66,9 +66,11 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const customerId = searchParams.get("customerId");
+    const customerId = searchParams.get("customerId"); // Get customerId from query params
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
+
+    console.log("Fetching shops for customerId:", customerId); // Debugging
 
     // Fetch shops with optional customerId filter
     const shops = await prisma.shop.findMany({

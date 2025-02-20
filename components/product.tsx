@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -11,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RichTextEditor } from "./RichTextEditor"; // Import the RichTextEditor
+import { RichTextEditor } from "./RichTextEditor";
 import { useRouter } from "next/navigation";
 
 interface Category {
@@ -35,43 +36,51 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
     initialShopId || null
   );
   const [products, setProducts] = useState([
-    { title: "", description: "", categoryId: "", itemId: "" }, // Add itemId
-  ]); // Array for multiple products
+    { title: "", description: "", categoryId: "", itemId: "", image: "" }, // Add image field
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState<string[]>([]); // Error state for validation
 
   // Fetch shops on mount
   useEffect(() => {
     const fetchShops = async () => {
       try {
-        const response = await fetch("/api/shop");
-        if (!response.ok) throw new Error("Failed to fetch shops");
-        const data = await response.json();
+        const userResponse = await fetch("/api/profile"); // Fetch logged-in user info
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+        const customerId = userData.customerId; // Store the logged-in customer ID
 
-        if (!Array.isArray(data.data)) {
-          console.error("Expected an array but received:", data);
-          setShops([]); // Set to an empty array if the response is not an array
+        const shopResponse = await fetch(`/api/shop?customerId=${customerId}`);
+        if (!shopResponse.ok) throw new Error("Failed to fetch shops.");
+        const shopData = await shopResponse.json();
+
+        if (!Array.isArray(shopData.data)) {
+          console.error("Expected an array but received:", shopData);
+          setShops([]);
           return;
         }
 
-        setShops(data.data); // Use data.data to match the API response structure
+        setShops(shopData.data);
 
-        // Pre-select the first shop if no initial shopId is provided
-        if (!initialShopId && data.data.length > 0) {
-          setSelectedShopId(data.data[0].id);
+        // Auto-select the first shop if no shop is already selected
+        if (!selectedShopId && shopData.data.length > 0) {
+          setSelectedShopId(shopData.data[0].id);
         }
       } catch (error) {
         console.error("Error fetching shops:", error);
         toast({
-          variant: "destructive",
           title: "Error fetching shops",
           description: "Failed to load shops. Please try again later.",
+          variant: "destructive",
         });
+        setShops([]);
       }
     };
 
     fetchShops();
-  }, [initialShopId]);
+  }, [setSelectedShopId, selectedShopId]);
 
   // Fetch categories when the selected shop changes
   useEffect(() => {
@@ -98,29 +107,73 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
     }
   }, [selectedShopId]);
 
+  // Handle product field changes
   const handleProductChange = (
     index: number,
-    field: "title" | "description" | "categoryId" | "itemId", // Add itemId
+    field: "title" | "description" | "categoryId" | "itemId" | "image",
     value: string
   ) => {
     const updatedProducts = [...products];
-    updatedProducts[index][field] = value; // TypeScript now knows `field` is one of the valid keys
+    updatedProducts[index][field] = value;
     setProducts(updatedProducts);
   };
 
+  // Add a new product row
   const addProductRow = () => {
     setProducts([
       ...products,
-      { title: "", description: "", categoryId: "", itemId: "" }, // Add itemId
+      { title: "", description: "", categoryId: "", itemId: "", image: "" },
     ]);
   };
 
+  // Remove a product row
   const removeProductRow = (index: number) => {
     const updatedProducts = products.filter((_, i) => i !== index);
     setProducts(updatedProducts);
   };
 
+  // Handle image upload
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target?.result as string; // Get the base64-encoded image
+        handleProductChange(index, "image", base64Image); // Save the base64 image to the form field
+      };
+      reader.readAsDataURL(file); // Read the file as a data URL
+    }
+  };
+
+  // Remove the uploaded image
+  const handleRemoveImage = (index: number) => {
+    handleProductChange(index, "image", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Submit products
   const submitProducts = async () => {
+    let newErrors = products.map((product) =>
+      product.title.trim() === "" ? "Title is required." : ""
+    );
+
+    setErrors(newErrors); // Update the error state
+
+    // If there are any errors, stop the submission
+    if (newErrors.some((error) => error !== "")) {
+      toast({
+        variant: "destructive",
+        title: "Missing required fields!",
+        description: "Please fill in all required fields before submitting.",
+      });
+      return;
+    }
+
     if (!selectedShopId) {
       toast({
         variant: "destructive",
@@ -137,7 +190,16 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ products, shopId: selectedShopId }),
+        body: JSON.stringify({
+          products: products.map((product) => ({
+            title: product.title,
+            description: product.description,
+            categoryId: product.categoryId,
+            itemId: product.itemId,
+            image: product.image,
+          })),
+          shopId: selectedShopId,
+        }),
       });
 
       const data = await response.json();
@@ -149,8 +211,9 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
         });
         router.replace("/shop/products/datatable");
         setProducts([
-          { title: "", description: "", categoryId: "", itemId: "" },
+          { title: "", description: "", categoryId: "", itemId: "", image: "" },
         ]);
+        setErrors([]); // Reset errors
       } else {
         toast({
           variant: "destructive",
@@ -172,11 +235,10 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
 
   return (
     <div className="w-full mt-20 h-full p-4 sm:pl-[260px]">
-      {" "}
       <CardTitle className="text-2xl">Create Items</CardTitle>
       <CardHeader className="relative right-5 mt-10">
-        <CardTitle className=" text-3xl">New Item</CardTitle>
-        <CardDescription>Add a new items here</CardDescription>
+        <CardTitle className="text-3xl">New Item</CardTitle>
+        <CardDescription>Add a new item here</CardDescription>
       </CardHeader>
       {/* Shop Selector Dropdown */}
       <div className="mb-6">
@@ -206,17 +268,55 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
       >
         {products.map((product, index) => (
           <div key={index} className="space-y-4">
-            {/* Title */}
+            {/* Image Upload */}
             <div>
-              <Input
-                name={`product-title-${index}`}
-                value={product.title}
-                onChange={(e) =>
-                  handleProductChange(index, "title", e.target.value)
-                }
-                placeholder="Enter title"
-                className="w-full"
-                disabled={isSubmitting}
+              <label
+                htmlFor={`image-upload-${index}`}
+                className="cursor-pointer"
+              >
+                {/* Title */}
+                <div>
+                  <Input
+                    name={`product-title-${index}`}
+                    value={product.title}
+                    onChange={(e) =>
+                      handleProductChange(index, "title", e.target.value)
+                    }
+                    placeholder="Enter title"
+                    className="w-full mb-2"
+                    disabled={isSubmitting}
+                  />
+                </div>
+                {product.image ? (
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt="Uploaded"
+                      className="w-[150px] h-[150px] object-cover rounded-lg"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-2 right-2"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="w-[150px] h-[150px] border-2 border-dashed rounded-lg flex items-center justify-center">
+                    <span className="text-gray-500">Upload Image</span>
+                  </div>
+                )}
+              </label>
+              <input
+                id={`image-upload-${index}`}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleImageUpload(e, index)}
+                ref={fileInputRef}
               />
             </div>
 
@@ -229,7 +329,7 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
                 }
                 placeholder="Enter product description"
                 disabled={isSubmitting}
-                className="min-h-[200px]" // Set a minimum height for the editor
+                className="min-h-[200px]"
               />
             </div>
 
@@ -270,7 +370,7 @@ const Product = ({ className, shopId: initialShopId }: ProductProps) => {
                 type="button"
                 variant="destructive"
                 onClick={() => removeProductRow(index)}
-                disabled={isSubmitting || products.length === 1} // Prevent removing last field
+                disabled={isSubmitting || products.length === 1}
               >
                 Remove
               </Button>

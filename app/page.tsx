@@ -179,11 +179,11 @@ export default function Home() {
               <h1 className="text-[#D4AF37] text-4xl lg:text-5xl font-bold mb-5">
                 Instantly Generate & Track QR Codes
               </h1>
-              <p className="text-lg lg:text-xl text-gray-300 max-w-[85%] mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-lg lg:text-xl  max-w-[85%] mx-auto lg:mx-0 leading-relaxed">
                 Create branded QR codes that last forever. Track scans, boost
                 engagement, and unlock powerful insights – all in seconds.
               </p>
-              <p className="text-lg lg:text-xl text-gray-300 max-w-[85%] mx-auto lg:mx-0 leading-relaxed mt-4">
+              <p className="text-lg lg:text-xl  max-w-[85%] mx-auto lg:mx-0 leading-relaxed mt-4">
                 No limits. No hidden fees. Just smarter sharing.
               </p>
               <div className="mt-6 space-x-4 space-y-4 lg:space-y-0">

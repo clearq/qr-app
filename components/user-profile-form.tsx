@@ -208,16 +208,16 @@ export const EditProfileForm = ({ user: userData }: Props) => {
         <label className="flex mt-5 justify-center items-center">
           <div className="w-[124px] mt-5 h-[124px] mb-5 relative rounded-full">
             <Avatar className="w-32 h-32 mb-4">
-              {logo ? (
+              {/* {logo ? (
                 <AvatarImage src={logo as string} alt="Uploaded Logo" />
-              ) : (
-                <AvatarFallback className="uppercase text-[16px]">
-                  {validation.values.firstName[0]}
-                  {validation.values.lastName[0]}
-                </AvatarFallback>
-              )}
+              ) : ( */}
+              <AvatarFallback className="uppercase text-[16px]">
+                {validation.values.firstName[0]}
+                {validation.values.lastName[0]}
+              </AvatarFallback>
+              {/* )} */}
             </Avatar>
-            <Button
+            {/* <Button
               asChild
               size="icon"
               className="h-8 w-8 rounded-full cursor-pointer absolute bottom-0 right-0"
@@ -242,7 +242,7 @@ export const EditProfileForm = ({ user: userData }: Props) => {
               accept="image/*"
               className="hidden"
               onChange={handleLogoUpload}
-            />
+            /> */}
 
             {logo && (
               <Button

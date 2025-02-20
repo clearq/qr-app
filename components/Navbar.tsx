@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ModeToggle } from "./ui/modeToggle";
 import Image from "next/image";
-import logoImage from "../public/image/qrLogo.png";
 import { ExtendedUser } from "@/next-auth";
 import { useRouter, usePathname } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
@@ -75,13 +74,14 @@ export const Sidebar = ({ user: userData }: Props) => {
       variant: "destructive",
       action: (
         <Button
+          className="text-[#252525]"
           variant={"outline"}
           onClick={async () => {
             await logOut();
             window.location.replace("/");
           }}
         >
-          {translations.confirmLogut}
+          {translations.confirmLogout}
         </Button>
       ),
     });
@@ -442,7 +442,7 @@ export const Sidebar = ({ user: userData }: Props) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="p-2 mb-28 flex flex-row space-x-2 sm:mb-2 hover:text-slate-500 hover:transition-transform justify-start items-start"
+                  className="p-2 mb-28 flex flex-row space-x-2 sm:mb-2 hover:transition-transform justify-start items-start"
                   onClick={handleSignOut}
                 >
                   <PowerOff className="w-5 h-5" />

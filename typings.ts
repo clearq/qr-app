@@ -138,11 +138,12 @@ export interface CATEGORY {
 
 export interface PRODUCT {
   id: string;
-  itemId: string; // Add this line for the itemId field
+  itemId: string;
   title: string;
   shop: Shop;
   shopId: string;
   description: string;
-  category?: { name: string }; // Ensure category is included
+  image?: string; // Add the image field
+  category?: { name: string };
   categoryId: string;
 }

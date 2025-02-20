@@ -42,21 +42,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   events: {
-    async signOut(params) {
-      // Check if the params contain a token
-      if ("token" in params) {
-        const { token } = params;
-
-        // Call the Server Action to clear cookies
-        await clearAuthCookies();
-      }
-      // Check if the params contain a session
-      else if ("session" in params) {
-        const { session } = params;
-
-        // Handle session-based cleanup if needed
-      } else {
-      }
-    },
+    async signOut() {},
   },
 });

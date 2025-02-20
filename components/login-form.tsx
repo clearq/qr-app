@@ -17,12 +17,6 @@ import { signIn, useSession } from "next-auth/react";
 import { AuthError } from "next-auth";
 import Link from "next/link";
 
-// Import SVG icons for the providers
-import TimeerIcon from "@/public/image/timeerSVG.svg";
-import StaffinIcon from "@/public/image/staffinSVG.svg";
-import GoogleIcon from "@/public/image/googleSVG.svg";
-import AppleIcon from "@/public/image/appleSVG.svg";
-
 export function LoginForm() {
   const [error, setError] = useState("");
   const router = useRouter();
@@ -85,14 +79,6 @@ export function LoginForm() {
     }
   };
 
-  const handleProviderSignIn = async (provider: string) => {
-    try {
-      await signIn(provider, { callbackUrl: "/all" });
-    } catch (error) {
-      setError("Failed to sign in with provider");
-    }
-  };
-
   return (
     <div className="flex mt-20 sm:mt-5 justify-center items-center">
       <Tabs defaultValue="account" className="w-[400px]">
@@ -140,32 +126,6 @@ export function LoginForm() {
               <div className="text-center text-gray-500 text-[20px]">
                 - OR -
               </div>
-              {/* <div className="flex justify-center gap-4 mt-4">
-                <button
-                  onClick={() => handleProviderSignIn("timeer")}
-                  className="p-2"
-                >
-                  <TimeerIcon className="w-12 h-12" />
-                </button>
-                <button
-                  onClick={() => handleProviderSignIn("staffin")}
-                  className="p-2"
-                >
-                  <StaffinIcon className="w-12 h-12" />
-                </button>
-                <button
-                  onClick={() => handleProviderSignIn("google")}
-                  className="p-2"
-                >
-                  <GoogleIcon className="w-12 h-12" />
-                </button>
-                <button
-                  onClick={() => handleProviderSignIn("apple")}
-                  className="p-2"
-                >
-                  <AppleIcon className="w-12 h-12" />
-                </button>
-              </div> */}
               <Link
                 href="/register"
                 className="block text-center mb-4 text-[16px] text-grey-500 hover:underline mt-2"

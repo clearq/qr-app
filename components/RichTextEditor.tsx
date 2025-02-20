@@ -63,16 +63,12 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
             // Text Color & Background
             [{ color: [] }, { background: [] }], // Text color and background color
+            // Clear Formatting
+            ["clean"], // Clear formatting
 
             // Lists
             [{ list: "ordered" }, { list: "bullet" }], // Ordered and unordered lists
             [{ direction: "rtl" }], // Text direction (right-to-left)
-
-            // Media Embeds
-            ["link", "image", "video"], // Links, images, videos
-
-            // Clear Formatting
-            ["clean"], // Clear formatting
           ],
           imageResize: {
             modules: ["Resize", "DisplaySize"], // Ensure the resize module is active
@@ -96,8 +92,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           "code-block",
           "header",
           "link",
-          "image",
-          "video",
         ]}
         className="resizable-editor"
       />

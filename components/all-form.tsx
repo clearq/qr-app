@@ -399,7 +399,7 @@ export default function AllForm({ id }: AllFormProps) {
           </CardContent>
         </Card>
       </div>
-      <div className="my-4 w-64">
+      {/* <div className="my-4 w-64">
         <Select
           onValueChange={(value) => setSelectedAnalytics(value)}
           value={selectedAnalytics}
@@ -413,16 +413,16 @@ export default function AllForm({ id }: AllFormProps) {
             <SelectItem value="product">{translations.products}</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       {/* Conditionally Render Analytics Component */}
-      <div className="mt-5 space-y-5">
+      {/* <div className="mt-5 space-y-5">
         {selectedAnalytics === "vcard" && <VCardAnalytics data={vcardData} />}
         {selectedAnalytics === "url" && <URLAnalytics data={urlData} />}
         {selectedAnalytics === "product" && (
           <ProductAnalytics data={productData} />
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

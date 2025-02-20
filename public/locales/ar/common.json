@@ -152,5 +152,5 @@
   "passwordUpdatedSuccessfully": "تم تحديث كلمة المرور بنجاح!",
   "errorUpdatingPassword": "خطأ في تحديث كلمة المرور",
   "savePassword": "حفظ كلمة المرور",
-  "confirmLogut":"تأكيد الخروج"
+  "confirmLogout":"تأكيد الخروج"
 }

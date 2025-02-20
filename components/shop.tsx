@@ -54,7 +54,7 @@ export const ShopComponent = ({
               title: `Shop created successfully!`,
               description: `${new Date().toLocaleDateString()}`,
             });
-            window.location.reload();
+            window.location.replace("/shop");
           } else {
             toast({
               variant: "destructive",
