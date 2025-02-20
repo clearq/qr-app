@@ -184,13 +184,6 @@ export const Vcard = () => {
             className="hidden"
             onChange={handleLogoUpload}
           />
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Upload Image
-          </Button> */}
           {logo && (
             <Button
               variant="destructive"
@@ -206,6 +199,7 @@ export const Vcard = () => {
       <CardContent>
         <form onSubmit={validation.handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
+            {/* First Name */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="firstName">
                 First name <span className="text-xs text-red-500">*</span>
@@ -217,9 +211,16 @@ export const Vcard = () => {
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                style={{ fontSize: "16px" }} // Add this line
+                style={{ fontSize: "16px" }}
               />
+              {validation.touched.firstName && validation.errors.firstName && (
+                <p className="text-xs text-red-500 mt-1">
+                  {validation.errors.firstName}
+                </p>
+              )}
             </div>
+
+            {/* Last Name */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="lastName">
                 Last name <span className="text-xs text-red-500">*</span>
@@ -231,9 +232,16 @@ export const Vcard = () => {
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                style={{ fontSize: "16px" }} // Add this line
+                style={{ fontSize: "16px" }}
               />
+              {validation.touched.lastName && validation.errors.lastName && (
+                <p className="text-xs text-red-500 mt-1">
+                  {validation.errors.lastName}
+                </p>
+              )}
             </div>
+
+            {/* Tag */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="tag">
                 Tag <span className="text-xs text-red-500">*</span>
@@ -245,21 +253,16 @@ export const Vcard = () => {
                 value={validation.values.tag}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                style={{ fontSize: "16px" }} // Add this line
+                style={{ fontSize: "16px" }}
               />
+              {validation.touched.tag && validation.errors.tag && (
+                <p className="text-xs text-red-500 mt-1">
+                  {validation.errors.tag}
+                </p>
+              )}
             </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                type="text"
-                name="title"
-                placeholder="Title"
-                value={validation.values.title}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                style={{ fontSize: "16px" }} // Add this line
-              />
-            </div>
+
+            {/* Email */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="customerEmail">
                 Email address <span className="text-xs text-red-500">*</span>
@@ -271,8 +274,14 @@ export const Vcard = () => {
                 value={validation.values.customerEmail}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                style={{ fontSize: "16px" }} // Add this line
+                style={{ fontSize: "16px" }}
               />
+              {validation.touched.customerEmail &&
+                validation.errors.customerEmail && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {validation.errors.customerEmail}
+                  </p>
+                )}
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="phone">Phone number</Label>

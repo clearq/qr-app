@@ -38,36 +38,40 @@ const Category = ({ className, shopId: initialShopId }: CategoryProps) => {
   useEffect(() => {
     const fetchShops = async () => {
       try {
-        const response = await fetch("/api/shop");
-        if (!response.ok) throw new Error("Failed to fetch shops");
-        const data = await response.json();
+        const userResponse = await fetch("/api/profile"); // Fetch logged-in user info
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+        const customerId = userData.customerId; // Store the logged-in customer ID
 
-        if (!Array.isArray(data.data)) {
-          console.error("Expected an array but received:", data);
+        const shopResponse = await fetch(`/api/shop?customerId=${customerId}`);
+        if (!shopResponse.ok) throw new Error("Failed to fetch shops.");
+        const shopData = await shopResponse.json();
+
+        if (!Array.isArray(shopData.data)) {
+          console.error("Expected an array but received:", shopData);
           setShops([]);
           return;
         }
 
-        setShops(data.data); // Use data.data
+        setShops(shopData.data);
 
-        // Pre-select the shop if initialShopId is provided
-        if (initialShopId && data.data.length > 0) {
-          setSelectedShopId(initialShopId);
+        // Auto-select the first shop if no shop is already selected
+        if (!selectedShopId && shopData.data.length > 0) {
+          setSelectedShopId(shopData.data[0].id);
         }
       } catch (error) {
         console.error("Error fetching shops:", error);
         toast({
+          title: "Error fetching shops",
+          description: "Failed to load shops. Please try again later.",
           variant: "destructive",
-          title: translations.error,
-          description: translations.failedToFetchShops,
         });
-      } finally {
-        setIsLoadingShops(false);
+        setShops([]);
       }
     };
 
     fetchShops();
-  }, [initialShopId, translations]); // Add initialShopId and translations as dependencies
+  }, [setSelectedShopId, selectedShopId]);
 
   const handleCategoryChange = (index: number, value: string) => {
     const updatedCategories = [...categories];

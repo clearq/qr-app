@@ -63,7 +63,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, description, shopId, categoryId, itemId } = body;
+    const { title, description, shopId, categoryId, itemId, image } = body;
 
     // Validate required fields
     if (!title || !shopId || !categoryId) {
@@ -82,7 +82,7 @@ export async function PUT(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    // Update the product, including itemId
+    // Update the product, including the image field
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
@@ -90,7 +90,8 @@ export async function PUT(
         description,
         shopId,
         categoryId,
-        itemId, // Include itemId
+        itemId,
+        image, // Include the image field
       },
     });
 

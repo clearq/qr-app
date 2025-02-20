@@ -117,23 +117,26 @@ export const DataTable = ({
   useEffect(() => {
     const fetchShops = async () => {
       try {
-        const response = await fetch("/api/shop");
-        if (!response.ok) {
-          throw new Error("Failed to fetch shops.");
-        }
-        const data = await response.json();
+        const userResponse = await fetch("/api/profile"); // Fetch logged-in user info
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+        const customerId = userData.customerId; // Store the logged-in customer ID
 
-        if (!Array.isArray(data.data)) {
-          console.error("Expected an array but received:", data);
-          setShops([]); // Set to an empty array if the response is not an array
+        const shopResponse = await fetch(`/api/shop?customerId=${customerId}`);
+        if (!shopResponse.ok) throw new Error("Failed to fetch shops.");
+        const shopData = await shopResponse.json();
+
+        if (!Array.isArray(shopData.data)) {
+          console.error("Expected an array but received:", shopData);
+          setShops([]);
           return;
         }
 
-        setShops(data.data); // Use data.data to match the API response structure
+        setShops(shopData.data);
 
-        // Pre-select the first shop if no shop is already selected
-        if (!selectedShopId && data.data.length > 0) {
-          setSelectedShopId(data.data[0].id);
+        // Auto-select the first shop if no shop is already selected
+        if (!selectedShopId && shopData.data.length > 0) {
+          setSelectedShopId(shopData.data[0].id);
         }
       } catch (error) {
         console.error("Error fetching shops:", error);
@@ -142,12 +145,12 @@ export const DataTable = ({
           description: "Failed to load shops. Please try again later.",
           variant: "destructive",
         });
-        setShops([]); // Set to an empty array in case of an error
+        setShops([]);
       }
     };
 
     fetchShops();
-  }, [setSelectedShopId, selectedShopId]); // Add selectedShopId to the dependency array
+  }, [setSelectedShopId, selectedShopId]);
 
   // Generate QR code for the selected product
   useEffect(() => {

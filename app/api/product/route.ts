@@ -15,22 +15,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // // Check for duplicates based on itemId
-    // const existingProducts = await prisma.product.findMany({
-    //   where: {
-    //     itemId: {
-    //       in: products.map((product: { itemId: any }) => product.itemId),
-    //     },
-    //   },
-    // });
-
-    // if (existingProducts.length > 0) {
-    //   return NextResponse.json(
-    //     { error: "One or more products already exist with the same itemId" },
-    //     { status: 400 }
-    //   );
-    // }
-
     // Create multiple products
     const createdProducts = await prisma.product.createMany({
       data: products.map(
@@ -39,12 +23,14 @@ export async function POST(req: NextRequest) {
           description: any;
           categoryId: any;
           itemId: any;
+          image: any; // Add image field
         }) => ({
           title: product.title,
           description: product.description,
           categoryId: product.categoryId,
           shopId,
-          itemId: product.itemId, // Include itemId
+          itemId: product.itemId,
+          image: product.image, // Include the image field
         })
       ),
     });
@@ -62,36 +48,47 @@ export async function POST(req: NextRequest) {
 // GET: Fetch all Products for a Shop or Category
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  const customerId = searchParams.get("customerId");
   const shopId = searchParams.get("shopId");
   const categoryId = searchParams.get("categoryId");
 
   try {
     let products;
-    if (shopId) {
-      // Fetch products for a shop
+    if (customerId) {
+      // Fetch the shopId of the customer first
+      const shop = await prisma.shop.findFirst({
+        where: { customerId },
+        select: { id: true },
+      });
+
+      if (!shop) {
+        return NextResponse.json(
+          { error: "No shop found for this customer" },
+          { status: 404 }
+        );
+      }
+
+      // Fetch products for that shop
+      products = await prisma.product.findMany({
+        where: { shopId: shop.id },
+        include: { category: true, shop: true },
+      });
+    } else if (shopId) {
+      // Fetch products by shopId
       products = await prisma.product.findMany({
         where: { shopId },
-        include: {
-          category: true,
-          shop: true,
-        },
+        include: { category: true, shop: true },
       });
     } else if (categoryId) {
-      // Fetch products for a category
+      // Fetch products by category
       products = await prisma.product.findMany({
         where: { categoryId },
-        include: {
-          category: true,
-          shop: true,
-        },
+        include: { category: true, shop: true },
       });
     } else {
-      // Fetch all products if no shopId or categoryId is provided
+      // Fetch all products if no filters provided
       products = await prisma.product.findMany({
-        include: {
-          category: true,
-          shop: true,
-        },
+        include: { category: true, shop: true },
       });
     }
 
@@ -141,7 +138,7 @@ export async function DELETE(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, title, description, shopId, categoryId, itemId } = body;
+    const { id, title, description, shopId, categoryId, itemId, image } = body;
 
     // Validate required fields
     if (!id || !title || !shopId || !categoryId) {
@@ -170,7 +167,8 @@ export async function PUT(req: NextRequest) {
         description,
         shopId,
         categoryId,
-        itemId, // Include itemId
+        itemId,
+        image, // Include itemId
       },
     });
 

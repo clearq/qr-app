@@ -22,6 +22,7 @@ import {
 } from "./ui/card";
 import { Label } from "./ui/label";
 import { Separator } from "./ui/separator";
+import Image from "next/image";
 
 interface ProductSingleProps {
   user?: ExtendedUser; // Add user prop
@@ -237,6 +238,16 @@ export const ProductPublicSingle = ({ user }: ProductSingleProps) => {
               </div>
 
               <div className="space-y-2">
+                {product.image && (
+                  <div>
+                    <Image
+                      src={product?.image || ""}
+                      alt="Product Image"
+                      width={300}
+                      height={300}
+                    />
+                  </div>
+                )}
                 <p>
                   <strong>Description:</strong>
                 </p>

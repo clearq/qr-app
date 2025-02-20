@@ -7,6 +7,7 @@ import QRCode from "qrcode.react";
 import { FaQrcode } from "react-icons/fa"; // Import QR code icon
 import { Button } from "./ui/button";
 import { toast } from "./ui/use-toast";
+import Image from "next/image";
 
 interface ProductSingleProps {
   product: PRODUCT;
@@ -30,8 +31,8 @@ export const ProductSingle = ({ product }: ProductSingleProps) => {
 
   const copyUrlToClipboard = () => {
     //@ts-ignore
-    const url = `https://qrgen.clearq.se/shop/products/details?id=${product?.id}&type=product`;
-    // const url = `localhost:3000/shop/products/details?id=${product?.id}&type=product`;
+    // const url = `https://qrgen.clearq.se/shop/products/details?id=${product?.id}&type=product`;
+    const url = `localhost:3000/shop/products/details?id=${product?.id}&type=product`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -64,6 +65,17 @@ export const ProductSingle = ({ product }: ProductSingleProps) => {
       </div>
 
       <div className="space-y-2">
+        {product.image && (
+          <div className="justify-center items-center w-[300px]">
+            <Image
+              className="justify-center items-center"
+              src={product?.image || ""}
+              alt="Product Image"
+              width={300}
+              height={300}
+            />
+          </div>
+        )}
         <p>
           <strong>Description:</strong>
         </p>
